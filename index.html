@@ -1,0 +1,1057 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Private AI Marketing Assistant — Rosario</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --card:#101826;
+      --muted:#9aa4b2;
+      --text:#e8eef7;
+      --line:#1d2a3b;
+      --accent:#7dd3fc;
+      --accent2:#a78bfa;
+      --good:#34d399;
+      --warn:#fbbf24;
+      --bad:#fb7185;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(167,139,250,.20), transparent 50%),
+                  radial-gradient(900px 500px at 80% -20%, rgba(125,211,252,.20), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    a{color:var(--accent)}
+    .wrap{max-width:1180px;margin:0 auto;padding:22px}
+    .topbar{
+      display:flex;gap:14px;align-items:center;justify-content:space-between;
+      padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);
+      background:rgba(16,24,38,.75);backdrop-filter: blur(10px); box-shadow: var(--shadow);
+      position:sticky; top:14px; z-index:10;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:40px;height:40px;border-radius:14px;
+      background: linear-gradient(135deg, rgba(125,211,252,.9), rgba(167,139,250,.9));
+      box-shadow: 0 10px 24px rgba(125,211,252,.12);
+    }
+    .brand h1{font-size:15px;margin:0;letter-spacing:.2px}
+    .brand p{margin:2px 0 0 0;color:var(--muted);font-size:12px}
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+    button{
+      cursor:pointer;
+      border:1px solid var(--line);
+      background: rgba(12,18,28,.7);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      font-weight:600;
+      transition:.15s transform, .15s opacity, .15s border-color;
+    }
+    button:hover{transform:translateY(-1px); border-color: rgba(125,211,252,.5)}
+    button.primary{
+      border-color: rgba(125,211,252,.45);
+      background: linear-gradient(135deg, rgba(125,211,252,.18), rgba(167,139,250,.18));
+    }
+    button.danger{border-color: rgba(251,113,133,.55)}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:16px;
+      margin-top:16px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      .topbar{position:relative; top:0}
+    }
+    .card{
+      border:1px solid var(--line);
+      background: rgba(16,24,38,.72);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px;
+    }
+    .card h2{
+      margin:0 0 10px 0;
+      font-size:14px;
+      letter-spacing:.3px;
+    }
+    .sub{color:var(--muted);font-size:12px;margin:0 0 14px 0;line-height:1.4}
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .row3{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+    }
+    .field{
+      display:flex;flex-direction:column;gap:6px;margin-bottom:10px;
+    }
+    label{font-size:12px;color:var(--muted)}
+    input, select, textarea{
+      border:1px solid var(--line);
+      background: rgba(9,14,22,.65);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      outline:none;
+    }
+    textarea{min-height:86px;resize:vertical}
+    input:focus, textarea:focus, select:focus{border-color: rgba(125,211,252,.55)}
+    .pillrow{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{
+      padding:8px 10px;border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(9,14,22,.55);
+      color: var(--muted);
+      font-size:12px;
+      display:flex; gap:8px; align-items:center;
+    }
+    .dot{width:8px;height:8px;border-radius:99px;background:var(--muted)}
+    .dot.good{background:var(--good)}
+    .dot.warn{background:var(--warn)}
+    .dot.bad{background:var(--bad)}
+    .kpi{
+      display:grid;grid-template-columns: repeat(3, 1fr);
+      gap:10px;margin-top:10px;
+    }
+    @media (max-width: 520px){
+      .kpi{grid-template-columns:1fr}
+      .row, .row3{grid-template-columns:1fr}
+    }
+    .kpi .box{
+      border:1px solid var(--line);
+      background: rgba(9,14,22,.55);
+      border-radius:16px;
+      padding:12px;
+    }
+    .kpi .big{font-size:20px;font-weight:800;letter-spacing:.2px}
+    .kpi .small{font-size:12px;color:var(--muted);margin-top:2px}
+    .split{
+      display:grid;grid-template-columns: 1fr 1fr; gap:10px;
+    }
+    .mono{font-family:var(--mono)}
+    .out{
+      white-space:pre-wrap;
+      border:1px dashed rgba(125,211,252,.35);
+      background: rgba(9,14,22,.45);
+      padding:12px;border-radius:16px;
+      min-height:120px;
+      line-height:1.45;
+    }
+    .list{
+      display:flex;flex-direction:column;gap:10px;margin-top:12px;
+    }
+    .item{
+      border:1px solid var(--line);
+      background: rgba(9,14,22,.55);
+      border-radius:16px;
+      padding:12px;
+    }
+    .item .meta{display:flex; gap:10px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size:12px}
+    .tag{
+      font-size:12px;
+      border:1px solid rgba(167,139,250,.35);
+      padding:4px 8px;border-radius:999px;color:rgba(167,139,250,.95)
+    }
+    .tag2{
+      font-size:12px;
+      border:1px solid rgba(125,211,252,.35);
+      padding:4px 8px;border-radius:999px;color:rgba(125,211,252,.95)
+    }
+    .hr{height:1px;background:var(--line);margin:12px 0}
+    .hidden{display:none !important}
+    .login{
+      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;
+    }
+    .login .panel{
+      max-width:520px;width:100%;
+      border:1px solid var(--line);
+      background: rgba(16,24,38,.72);
+      border-radius:22px;
+      box-shadow: var(--shadow);
+      padding:18px;
+    }
+    .login h1{margin:0 0 6px 0;font-size:18px}
+    .login p{margin:0 0 14px 0;color:var(--muted);font-size:12px;line-height:1.5}
+    .notice{
+      font-size:12px;color:var(--muted);line-height:1.5;
+      border:1px solid rgba(251,191,36,.35);
+      background: rgba(251,191,36,.08);
+      padding:10px 12px;border-radius:16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- LOGIN GATE -->
+  <div id="loginView" class="login">
+    <div class="panel">
+      <h1>Private AI Marketing Assistant</h1>
+      <p>Local-only dashboard for tracking, monitoring, and generating TikTok/Instagram content ideas for your business.</p>
+      <div class="notice">
+        This is a simple privacy gate for a static site. If you need true private login, we can upgrade it later.
+      </div>
+      <div class="hr"></div>
+      <div class="field">
+        <label>Enter password</label>
+        <input id="pw" type="password" placeholder="Click 'First time? Set password' on first run"/>
+      </div>
+      <button class="primary" onclick="login()">Unlock</button>
+      <button onclick="firstTimeSet()">First time? Set password</button>
+      <p class="sub" style="margin-top:12px">Tip: Keep this link private. Use a strong password.</p>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="appView" class="hidden">
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo"></div>
+          <div>
+            <h1>Rosario’s AI Marketing Assistant</h1>
+            <p id="todayLine">Dashboard</p>
+          </div>
+        </div>
+        <div class="btnrow">
+          <button class="primary" onclick="generateAll()">Generate Ideas</button>
+          <button onclick="build7DayPlan()">Build 7-Day Plan</button>
+          <button onclick="exportData()">Export</button>
+          <button class="danger" onclick="logout()">Lock</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- LEFT -->
+        <div class="card">
+          <h2>1) Inputs (what the assistant uses)</h2>
+          <p class="sub">Fill these out once, then update weekly. The generator uses your niche, offers, voice, and current focus.</p>
+
+          <div class="row">
+            <div class="field">
+              <label>Brand / Business</label>
+              <input id="brandName" placeholder="Arizona Residential Private Contracting"/>
+            </div>
+            <div class="field">
+              <label>Market (City/Area)</label>
+              <input id="market" placeholder="Phoenix East Valley + (San Diego expansion)"/>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Platforms</label>
+              <select id="platform">
+                <option value="TikTok">TikTok</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Both" selected>Both</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Content Style</label>
+              <select id="style">
+                <option value="Reality-style / behind-the-scenes" selected>Reality-style / behind-the-scenes</option>
+                <option value="Educational (tips + how-to)">Educational (tips + how-to)</option>
+                <option value="Storytelling (before/after + client wins)">Storytelling (before/after + client wins)</option>
+                <option value="Luxury / high-end vibe">Luxury / high-end vibe</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Primary Services to Promote (comma-separated)</label>
+              <input id="services" placeholder="Exterior painting, remodels, electrical, property management turnovers"/>
+            </div>
+            <div class="field">
+              <label>Current Offer / CTA</label>
+              <input id="cta" placeholder="DM me for a quote / walkthrough / connect with agent"/>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>What are you trying to achieve this month?</label>
+            <textarea id="goal" placeholder="Example: Get more high-end remodel leads + attract brand deals (tools, paint, home tech, etc.)."></textarea>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Your Voice (pick one)</label>
+              <select id="voice">
+                <option value="Confident + friendly" selected>Confident + friendly</option>
+                <option value="Luxury + professional">Luxury + professional</option>
+                <option value="Funny + bold">Funny + bold</option>
+                <option value="Straight shooter (no fluff)">Straight shooter (no fluff)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Video Length Target</label>
+              <select id="length">
+                <option value="15–25 seconds">15–25 seconds</option>
+                <option value="30–45 seconds">30–45 seconds</option>
+                <option value="60–90 seconds" selected>60–90 seconds</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <h2>2) Tracking + Monitoring (manual metrics)</h2>
+          <p class="sub">Log post performance. The assistant summarizes what’s working and what to repeat.</p>
+
+          <div class="row3">
+            <div class="field">
+              <label>Date</label>
+              <input id="mDate" type="date"/>
+            </div>
+            <div class="field">
+              <label>Platform</label>
+              <select id="mPlatform">
+                <option>TikTok</option>
+                <option>Instagram</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Post Type</label>
+              <select id="mType">
+                <option>Walkthrough</option>
+                <option>Before/After</option>
+                <option>Tip/How-to</option>
+                <option>Client story</option>
+                <option>Tool/Material</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row3">
+            <div class="field">
+              <label>Views</label>
+              <input id="mViews" type="number" placeholder="0"/>
+            </div>
+            <div class="field">
+              <label>Likes</label>
+              <input id="mLikes" type="number" placeholder="0"/>
+            </div>
+            <div class="field">
+              <label>Comments</label>
+              <input id="mComments" type="number" placeholder="0"/>
+            </div>
+          </div>
+
+          <div class="row3">
+            <div class="field">
+              <label>Saves</label>
+              <input id="mSaves" type="number" placeholder="0"/>
+            </div>
+            <div class="field">
+              <label>Shares</label>
+              <input id="mShares" type="number" placeholder="0"/>
+            </div>
+            <div class="field">
+              <label>Profile Visits</label>
+              <input id="mVisits" type="number" placeholder="0"/>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Hook used (first line)</label>
+            <input id="mHook" placeholder="Example: This is why most paint jobs fail in year 2…"/>
+          </div>
+          <div class="field">
+            <label>Notes (what happened / why it worked)</label>
+            <textarea id="mNotes" placeholder="Example: Hook was strong, before/after was clean, used trending audio, asked a question."></textarea>
+          </div>
+
+          <div class="pillrow">
+            <button class="primary" onclick="saveMetric()">Save Metric</button>
+            <button onclick="summarizePerformance()">Summarize Performance</button>
+            <button class="danger" onclick="clearMetrics()">Clear Metrics</button>
+          </div>
+
+          <div class="kpi" id="kpiRow"></div>
+          <div class="out mono" id="perfOut">Performance summary will appear here.</div>
+
+          <div class="list" id="metricList"></div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="card">
+          <h2>Idea Generator</h2>
+          <p class="sub">Generates hooks, scripts, captions, and hashtags based on your niche + goals.</p>
+
+          <div class="field">
+            <label>Pick a Content Pillar</label>
+            <select id="pillar">
+              <option value="Exterior Painting">Exterior Painting</option>
+              <option value="Luxury Remodeling">Luxury Remodeling</option>
+              <option value="Property Management / Turnovers">Property Management / Turnovers</option>
+              <option value="Electrical / Safety">Electrical / Safety</option>
+              <option value="Client Stories / Wins" selected>Client Stories / Wins</option>
+              <option value="Tools / Materials / Behind-the-scenes">Tools / Materials / Behind-the-scenes</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Current Topic / Job (optional)</label>
+            <input id="topic" placeholder="Example: exterior estimate walkthrough, stucco trim, black shingles, etc."/>
+          </div>
+
+          <div class="field">
+            <label>Audience</label>
+            <select id="audience">
+              <option value="Homeowners">Homeowners</option>
+              <option value="Luxury homeowners" selected>Luxury homeowners</option>
+              <option value="Property managers / Realtors">Property managers / Realtors</option>
+              <option value="Brands (tools, paint, home tech)">Brands (tools, paint, home tech)</option>
+            </select>
+          </div>
+
+          <div class="split">
+            <button class="primary" onclick="generateHooks()">Hooks</button>
+            <button class="primary" onclick="generateScripts()">Scripts</button>
+            <button class="primary" onclick="generateCaptions()">Captions</button>
+            <button class="primary" onclick="generateHashtags()">Hashtags</button>
+          </div>
+
+          <div class="hr"></div>
+          <h2>Output</h2>
+          <div class="out mono" id="ideaOut">Click a generator button to create content ideas.</div>
+
+          <div class="hr"></div>
+          <h2>Saved Ideas</h2>
+          <div class="pillrow">
+            <button onclick="saveIdea()">Save Output</button>
+            <button class="danger" onclick="clearIdeas()">Clear Saved</button>
+          </div>
+          <div class="list" id="ideaList"></div>
+
+          <div class="hr"></div>
+          <h2>Settings</h2>
+          <p class="sub">Local settings stored in your browser.</p>
+          <div class="field">
+            <label>Change Password</label>
+            <input id="newPw" type="password" placeholder="New password"/>
+          </div>
+          <button onclick="setPassword()">Update Password</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>7-Day Posting Plan</h2>
+        <p class="sub">Based on your current goals + performance. Copy/paste into notes or a scheduler.</p>
+        <div class="pillrow">
+          <button class="primary" onclick="build7DayPlan()">Generate Plan</button>
+          <button onclick="copyPlan()">Copy Plan</button>
+          <button class="danger" onclick="clearPlan()">Clear Plan</button>
+        </div>
+        <div class="out mono" id="planOut">Your plan will appear here.</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ====== Storage keys ======
+  const KEY = {
+    pw: "arm_ai_pw",
+    inputs: "arm_ai_inputs",
+    metrics: "arm_ai_metrics",
+    ideas: "arm_ai_ideas",
+    plan: "arm_ai_plan"
+  };
+
+  // ====== Helpers ======
+  const $ = (id) => document.getElementById(id);
+  const now = new Date();
+  const pad = (n)=> String(n).padStart(2,"0");
+  const todayISO = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+
+  function safeNum(v){ const n = Number(v); return Number.isFinite(n) ? n : 0; }
+
+  function loadJSON(key, fallback){
+    try{
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    }catch(e){
+      return fallback;
+    }
+  }
+  function saveJSON(key, val){
+    localStorage.setItem(key, JSON.stringify(val));
+  }
+
+  function setTodayLine(){
+    const d = new Date();
+    const pretty = d.toLocaleString(undefined, { weekday:"long", year:"numeric", month:"short", day:"numeric" });
+    $("todayLine").textContent = `Today: ${pretty} • Private dashboard`;
+    $("mDate").value = todayISO;
+  }
+
+  // ====== Login ======
+  function firstTimeSet(){
+    const existing = localStorage.getItem(KEY.pw);
+    if(existing){
+      alert("Password already set. If you forgot it, clear localStorage for this site in your browser settings.");
+      return;
+    }
+    const p1 = prompt("Set a password for this dashboard (store somewhere safe):");
+    if(!p1 || p1.length < 6){ alert("Password too short. Use 6+ characters."); return; }
+    localStorage.setItem(KEY.pw, hash(p1));
+    alert("Password set. Now log in.");
+  }
+
+  function login(){
+    const stored = localStorage.getItem(KEY.pw);
+    if(!stored){
+      alert("No password set yet. Click 'First time? Set password'.");
+      return;
+    }
+    const entered = $("pw").value || "";
+    if(hash(entered) === stored){
+      $("loginView").classList.add("hidden");
+      $("appView").classList.remove("hidden");
+      setTodayLine();
+      hydrate();
+    }else{
+      alert("Wrong password.");
+    }
+  }
+
+  function logout(){
+    $("pw").value = "";
+    $("loginView").classList.remove("hidden");
+    $("appView").classList.add("hidden");
+  }
+
+  // Simple hash (privacy gate only — not secure auth)
+  function hash(str){
+    let h = 2166136261;
+    for(let i=0;i<str.length;i++){
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0).toString(16);
+  }
+
+  function setPassword(){
+    const np = $("newPw").value || "";
+    if(np.length < 6){ alert("Use at least 6 characters."); return; }
+    localStorage.setItem(KEY.pw, hash(np));
+    $("newPw").value = "";
+    alert("Password updated.");
+  }
+
+  // ====== Inputs ======
+  function getInputs(){
+    return {
+      brandName: $("brandName").value.trim(),
+      market: $("market").value.trim(),
+      platform: $("platform").value,
+      style: $("style").value,
+      services: $("services").value.trim(),
+      cta: $("cta").value.trim(),
+      goal: $("goal").value.trim(),
+      voice: $("voice").value,
+      length: $("length").value
+    };
+  }
+
+  function saveInputs(){
+    saveJSON(KEY.inputs, getInputs());
+  }
+
+  function hydrateInputs(){
+    const i = loadJSON(KEY.inputs, {});
+    if(i.brandName) $("brandName").value = i.brandName;
+    if(i.market) $("market").value = i.market;
+    if(i.platform) $("platform").value = i.platform;
+    if(i.style) $("style").value = i.style;
+    if(i.services) $("services").value = i.services;
+    if(i.cta) $("cta").value = i.cta;
+    if(i.goal) $("goal").value = i.goal;
+    if(i.voice) $("voice").value = i.voice;
+    if(i.length) $("length").value = i.length;
+
+    // Autosave on input
+    ["brandName","market","platform","style","services","cta","goal","voice","length"].forEach(id=>{
+      $(id).addEventListener("input", saveInputs);
+      $(id).addEventListener("change", saveInputs);
+    });
+  }
+
+  // ====== Metrics ======
+  function getMetrics(){ return loadJSON(KEY.metrics, []); }
+
+  function saveMetric(){
+    const m = {
+      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+      date: $("mDate").value || todayISO,
+      platform: $("mPlatform").value,
+      type: $("mType").value,
+      views: safeNum($("mViews").value),
+      likes: safeNum($("mLikes").value),
+      comments: safeNum($("mComments").value),
+      saves: safeNum($("mSaves").value),
+      shares: safeNum($("mShares").value),
+      visits: safeNum($("mVisits").value),
+      hook: $("mHook").value.trim(),
+      notes: $("mNotes").value.trim()
+    };
+
+    const list = getMetrics();
+    list.unshift(m);
+    saveJSON(KEY.metrics, list);
+
+    // clear a few fields
+    ["mViews","mLikes","mComments","mSaves","mShares","mVisits","mHook","mNotes"].forEach(id=>$(id).value="");
+    renderMetrics();
+    renderKPIs();
+  }
+
+  function clearMetrics(){
+    if(!confirm("Clear all saved metrics?")) return;
+    saveJSON(KEY.metrics, []);
+    $("perfOut").textContent = "Performance summary will appear here.";
+    renderMetrics();
+    renderKPIs();
+  }
+
+  function deleteMetric(id){
+    const list = getMetrics().filter(x=>x.id!==id);
+    saveJSON(KEY.metrics, list);
+    renderMetrics();
+    renderKPIs();
+  }
+
+  function renderMetrics(){
+    const list = getMetrics();
+    const root = $("metricList");
+    root.innerHTML = "";
+    list.slice(0, 12).forEach(m=>{
+      const div = document.createElement("div");
+      div.className = "item";
+      const er = engagementRate(m);
+      div.innerHTML = `
+        <div class="meta">
+          <span class="tag2">${m.platform}</span>
+          <span class="tag">${m.type}</span>
+          <span>${m.date}</span>
+          <span>ER: <b>${(er*100).toFixed(1)}%</b></span>
+        </div>
+        <div style="margin-top:8px; font-weight:800">${m.views.toLocaleString()} views</div>
+        <div class="meta" style="margin-top:6px">
+          <span>❤️ ${m.likes}</span>
+          <span>💬 ${m.comments}</span>
+          <span>🔖 ${m.saves}</span>
+          <span>↗️ ${m.shares}</span>
+          <span>👤 ${m.visits}</span>
+        </div>
+        <div style="margin-top:8px; color: var(--muted); font-size:12px">
+          <div><span class="mono">Hook:</span> ${escapeHtml(m.hook || "—")}</div>
+          <div><span class="mono">Notes:</span> ${escapeHtml(m.notes || "—")}</div>
+        </div>
+        <div class="pillrow" style="margin-top:10px">
+          <button onclick="deleteMetric('${m.id}')">Delete</button>
+        </div>
+      `;
+      root.appendChild(div);
+    });
+
+    if(list.length === 0){
+      root.innerHTML = `<div class="sub">No metrics saved yet. Add your first post stats above.</div>`;
+    }
+  }
+
+  function engagementRate(m){
+    const interactions = (m.likes + m.comments + m.saves + m.shares);
+    return m.views > 0 ? interactions / m.views : 0;
+  }
+
+  function renderKPIs(){
+    const list = getMetrics();
+    const last7 = list.filter(m=>{
+      const dt = new Date(m.date + "T00:00:00");
+      const diffDays = (new Date() - dt) / (1000*60*60*24);
+      return diffDays <= 7.5;
+    });
+
+    const sum = (arr, key)=> arr.reduce((a,x)=> a + safeNum(x[key]), 0);
+    const totalViews = sum(last7, "views");
+    const totalLikes = sum(last7, "likes");
+    const totalComments = sum(last7, "comments");
+    const totalSaves = sum(last7, "saves");
+    const totalShares = sum(last7, "shares");
+
+    const er = totalViews ? (totalLikes+totalComments+totalSaves+totalShares)/totalViews : 0;
+
+    const root = $("kpiRow");
+    root.innerHTML = `
+      <div class="box">
+        <div class="big">${totalViews.toLocaleString()}</div>
+        <div class="small">Views (last 7 days)</div>
+      </div>
+      <div class="box">
+        <div class="big">${((er||0)*100).toFixed(1)}%</div>
+        <div class="small">Engagement Rate</div>
+      </div>
+      <div class="box">
+        <div class="big">${(totalSaves+totalShares).toLocaleString()}</div>
+        <div class="small">Saves + Shares</div>
+      </div>
+    `;
+  }
+
+  function summarizePerformance(){
+    const list = getMetrics();
+    if(list.length === 0){
+      $("perfOut").textContent = "Add at least 1 metric entry first.";
+      return;
+    }
+
+    const top = [...list].sort((a,b)=> engagementRate(b)-engagementRate(a)).slice(0,3);
+    const weak = [...list].sort((a,b)=> engagementRate(a)-engagementRate(b)).slice(0,2);
+
+    const bestTypes = countBy(list, "type");
+    const bestHooks = top.map(m=>m.hook).filter(Boolean).slice(0,3);
+
+    const insight =
+`WHAT’S WORKING (based on your logged posts)
+• Best post types lately: ${topKeys(bestTypes).join(", ") || "—"}
+• Top hooks to repeat:
+${bestHooks.length ? bestHooks.map(h=>"  - "+h).join("\n") : "  - (add hooks in your metric logs)"}
+
+WHAT TO IMPROVE
+• Lowest ER examples:
+${weak.map(m=>`  - ${m.platform} ${m.type} on ${m.date} (ER ${(engagementRate(m)*100).toFixed(1)}%)`).join("\n")}
+
+NEXT ACTIONS (simple)
+1) Re-post your top-performing structure with a new job/topic (same hook pattern).
+2) Add a clear CTA in the last 3 seconds: "${($("cta").value || "DM me and I’ll send pricing / next steps").trim()}".
+3) Turn 1 winning video into: 1 short clip (15s), 1 full (60–90s), 1 carousel (IG), 1 story (IG).`;
+
+    $("perfOut").textContent = insight;
+  }
+
+  function countBy(arr, key){
+    return arr.reduce((m,x)=>{
+      const k = x[key] || "—";
+      m[k] = (m[k]||0)+1;
+      return m;
+    },{});
+  }
+  function topKeys(map){
+    return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);
+  }
+
+  // ====== Ideas ======
+  function getIdeaContext(){
+    saveInputs();
+    const i = getInputs();
+    return {
+      ...i,
+      pillar: $("pillar").value,
+      topic: $("topic").value.trim(),
+      audience: $("audience").value
+    };
+  }
+
+  function setOut(text){
+    $("ideaOut").textContent = text;
+  }
+
+  function generateHooks(){
+    const c = getIdeaContext();
+    const topic = c.topic ? `Topic: ${c.topic}` : `Topic: (use your current job / walkthrough)`;
+    const hooks = [
+      `“If you’re buying a home, watch this BEFORE you close…”`,
+      `“This is the #1 mistake I see on ${c.pillar.toLowerCase()} jobs…”`,
+      `“Here’s what this would cost IF you did it the right way…”`,
+      `“I’m about to show you what most contractors won’t point out…”`,
+      `“This is why your paint/job fails in 12–24 months…”`,
+      `“3 things I look for in the first 60 seconds of a walkthrough…”`,
+      `“Stop doing this to your house — it’s costing you thousands.”`,
+      `“I’m not trying to scare you… but this is a real problem.”`
+    ];
+
+    setOut(
+`HOOKS (${c.platform} • ${c.voice} • ${c.length})
+Brand: ${c.brandName || "—"} | Market: ${c.market || "—"}
+Pillar: ${c.pillar} | Audience: ${c.audience}
+${topic}
+
+Pick 1 hook and deliver it in the first 2 seconds:
+${hooks.map((h,i)=>`${i+1}) ${h}`).join("\n")}
+
+Quick CTA add-on:
+“${c.cta || "DM me and I’ll send the next steps."}”`
+    );
+  }
+
+  function generateScripts(){
+    const c = getIdeaContext();
+    const jobLine = c.topic ? `Job/Topic: ${c.topic}` : `Job/Topic: (add your current job here)`;
+    const script =
+`SCRIPT TEMPLATE (60–90s • ${c.style})
+1) Hook (0–2s): [pick a hook]
+2) Context (2–8s): “We’re at a home in ${c.market || "your area"} and I’m doing a quick ${c.pillar.toLowerCase()} walkthrough.”
+3) The Problem (8–25s): Show 1–2 issues. Explain risk in simple terms.
+4) The Fix (25–55s): Explain your process:
+   • Prep (protect + cover + repair)
+   • Correct materials (primer / caulk / proper products)
+   • Clean finish (2 coats, edges, details)
+5) Proof (55–75s): Show close-ups, texture, before/after, or estimate checklist.
+6) CTA (last 10s): “${c.cta || "DM me for a quote or walkthrough."}”
+
+B-ROLL SHOT LIST
+• Wide front elevation • Close-up texture • Problem area • Material/tool shot • You talking to camera • Detail finish
+
+ON-CAMERA LINES (use 2–3)
+• “I’m going to show you exactly what we’d do here.”
+• “This is what makes the difference between average and high-end.”
+• “If you like how this looks, DM me and I’ll send details.”
+
+${jobLine}
+Services to weave in: ${c.services || "—"}`
+    ;
+    setOut(script);
+  }
+
+  function generateCaptions(){
+    const c = getIdeaContext();
+    const caps = [
+      `Walkthrough time 🔍 If you’re buying this home, here’s what I’d fix first. ${c.cta || "DM me for details."}`,
+      `This is how we keep it looking new — not “good for now.” ${c.cta || "DM me."}`,
+      `Quick estimate walkthrough in ${c.market || "your area"} — what would you change on this exterior?`,
+      `Luxury finish is all in the prep. Here’s the checklist we follow every time.`,
+      `If you like the way this home looks, message me — I can connect you with the agent + help with the work.`
+    ];
+
+    setOut(
+`CAPTION OPTIONS (${c.platform})
+1) ${caps[0]}
+2) ${caps[1]}
+3) ${caps[2]}
+4) ${caps[3]}
+5) ${caps[4]}
+
+COMMENT PROMPT (boost engagement)
+• “Want me to price this out on camera? Comment ‘QUOTE’.”`
+    );
+  }
+
+  function generateHashtags(){
+    const c = getIdeaContext();
+    const base = [
+      "#homeimprovement", "#contractor", "#remodel", "#realestate", "#beforeandafter",
+      "#exteriordesign", "#homeowners", "#renovation", "#diyvspro", "#propertymanagement"
+    ];
+    const local = c.market?.toLowerCase().includes("san diego")
+      ? ["#sandiego", "#northcountysd", "#carlsbad", "#encinitas"]
+      : ["#phoenix", "#tempe", "#chandler", "#eastvalley"];
+    const niche =
+      c.pillar.includes("Painting") ? ["#exteriorpainting", "#housepainting", "#stucco"] :
+      c.pillar.includes("Electrical") ? ["#electrician", "#homesafety"] :
+      c.pillar.includes("Luxury") ? ["#luxuryhomes", "#highendhomes"] :
+      ["#walkthrough", "#contractorlife"];
+
+    setOut(
+`HASHTAGS (mix 8–14 total)
+Local: ${local.join(" ")}
+Niche: ${niche.join(" ")}
+Base: ${base.slice(0,8).join(" ")}
+
+Tip: rotate 3–5 hashtags each post so you don’t look spammy.`
+    );
+  }
+
+  function generateAll(){
+    // bundle output
+    generateHooks();
+    const hooks = $("ideaOut").textContent;
+    generateScripts();
+    const script = $("ideaOut").textContent;
+    generateCaptions();
+    const caps = $("ideaOut").textContent;
+    generateHashtags();
+    const tags = $("ideaOut").textContent;
+
+    setOut(`${hooks}\n\n---\n\n${script}\n\n---\n\n${caps}\n\n---\n\n${tags}`);
+  }
+
+  function getIdeas(){ return loadJSON(KEY.ideas, []); }
+
+  function saveIdea(){
+    const text = $("ideaOut").textContent.trim();
+    if(!text || text.includes("Click a generator button")){ alert("Generate something first."); return; }
+    const c = getIdeaContext();
+    const item = {
+      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+      created: new Date().toISOString(),
+      pillar: c.pillar,
+      platform: c.platform,
+      audience: c.audience,
+      topic: c.topic || "—",
+      text
+    };
+    const list = getIdeas();
+    list.unshift(item);
+    saveJSON(KEY.ideas, list);
+    renderIdeas();
+  }
+
+  function clearIdeas(){
+    if(!confirm("Clear all saved ideas?")) return;
+    saveJSON(KEY.ideas, []);
+    renderIdeas();
+  }
+
+  function deleteIdea(id){
+    const list = getIdeas().filter(x=>x.id!==id);
+    saveJSON(KEY.ideas, list);
+    renderIdeas();
+  }
+
+  function renderIdeas(){
+    const list = getIdeas();
+    const root = $("ideaList");
+    root.innerHTML = "";
+    list.slice(0, 10).forEach(i=>{
+      const div = document.createElement("div");
+      div.className = "item";
+      const when = new Date(i.created).toLocaleString();
+      div.innerHTML = `
+        <div class="meta">
+          <span class="tag2">${i.platform}</span>
+          <span class="tag">${i.pillar}</span>
+          <span>${when}</span>
+        </div>
+        <div style="margin-top:8px; color:var(--muted); font-size:12px">
+          <b>Topic:</b> ${escapeHtml(i.topic)}
+        </div>
+        <div class="out mono" style="margin-top:10px; min-height:auto">${escapeHtml(i.text)}</div>
+        <div class="pillrow" style="margin-top:10px">
+          <button onclick="copyText(${JSON.stringify(i.text)})">Copy</button>
+          <button onclick="deleteIdea('${i.id}')">Delete</button>
+        </div>
+      `;
+      root.appendChild(div);
+    });
+
+    if(list.length === 0){
+      root.innerHTML = `<div class="sub">No saved ideas yet. Generate output and click “Save Output”.</div>`;
+    }
+  }
+
+  // ====== 7-day plan ======
+  function build7DayPlan(){
+    const i = getInputs();
+    const metrics = getMetrics();
+    const topType = topKeys(countBy(metrics, "type"))[0] || "Walkthrough";
+    const plan =
+`7-DAY POSTING PLAN (repeat what works + build demand)
+Brand: ${i.brandName || "—"} | Market: ${i.market || "—"} | Platforms: ${i.platform}
+Goal: ${i.goal || "—"}
+
+DAY 1: ${topType} — “Problem → Fix”
+• Hook: “If you’re buying a home, watch this before you close…”
+• CTA: ${i.cta || "DM me for details."}
+
+DAY 2: Tip video (15–25s)
+• “3 things to check before hiring anyone”
+
+DAY 3: Behind-the-scenes (tools + materials)
+• Show prep, masking, products, why you choose them (luxury finish)
+
+DAY 4: Walkthrough estimate (60–90s)
+• “What this would cost if done right” (steps/ranges)
+
+DAY 5: Client win / before-after
+• Show transformation + quick story
+
+DAY 6: Realtor / property manager angle
+• “How we turn a unit/home fast without cutting corners”
+
+DAY 7: Brand deal bait
+• “Here’s what I’d improve about this product if I was using it daily…”
+
+Daily rule:
+• Ask 1 question in every caption to force comments.
+• Pin your best comment reply as a mini sales pitch.
+`;
+    $("planOut").textContent = plan;
+    saveJSON(KEY.plan, plan);
+  }
+
+  function copyPlan(){
+    const t = $("planOut").textContent.trim();
+    if(!t) return;
+    navigator.clipboard.writeText(t);
+    alert("Plan copied.");
+  }
+
+  function clearPlan(){
+    $("planOut").textContent = "Your plan will appear here.";
+    localStorage.removeItem(KEY.plan);
+  }
+
+  // ====== Export ======
+  function exportData(){
+    const blob = new Blob([JSON.stringify({
+      inputs: loadJSON(KEY.inputs, {}),
+      metrics: loadJSON(KEY.metrics, []),
+      ideas: loadJSON(KEY.ideas, []),
+      plan: loadJSON(KEY.plan, "")
+    }, null, 2)], {type:"application/json"});
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "marketing-assistant-export.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ====== Utilities ======
+  function copyText(t){
+    navigator.clipboard.writeText(t);
+    alert("Copied.");
+  }
+
+  function escapeHtml(s){
+    return String(s)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function hydrate(){
+    hydrateInputs();
+    renderMetrics();
+    renderKPIs();
+    renderIdeas();
+
+    const savedPlan = loadJSON(KEY.plan, "");
+    if(savedPlan) $("planOut").textContent = savedPlan;
+  }
+
+  // Auto-set date on load
+  window.addEventListener("load", ()=>{
+    $("mDate").value = todayISO;
+  });
+</script>
+</body>
+</html>
