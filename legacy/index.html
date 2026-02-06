@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Private AI Marketing Assistant — Rosario</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
     :root{
       --bg:#0b0f14;
-      --card:#101826;
+      --card:#121a27;
       --muted:#9aa4b2;
       --text:#e8eef7;
       --line:#1d2a3b;
@@ -18,15 +19,18 @@
       --bad:#fb7185;
       --shadow: 0 10px 30px rgba(0,0,0,.35);
       --radius: 18px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      --panel: rgba(14, 20, 30, .78);
     }
     *{box-sizing:border-box}
     body{
       margin:0;
       font-family:var(--sans);
-      background: radial-gradient(1200px 600px at 20% -10%, rgba(167,139,250,.20), transparent 50%),
-                  radial-gradient(900px 500px at 80% -20%, rgba(125,211,252,.20), transparent 55%),
+      background:
+        radial-gradient(1200px 600px at 20% -10%, color-mix(in srgb, var(--accent2) 35%, transparent), transparent 55%),
+        radial-gradient(900px 500px at 80% -20%, color-mix(in srgb, var(--accent) 35%, transparent), transparent 55%),
+        linear-gradient(180deg, rgba(10,14,20,.4), transparent 30%),
                   var(--bg);
       color:var(--text);
     }
@@ -35,17 +39,31 @@
     .topbar{
       display:flex;gap:14px;align-items:center;justify-content:space-between;
       padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);
-      background:rgba(16,24,38,.75);backdrop-filter: blur(10px); box-shadow: var(--shadow);
+      background:var(--panel);backdrop-filter: blur(12px); box-shadow: var(--shadow);
       position:sticky; top:14px; z-index:10;
     }
     .brand{display:flex;align-items:center;gap:12px}
     .logo{
       width:40px;height:40px;border-radius:14px;
-      background: linear-gradient(135deg, rgba(125,211,252,.9), rgba(167,139,250,.9));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 80%, #fff 20%), color-mix(in srgb, var(--accent2) 80%, #fff 20%));
       box-shadow: 0 10px 24px rgba(125,211,252,.12);
+      display:grid;place-items:center;overflow:hidden;
     }
+    .logo img{width:100%;height:100%;object-fit:cover}
     .brand h1{font-size:15px;margin:0;letter-spacing:.2px}
     .brand p{margin:2px 0 0 0;color:var(--muted);font-size:12px}
+    .topbar-actions{display:flex;align-items:center;gap:12px}
+    .profile{
+      display:flex;align-items:center;gap:10px;border:1px solid var(--line);
+      background: rgba(9,14,22,.45);padding:6px 10px;border-radius:999px;
+    }
+    .avatar{
+      width:28px;height:28px;border-radius:50%;
+      background: linear-gradient(135deg, rgba(125,211,252,.4), rgba(167,139,250,.4));
+      overflow:hidden;
+    }
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .profile .meta{font-size:12px;color:var(--muted)}
     .btnrow{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
     button{
       cursor:pointer;
@@ -75,7 +93,7 @@
     }
     .card{
       border:1px solid var(--line);
-      background: rgba(16,24,38,.72);
+      background: var(--panel);
       border-radius:var(--radius);
       box-shadow: var(--shadow);
       padding:16px;
@@ -151,6 +169,12 @@
       min-height:120px;
       line-height:1.45;
     }
+    .mini{
+      font-size:12px;color:var(--muted);line-height:1.5;
+      border:1px solid var(--line);
+      background: rgba(9,14,22,.35);
+      padding:10px 12px;border-radius:16px;
+    }
     .list{
       display:flex;flex-direction:column;gap:10px;margin-top:12px;
     }
@@ -192,6 +216,16 @@
       background: rgba(251,191,36,.08);
       padding:10px 12px;border-radius:16px;
     }
+    .badge{
+      font-size:11px;border:1px solid rgba(125,211,252,.4);
+      padding:3px 8px;border-radius:999px;color:rgba(125,211,252,.95)
+    }
+    .social-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+    .social-item{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      border:1px solid var(--line);background: rgba(9,14,22,.45);
+      padding:10px;border-radius:14px;font-size:12px;color:var(--muted);
+    }
   </style>
 </head>
 <body>
@@ -219,17 +253,27 @@
     <div class="wrap">
       <div class="topbar">
         <div class="brand">
-          <div class="logo"></div>
+          <div class="logo" id="brandLogo">
+            <img id="brandLogoImg" alt="Brand logo" class="hidden"/>
+          </div>
           <div>
-            <h1>Rosario’s AI Marketing Assistant</h1>
-            <p id="todayLine">Dashboard</p>
+            <h1 id="brandTitle">Rosario’s AI Marketing Assistant</h1>
+            <p id="brandTagline">Private dashboard</p>
           </div>
         </div>
-        <div class="btnrow">
-          <button class="primary" onclick="generateAll()">Generate Ideas</button>
-          <button onclick="build7DayPlan()">Build 7-Day Plan</button>
-          <button onclick="exportData()">Export</button>
-          <button class="danger" onclick="logout()">Lock</button>
+        <div class="topbar-actions">
+          <div class="profile">
+            <div class="avatar" id="brandAvatar">
+              <img id="brandAvatarImg" alt="Profile avatar" class="hidden"/>
+            </div>
+            <div class="meta" id="profileLabel">Owner • Private</div>
+          </div>
+          <div class="btnrow">
+            <button class="primary" onclick="generateAll()">Generate Ideas</button>
+            <button onclick="build7DayPlan()">Build 7-Day Plan</button>
+            <button onclick="exportData()">Export</button>
+            <button class="danger" onclick="logout()">Lock</button>
+          </div>
         </div>
       </div>
 
@@ -440,7 +484,73 @@
 
           <div class="hr"></div>
           <h2>Settings</h2>
-          <p class="sub">Local settings stored in your browser.</p>
+          <p class="sub">Brand + login settings stored locally in your browser.</p>
+
+          <div class="hr"></div>
+          <h2>Brand Studio</h2>
+          <p class="sub">Update colors, logo, and profile without editing the file.</p>
+
+          <div class="row">
+            <div class="field">
+              <label>Brand Title</label>
+              <input id="brandTitleInput" placeholder="Rosario’s AI Marketing Assistant"/>
+            </div>
+            <div class="field">
+              <label>Tagline / Status</label>
+              <input id="brandTaglineInput" placeholder="Private dashboard • Phoenix AZ"/>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Profile Label</label>
+            <input id="profileLabelInput" placeholder="Owner • Private"/>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Primary Accent</label>
+              <input id="accentColor" type="color"/>
+            </div>
+            <div class="field">
+              <label>Secondary Accent</label>
+              <input id="accent2Color" type="color"/>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Background Color</label>
+              <input id="bgColor" type="color"/>
+            </div>
+            <div class="field">
+              <label>Card / Panel Color</label>
+              <input id="cardColor" type="color"/>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Logo Image (square works best)</label>
+              <input id="logoUpload" type="file" accept="image/*"/>
+            </div>
+            <div class="field">
+              <label>Profile Avatar</label>
+              <input id="avatarUpload" type="file" accept="image/*"/>
+            </div>
+          </div>
+
+          <div class="pillrow">
+            <button onclick="resetBrand()">Reset Brand</button>
+          </div>
+
+          <div class="hr"></div>
+          <h2>Social Accounts (Live Data)</h2>
+          <p class="sub">Connect accounts to pull analytics. Requires a backend + API keys.</p>
+          <div class="mini">
+            Live analytics needs OAuth and platform approvals. I can wire this up once you’re ready.
+          </div>
+          <div class="social-list" id="socialList"></div>
+
           <div class="field">
             <label>Change Password</label>
             <input id="newPw" type="password" placeholder="New password"/>
@@ -469,7 +579,9 @@
     inputs: "arm_ai_inputs",
     metrics: "arm_ai_metrics",
     ideas: "arm_ai_ideas",
-    plan: "arm_ai_plan"
+    plan: "arm_ai_plan",
+    brand: "arm_ai_brand",
+    social: "arm_ai_social"
   };
 
   // ====== Helpers ======
@@ -493,9 +605,6 @@
   }
 
   function setTodayLine(){
-    const d = new Date();
-    const pretty = d.toLocaleString(undefined, { weekday:"long", year:"numeric", month:"short", day:"numeric" });
-    $("todayLine").textContent = `Today: ${pretty} • Private dashboard`;
     $("mDate").value = todayISO;
   }
 
@@ -588,6 +697,142 @@
     ["brandName","market","platform","style","services","cta","goal","voice","length"].forEach(id=>{
       $(id).addEventListener("input", saveInputs);
       $(id).addEventListener("change", saveInputs);
+    });
+  }
+
+  // ====== Brand Studio ======
+  const DEFAULT_BRAND = {
+    title: "Rosario’s AI Marketing Assistant",
+    tagline: "Private dashboard",
+    accent: "#7dd3fc",
+    accent2: "#a78bfa",
+    bg: "#0b0f14",
+    card: "#121a27",
+    logo: "",
+    avatar: "",
+    profileLabel: "Owner • Private"
+  };
+
+  function getBrand(){
+    return { ...DEFAULT_BRAND, ...loadJSON(KEY.brand, {}) };
+  }
+
+  function hexToRgba(hex, alpha){
+    const h = hex.replace("#","").trim();
+    if(h.length !== 6) return `rgba(18, 26, 39, ${alpha})`;
+    const r = parseInt(h.slice(0,2), 16);
+    const g = parseInt(h.slice(2,4), 16);
+    const b = parseInt(h.slice(4,6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  function applyBrand(b){
+    document.documentElement.style.setProperty("--accent", b.accent);
+    document.documentElement.style.setProperty("--accent2", b.accent2);
+    document.documentElement.style.setProperty("--bg", b.bg);
+    document.documentElement.style.setProperty("--card", b.card);
+    document.documentElement.style.setProperty("--panel", hexToRgba(b.card, 0.78));
+    $("brandTitle").textContent = b.title || DEFAULT_BRAND.title;
+    $("brandTagline").textContent = b.tagline || DEFAULT_BRAND.tagline;
+    $("profileLabel").textContent = b.profileLabel || DEFAULT_BRAND.profileLabel;
+
+    if(b.logo){
+      $("brandLogoImg").src = b.logo;
+      $("brandLogoImg").classList.remove("hidden");
+    }else{
+      $("brandLogoImg").classList.add("hidden");
+    }
+
+    if(b.avatar){
+      $("brandAvatarImg").src = b.avatar;
+      $("brandAvatarImg").classList.remove("hidden");
+    }else{
+      $("brandAvatarImg").classList.add("hidden");
+    }
+  }
+
+  function saveBrand(partial){
+    const next = { ...getBrand(), ...partial };
+    saveJSON(KEY.brand, next);
+    applyBrand(next);
+  }
+
+  function resetBrand(){
+    if(!confirm("Reset brand settings to default?")) return;
+    saveJSON(KEY.brand, DEFAULT_BRAND);
+    hydrateBrand();
+  }
+
+  function readImageFile(input, cb){
+    const file = input.files && input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => cb(String(reader.result || ""));
+    reader.readAsDataURL(file);
+  }
+
+  function hydrateBrand(){
+    const b = getBrand();
+    $("brandTitleInput").value = b.title;
+    $("brandTaglineInput").value = b.tagline;
+    $("profileLabelInput").value = b.profileLabel;
+    $("accentColor").value = b.accent;
+    $("accent2Color").value = b.accent2;
+    $("bgColor").value = b.bg;
+    $("cardColor").value = b.card;
+    applyBrand(b);
+
+    $("brandTitleInput").addEventListener("input", (e)=> saveBrand({ title: e.target.value }));
+    $("brandTaglineInput").addEventListener("input", (e)=> saveBrand({ tagline: e.target.value }));
+    $("profileLabelInput").addEventListener("input", (e)=> saveBrand({ profileLabel: e.target.value }));
+    $("accentColor").addEventListener("input", (e)=> saveBrand({ accent: e.target.value }));
+    $("accent2Color").addEventListener("input", (e)=> saveBrand({ accent2: e.target.value }));
+    $("bgColor").addEventListener("input", (e)=> saveBrand({ bg: e.target.value }));
+    $("cardColor").addEventListener("input", (e)=> saveBrand({ card: e.target.value }));
+
+    $("logoUpload").addEventListener("change", (e)=>{
+      readImageFile(e.target, (data)=> saveBrand({ logo: data }));
+    });
+    $("avatarUpload").addEventListener("change", (e)=>{
+      readImageFile(e.target, (data)=> saveBrand({ avatar: data }));
+    });
+  }
+
+  // ====== Social Connections (placeholder) ======
+  const SOCIAL_PLATFORMS = ["Instagram", "Facebook", "TikTok", "LinkedIn", "YouTube", "X"];
+
+  function getSocial(){
+    return loadJSON(KEY.social, {});
+  }
+
+  function setSocial(platform, status){
+    const next = { ...getSocial(), [platform]: status };
+    saveJSON(KEY.social, next);
+    renderSocial();
+  }
+
+  function connectSocial(platform){
+    alert(`${platform} connection requires a backend OAuth flow and API keys. I can wire it up once you’re ready.`);
+    setSocial(platform, "Needs setup");
+  }
+
+  function renderSocial(){
+    const state = getSocial();
+    const root = $("socialList");
+    root.innerHTML = "";
+    SOCIAL_PLATFORMS.forEach(p=>{
+      const status = state[p] || "Not connected";
+      const row = document.createElement("div");
+      row.className = "social-item";
+      row.innerHTML = `
+        <div>
+          <b>${p}</b> • <span>${status}</span>
+        </div>
+        <div class="pillrow">
+          <button onclick="connectSocial('${p}')">Connect</button>
+        </div>
+      `;
+      root.appendChild(row);
     });
   }
 
@@ -1040,9 +1285,11 @@ Daily rule:
 
   function hydrate(){
     hydrateInputs();
+    hydrateBrand();
     renderMetrics();
     renderKPIs();
     renderIdeas();
+    renderSocial();
 
     const savedPlan = loadJSON(KEY.plan, "");
     if(savedPlan) $("planOut").textContent = savedPlan;
