@@ -496,7 +496,8 @@
       box-shadow: var(--shadow);
       display:flex;flex-direction:column;gap:14px;
       height:calc(100vh - 36px);
-      transition: width .18s ease, min-width .18s ease, padding .18s ease;
+      transition: width .26s cubic-bezier(.2,.8,.2,1), min-width .26s cubic-bezier(.2,.8,.2,1), padding .26s cubic-bezier(.2,.8,.2,1), background .2s ease;
+      will-change: width, padding;
       z-index:4;
     }
     .sidebar:hover{
@@ -536,12 +537,32 @@
     .nav .icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
     .nav .icon{color:var(--text)}
     .nav .label{white-space:nowrap}
+    .sidebar .sb-name,
+    .sidebar .sb-title,
+    .sidebar .nav .label,
+    .sidebar .subhead{
+      transition: opacity .2s ease, transform .2s ease, max-width .2s ease;
+      max-width:160px;
+    }
+    .sidebar .sb-actions{
+      transition: opacity .2s ease, max-height .2s ease;
+      max-height:200px;
+      overflow:hidden;
+    }
     .sidebar:not(:hover) .sb-name,
     .sidebar:not(:hover) .sb-title,
     .sidebar:not(:hover) .nav .label,
-    .sidebar:not(:hover) .subhead,
+    .sidebar:not(:hover) .subhead{
+      opacity:0;
+      transform: translateX(-6px);
+      max-width:0;
+      overflow:hidden;
+    }
     .sidebar:not(:hover) .sb-actions{
-      display:none;
+      opacity:0;
+      max-height:0;
+      overflow:hidden;
+      pointer-events:none;
     }
     .sidebar:not(:hover) .nav button{
       justify-content:center;padding:10px 0;height:38px;
