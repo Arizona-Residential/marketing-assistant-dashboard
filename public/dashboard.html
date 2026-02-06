@@ -1299,7 +1299,38 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       }).catch(()=>{});
+      await fetch("/api/public-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(()=>{});
     }, 500);
+  }
+
+  async function loadPublicSettings(){
+    try{
+      const res = await fetch("/api/public-settings", { cache: "no-store" });
+      const data = await res.json();
+      if(data.status !== "ok" || !data.data) return;
+      if(data.data.brand){
+        saveJSON(KEY.brand, { ...getBrand(), ...data.data.brand });
+      }
+      if(data.data.layout){
+        saveJSON(KEY.layout, { ...getLayout(), ...data.data.layout });
+      }
+      if(data.data.theme){
+        localStorage.setItem(KEY.theme, data.data.theme);
+      }
+      if(data.data.motion){
+        localStorage.setItem(KEY.motion, data.data.motion);
+      }
+      if(data.data.glass){
+        localStorage.setItem(KEY.glass, data.data.glass);
+      }
+      if(data.data.blur){
+        localStorage.setItem(KEY.blur, data.data.blur);
+      }
+    }catch(e){}
   }
 
   function applyTheme(theme){
@@ -2340,17 +2371,19 @@ Daily rule:
     $("mDate").value = todayISO;
     document.body.classList.add("layout-locked");
     $("layoutToggleBtn").textContent = "Customize Layout";
-    renderLoginBrand();
-    applyTheme(localStorage.getItem(KEY.theme) || "dark");
-    applyMotion(localStorage.getItem(KEY.motion) || "full");
-    applyGlass(localStorage.getItem(KEY.glass) || (document.body.classList.contains("light") ? "0.22" : "0.022"));
-    applyBlur(localStorage.getItem(KEY.blur) || "18");
-    if(localStorage.getItem(KEY.session) === "1"){
-      $("loginView").classList.add("hidden");
-      $("appView").classList.remove("hidden");
-      setTodayLine();
-      hydrate();
-    }
+    loadPublicSettings().finally(()=>{
+      renderLoginBrand();
+      applyTheme(localStorage.getItem(KEY.theme) || "dark");
+      applyMotion(localStorage.getItem(KEY.motion) || "full");
+      applyGlass(localStorage.getItem(KEY.glass) || (document.body.classList.contains("light") ? "0.22" : "0.022"));
+      applyBlur(localStorage.getItem(KEY.blur) || "18");
+      if(localStorage.getItem(KEY.session) === "1"){
+        $("loginView").classList.add("hidden");
+        $("appView").classList.remove("hidden");
+        setTodayLine();
+        hydrate();
+      }
+    });
   });
 </script>
 </body>
