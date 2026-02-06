@@ -717,8 +717,24 @@
             <div class="sb-actions" id="pageTools"></div>
             </div>
             <div class="nav-bottom">
-              <button onclick="openSettings()">Settings</button>
-              <button class="danger" onclick="logout()">Lock</button>
+              <button data-label="Settings" onclick="openSettings()">
+                <span class="icon">
+                  <svg viewBox="0 0 24 24" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.8 1.8 0 000-6l2-1.2-2-3.5-2.2.6a6.2 6.2 0 00-3.4-2l-.4-2.3H10l-.4 2.3a6.2 6.2 0 00-3.4 2l-2.2-.6-2 3.5 2 1.2a1.8 1.8 0 000 6l-2 1.2 2 3.5 2.2-.6a6.2 6.2 0 003.4 2l.4 2.3h4l.4-2.3a6.2 6.2 0 003.4-2l2.2.6 2-3.5-2-1.2z"/>
+                  </svg>
+                </span>
+                <span class="label">Settings</span>
+              </button>
+              <button class="danger" data-label="Lock" onclick="logout()">
+                <span class="icon">
+                  <svg viewBox="0 0 24 24" stroke-width="1.8">
+                    <rect x="5" y="11" width="14" height="9" rx="2"/>
+                    <path d="M8 11V8a4 4 0 018 0v3"/>
+                  </svg>
+                </span>
+                <span class="label">Lock</span>
+              </button>
               <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <path d="M14 6l-6 6 6 6"/>
@@ -1906,7 +1922,6 @@
     const profiles = getSocialProfile();
     const root = $("socialList");
     root.innerHTML = "";
-    renderConnectedBadge();
     SOCIAL_PLATFORMS.forEach(p=>{
       const status = state[p] || "Not connected";
       const profile = profiles[p] || "";
@@ -2362,7 +2377,6 @@
       if(user.display_name){
         setSocial("TikTok", "Connected");
         setSocialProfile("TikTok", user.display_name);
-        renderConnectedBadge();
         loadSettingsFromServer();
       }
       const topLine = top
@@ -2898,7 +2912,6 @@ Daily rule:
     const message = params.get("message");
     if(tiktok === "connected"){
       setSocial("TikTok", "Connected");
-      renderConnectedBadge();
       loadSettingsFromServer();
       loadLiveAnalytics();
     }else if(tiktok === "missing-config"){
