@@ -112,7 +112,7 @@
       z-index:-1;
     }
     a{color:var(--accent)}
-    .wrap{max-width:1180px;margin:0 auto;padding:22px}
+    .wrap{max-width:1600px;margin:0 auto;padding:20px}
     .topbar{
       display:flex;gap:14px;align-items:center;justify-content:space-between;
       padding:14px 16px;border:1px solid var(--glass-border);border-radius:var(--radius);
@@ -539,12 +539,14 @@
       width:100%;text-align:left;border-radius:14px;
       padding:8px 10px;font-size:12px;display:flex;align-items:center;gap:10px;
       position:relative;
+      color: var(--muted);
     }
     .sidebar .nav button.active{
       border-color: rgba(251,191,36,.55);
       color: var(--text);
       background: rgba(251,191,36,.08);
     }
+    .nav svg{width:18px;height:18px;stroke:currentColor;fill:none}
     .nav .icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
     .nav .label{white-space:nowrap}
     .sidebar.collapsed .sb-name,
@@ -588,7 +590,7 @@
     }
     .page-header .title{font-size:16px;font-weight:600}
     .page-header .subtitle{font-size:12px;color:var(--muted)}
-    .widget-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:16px}
+    .widget-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--widget-gap,16px);margin-top:16px}
     .widget{grid-column:span 6; padding:14px;border-radius:20px;
       border:1px solid var(--glass-border);background:var(--glass-strong);
       backdrop-filter: blur(var(--blur));box-shadow: var(--shadow);
@@ -657,7 +659,25 @@
           </div>
           <div class="nav">
             <div class="subhead">Main</div>
-            <button data-page="dashboard" data-label="Dashboard" class="active">
+            <button data-page="welcome" data-label="Welcome">
+              <span class="icon">
+                <svg viewBox="0 0 24 24" stroke-width="1.8">
+                  <path d="M12 3l3 6 6 .9-4.5 4.3 1 6-5.5-3-5.5 3 1-6L3 9.9 9 9z"/>
+                </svg>
+              </span>
+              <span class="label">Welcome</span>
+            </button>
+            <button data-page="company" data-label="Company" class="active">
+              <span class="icon">
+                <svg viewBox="0 0 24 24" stroke-width="1.8">
+                  <path d="M4 20h16"/>
+                  <path d="M6 20V6l6-3 6 3v14"/>
+                  <path d="M9 20v-6h6v6"/>
+                </svg>
+              </span>
+              <span class="label">Company</span>
+            </button>
+            <button data-page="dashboard" data-label="Dashboard">
               <span class="icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <rect x="3" y="3" width="7" height="7" rx="2"/>
@@ -667,16 +687,6 @@
                 </svg>
               </span>
               <span class="label">Dashboard</span>
-            </button>
-            <button data-page="company" data-label="Company">
-              <span class="icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                  <path d="M4 20h16"/>
-                  <path d="M6 20V6l6-3 6 3v14"/>
-                  <path d="M9 20v-6h6v6"/>
-                </svg>
-              </span>
-              <span class="label">Company</span>
             </button>
             <button data-page="email" data-label="Email">
               <span class="icon">
@@ -713,7 +723,7 @@
           </div>
         </aside>
         <div class="main">
-      <div class="page active" id="page-dashboard" data-page="dashboard">
+          <div class="page" id="page-dashboard" data-page="dashboard">
       <div class="topbar">
         <div class="brand">
           <div class="logo" id="brandLogo">
@@ -736,7 +746,6 @@
             <div class="meta" id="profileLabel">Owner • Private</div>
           </div>
           <div class="btnrow">
-            <button onclick="openSettings()">Settings</button>
             <button onclick="toggleLayout()" id="layoutToggleBtn">Customize Layout</button>
             <button onclick="toggleTheme()" id="themeToggleBtn">Light Mode</button>
             <button class="primary" onclick="generateAll()">Generate Ideas</button>
@@ -1000,6 +1009,44 @@
         </section>
       </div>
       </div>
+      <div class="page" id="page-welcome" data-page="welcome">
+        <div class="page-header">
+          <div>
+            <div class="title">Welcome back</div>
+            <div class="subtitle">Here’s what to focus on today.</div>
+          </div>
+          <div class="pillrow">
+            <span class="badge" id="welcomeDate">Today</span>
+          </div>
+        </div>
+        <div class="widget-grid">
+          <div class="widget large">
+            <h3>Today’s Priorities</h3>
+            <div class="widget-list">
+              <div class="widget-item">Reply to 3 open estimates</div>
+              <div class="widget-item">Confirm tomorrow’s walkthroughs</div>
+              <div class="widget-item">Post 1 TikTok walkthrough clip</div>
+            </div>
+          </div>
+          <div class="widget small">
+            <h3>Sales Snapshot</h3>
+            <p>$18,400 projected this week</p>
+          </div>
+          <div class="widget small">
+            <h3>Open Tasks</h3>
+            <p>7 items • 2 overdue</p>
+          </div>
+          <div class="widget large">
+            <h3>Team Schedule</h3>
+            <div class="widget-list">
+              <div class="widget-item">9:00 AM — Exterior estimate • Mesa</div>
+              <div class="widget-item">1:30 PM — Remodel consult • Chandler</div>
+              <div class="widget-item">3:00 PM — Follow‑up calls</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="page" id="page-company" data-page="company">
         <div class="page-header">
           <div>
@@ -1168,6 +1215,13 @@
           </div>
 
           <div class="hr"></div>
+          <h2>Page Layout</h2>
+          <div class="field">
+            <label>Widget spacing (current page)</label>
+            <input id="pageGap" type="range" min="10" max="28" step="1"/>
+          </div>
+
+          <div class="hr"></div>
           <h2>Motion</h2>
           <div class="pillrow">
             <label class="toggle"><input type="checkbox" id="toggleMotion"/> Reduce Motion</label>
@@ -1319,6 +1373,8 @@
     const pretty = d.toLocaleString(undefined, { weekday:"long", year:"numeric", month:"short", day:"numeric" });
     const line = $("todayLine");
     if(line) line.textContent = `Today: ${pretty}`;
+    const welcome = $("welcomeDate");
+    if(welcome) welcome.textContent = `Today: ${pretty}`;
     $("mDate").value = todayISO;
   }
 
@@ -1633,16 +1689,19 @@
   }
 
   const PAGE_TOOLS = {
+    welcome: [
+      { label: "Back to Dashboard", action: "setActivePage('dashboard')" }
+    ],
+    company: [
+      { label: "Back to Dashboard", action: "setActivePage('dashboard')" },
+      { label: "Add Report", action: "alert('Report builder coming next.')" }
+    ],
     dashboard: [
       { label: "Customize Layout", action: "toggleLayout()" },
       { label: "Light/Dark", action: "toggleTheme()" },
       { label: "Generate Ideas", action: "generateAll()", primary: true },
       { label: "Build 7-Day Plan", action: "build7DayPlan()" },
       { label: "Export", action: "exportData()" }
-    ],
-    company: [
-      { label: "Back to Dashboard", action: "setActivePage('dashboard')" },
-      { label: "Add Report", action: "alert('Report builder coming next.')" }
     ],
     email: [
       { label: "Back to Dashboard", action: "setActivePage('dashboard')" },
@@ -1682,6 +1741,8 @@
     });
     $("sidebarTagline").textContent = page === "dashboard" ? "Dashboard" : page[0].toUpperCase() + page.slice(1);
     renderPageTools(page);
+    const gap = localStorage.getItem(`page_gap_${page}`);
+    document.documentElement.style.setProperty("--widget-gap", gap || "16px");
     const url = new URL(window.location.href);
     url.searchParams.set("page", page);
     window.history.replaceState({}, "", url.toString());
@@ -1692,7 +1753,7 @@
       btn.addEventListener("click", ()=> setActivePage(btn.getAttribute("data-page")));
     });
     const params = new URLSearchParams(window.location.search);
-    setActivePage(params.get("page") || "dashboard");
+    setActivePage(params.get("page") || "company");
   }
 
   function toggleSidebar(){
@@ -2152,8 +2213,23 @@
     });
   }
 
+  function bindPageGap(){
+    const slider = $("pageGap");
+    if(!slider) return;
+    slider.addEventListener("input", ()=>{
+      const params = new URLSearchParams(window.location.search);
+      const page = params.get("page") || "company";
+      localStorage.setItem(`page_gap_${page}`, slider.value);
+      document.documentElement.style.setProperty("--widget-gap", `${slider.value}px`);
+    });
+  }
+
   function openSettings(){
     $("settingsModal").classList.add("open");
+    const params = new URLSearchParams(window.location.search);
+    const page = params.get("page") || "company";
+    const gap = localStorage.getItem(`page_gap_${page}`) || "16";
+    $("pageGap").value = gap;
   }
   function closeSettings(){
     $("settingsModal").classList.remove("open");
@@ -2730,6 +2806,7 @@ Daily rule:
     bindMotionToggle();
     bindGlassSlider();
     bindBlurSlider();
+    bindPageGap();
     renderMetrics();
     renderKPIs();
     renderIdeas();
