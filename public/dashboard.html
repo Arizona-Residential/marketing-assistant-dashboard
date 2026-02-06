@@ -741,6 +741,107 @@
     }
     .widget-row{display:flex;gap:10px;align-items:center}
     .widget-row .pill{padding:4px 8px;border-radius:999px;border:1px solid var(--glass-border);font-size:11px}
+    .calendar-mini-month{
+      border:1px solid var(--glass-border);
+      background: var(--glass);
+      border-radius:14px;
+      padding:10px;
+      display:grid;
+      grid-template-columns:repeat(7, 1fr);
+      gap:6px;
+      font-size:11px;
+      color:var(--muted);
+    }
+    .calendar-mini-month .d{
+      height:22px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:8px;
+    }
+    .calendar-mini-month .d.in-week{
+      border:1px solid rgba(251,191,36,.45);
+      color:var(--text);
+      background: rgba(251,191,36,.12);
+    }
+    .calendar-board{
+      margin-top:8px;
+      border:1px solid var(--glass-border);
+      border-radius:14px;
+      background: var(--glass);
+      display:grid;
+      grid-template-columns:58px 1fr;
+      overflow:hidden;
+      min-height:520px;
+    }
+    .calendar-time-col{
+      border-right:1px solid var(--glass-border);
+      font-size:11px;
+      color:var(--muted);
+    }
+    .calendar-time-col .t{
+      height:60px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding-top:2px;
+    }
+    .calendar-week-grid{
+      display:grid;
+      grid-template-columns:repeat(7, minmax(120px,1fr));
+      min-height:520px;
+    }
+    .calendar-day-col{
+      position:relative;
+      border-right:1px solid rgba(255,255,255,.08);
+    }
+    .calendar-day-col:last-child{border-right:none}
+    .calendar-day-head{
+      height:44px;
+      border-bottom:1px solid var(--glass-border);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      color:var(--muted);
+      gap:2px;
+    }
+    .calendar-day-head strong{font-size:18px;color:var(--text);line-height:1}
+    .calendar-day-body{
+      position:relative;
+      height:calc(100% - 44px);
+      min-height:476px;
+      background-image:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 59px,
+        rgba(255,255,255,.08) 59px,
+        rgba(255,255,255,.08) 60px
+      );
+    }
+    .cal-event{
+      position:absolute;
+      left:6px;
+      right:6px;
+      border-radius:10px;
+      padding:6px 7px;
+      border:1px solid rgba(255,255,255,.2);
+      font-size:11px;
+      color:#f8fafc;
+      overflow:hidden;
+      cursor:pointer;
+    }
+    .cal-event .title{
+      font-weight:600;
+      line-height:1.2;
+      margin-bottom:4px;
+    }
+    .cal-event .time{
+      opacity:.9;
+      font-size:10px;
+    }
     @media (max-width: 980px){
       .app-shell{flex-direction:column}
       .sidebar{width:100%;min-width:0;position:relative;padding:16px 12px}
@@ -827,6 +928,15 @@
                 </svg>
               </span>
               <span class="label">Operations</span>
+            </button>
+            <button data-page="calendar" data-label="Calendar">
+              <span class="icon">
+                <svg viewBox="0 0 24 24" stroke-width="1.8">
+                  <rect x="3" y="5" width="18" height="16" rx="2"/>
+                  <path d="M8 3v4M16 3v4M3 10h18"/>
+                </svg>
+              </span>
+              <span class="label">Calendar</span>
             </button>
             <button data-page="dashboard" data-label="Marketing">
               <span class="icon">
@@ -1267,6 +1377,64 @@
         </div>
       </div>
 
+      <div class="page" id="page-calendar" data-page="calendar">
+        <div class="page-header">
+          <div>
+            <div class="title">Company Calendar</div>
+            <div class="subtitle" id="calendarRange">Week view</div>
+          </div>
+          <div class="pillrow">
+            <button onclick="changeCalendarWeek(-1)">Prev</button>
+            <button onclick="changeCalendarWeek(1)">Next</button>
+            <button class="primary" onclick="focusCalendarCreate()">Create Event</button>
+          </div>
+        </div>
+        <div class="widget-grid" id="widgets-calendar">
+          <div class="widget small">
+            <h3>This Month</h3>
+            <div id="calendarMiniMonth" class="calendar-mini-month"></div>
+          </div>
+          <div class="widget small">
+            <h3>Categories</h3>
+            <div class="widget-list" id="calendarCategories"></div>
+          </div>
+          <div class="widget large">
+            <h3>Create Event</h3>
+            <div class="field"><label>Title</label><input id="calTitle" placeholder="Estimate walkthrough"/></div>
+            <div class="row">
+              <div class="field"><label>Date</label><input id="calDate" type="date"/></div>
+              <div class="field"><label>Category</label>
+                <select id="calCategory">
+                  <option>Estimate</option>
+                  <option>Job</option>
+                  <option>Marketing</option>
+                  <option>Meeting</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field"><label>Start</label><input id="calStart" type="time" value="09:00"/></div>
+              <div class="field"><label>End</label><input id="calEnd" type="time" value="10:00"/></div>
+            </div>
+            <div class="field"><label>Notes</label><input id="calNotes" placeholder="Client address / reminder"/></div>
+            <div class="pillrow">
+              <button class="primary" onclick="addCalendarEvent()">Add Event</button>
+            </div>
+          </div>
+          <div class="widget full">
+            <h3>Weekly Planner</h3>
+            <div class="calendar-board">
+              <div class="calendar-time-col" id="calendarTimeCol"></div>
+              <div class="calendar-week-grid" id="calendarWeekGrid"></div>
+            </div>
+          </div>
+          <div class="widget full">
+            <h3>Upcoming Events</h3>
+            <div class="widget-list" id="calendarEventList"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="page" id="page-email" data-page="email">
         <div class="page-header">
           <div>
@@ -1539,6 +1707,8 @@
     brand: "arm_ai_brand",
     social: "arm_ai_social",
     socialProfile: "arm_ai_social_profile",
+    calendar: "arm_company_calendar_events",
+    calendarWeek: "arm_company_calendar_week",
     layout: "arm_ai_layout",
     theme: "arm_ai_theme",
     motion: "arm_ai_motion",
@@ -1880,7 +2050,6 @@
 
   let settingsSyncTimer = null;
   function scheduleSettingsSync(){
-    if(!isTikTokConnected()) return;
     if(settingsSyncTimer) clearTimeout(settingsSyncTimer);
     settingsSyncTimer = setTimeout(async ()=>{
       const payload = {
@@ -1889,13 +2058,17 @@
         theme: localStorage.getItem(KEY.theme) || "dark",
         motion: localStorage.getItem(KEY.motion) || "full",
         glass: localStorage.getItem(KEY.glass),
-        blur: localStorage.getItem(KEY.blur)
+        blur: localStorage.getItem(KEY.blur),
+        widgetGap: localStorage.getItem("widget_gap_global") || "16",
+        calendarEvents: loadJSON(KEY.calendar, [])
       };
-      await fetch("/api/settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      }).catch(()=>{});
+      if(isTikTokConnected()){
+        await fetch("/api/settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).catch(()=>{});
+      }
       await fetch("/api/public-settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1911,6 +2084,10 @@
     company: [
       { label: "Back to Marketing", action: "setActivePage('dashboard')" },
       { label: "Add Report", action: "alert('Report builder coming next.')" }
+    ],
+    calendar: [
+      { label: "Today", action: "jumpCalendarToToday()" },
+      { label: "New Event", action: "focusCalendarCreate()", primary: true }
     ],
     dashboard: [
       { label: "Light/Dark", action: "toggleTheme()" },
@@ -1949,6 +2126,7 @@
   const PAGE_LABELS = {
     welcome: "Daily Brief",
     company: "Operations",
+    calendar: "Calendar",
     dashboard: "Marketing",
     email: "Inbox",
     housecall: "Jobs",
@@ -1969,6 +2147,9 @@
     if(topbar) topbar.style.display = page === "dashboard" ? "flex" : "none";
     const gap = localStorage.getItem("widget_gap_global") || "16";
     document.documentElement.style.setProperty("--widget-gap", `${gap}px`);
+    if(page === "calendar"){
+      renderCalendar();
+    }
     const url = new URL(window.location.href);
     url.searchParams.set("page", page);
     window.history.replaceState({}, "", url.toString());
@@ -2004,6 +2185,13 @@
       }
       if(data.data.blur){
         localStorage.setItem(KEY.blur, data.data.blur);
+      }
+      if(data.data.widgetGap){
+        localStorage.setItem("widget_gap_global", String(data.data.widgetGap));
+      }
+      if(Array.isArray(data.data.calendarEvents)){
+        saveJSON(KEY.calendar, data.data.calendarEvents);
+        if(!$("appView").classList.contains("hidden")) renderCalendar();
       }
     }catch(e){}
   }
@@ -2087,6 +2275,14 @@
     }
     if(data.data.blur){
       applyBlur(data.data.blur);
+    }
+    if(data.data.widgetGap){
+      localStorage.setItem("widget_gap_global", String(data.data.widgetGap));
+      document.documentElement.style.setProperty("--widget-gap", `${data.data.widgetGap}px`);
+    }
+    if(Array.isArray(data.data.calendarEvents)){
+      saveJSON(KEY.calendar, data.data.calendarEvents);
+      renderCalendar();
     }
   }
 
@@ -2255,6 +2451,7 @@
   const WIDGET_PAGES = [
     { page: "welcome", id: "widgets-welcome" },
     { page: "company", id: "widgets-company" },
+    { page: "calendar", id: "widgets-calendar" },
     { page: "dashboard", id: "widgets-dashboard" },
     { page: "email", id: "widgets-email" },
     { page: "housecall", id: "widgets-housecall" },
@@ -3050,6 +3247,225 @@ Daily rule:
     URL.revokeObjectURL(url);
   }
 
+  // ====== Company calendar ======
+  const CAL_CATEGORIES = {
+    Estimate: { color: "rgba(59,130,246,.75)" },
+    Job: { color: "rgba(16,185,129,.75)" },
+    Marketing: { color: "rgba(251,191,36,.75)" },
+    Meeting: { color: "rgba(139,92,246,.75)" }
+  };
+
+  function getCalendarEvents(){
+    return loadJSON(KEY.calendar, []);
+  }
+
+  function saveCalendarEvents(events){
+    saveJSON(KEY.calendar, events);
+    scheduleSettingsSync();
+  }
+
+  function toWeekStart(date){
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  function formatDateISO(date){
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  }
+
+  function getCurrentWeekStart(){
+    const raw = localStorage.getItem(KEY.calendarWeek);
+    if(raw){
+      const d = new Date(raw);
+      if(!Number.isNaN(d.getTime())) return toWeekStart(d);
+    }
+    return toWeekStart(new Date());
+  }
+
+  function setCurrentWeekStart(date){
+    localStorage.setItem(KEY.calendarWeek, formatDateISO(date));
+  }
+
+  function changeCalendarWeek(delta){
+    const start = getCurrentWeekStart();
+    start.setDate(start.getDate() + delta * 7);
+    setCurrentWeekStart(start);
+    renderCalendar();
+  }
+
+  function jumpCalendarToToday(){
+    setCurrentWeekStart(toWeekStart(new Date()));
+    renderCalendar();
+    setActivePage("calendar");
+  }
+
+  function focusCalendarCreate(){
+    setActivePage("calendar");
+    const title = $("calTitle");
+    if(title) title.focus();
+  }
+
+  function addCalendarEvent(){
+    const title = ($("calTitle").value || "").trim();
+    const date = $("calDate").value;
+    const start = $("calStart").value;
+    const end = $("calEnd").value;
+    const category = $("calCategory").value;
+    const notes = ($("calNotes").value || "").trim();
+    if(!title || !date || !start || !end){
+      alert("Enter title, date, start time, and end time.");
+      return;
+    }
+    if(end <= start){
+      alert("End time must be after start time.");
+      return;
+    }
+    const events = getCalendarEvents();
+    events.push({
+      id: `e_${Date.now()}`,
+      title,
+      date,
+      start,
+      end,
+      category,
+      notes
+    });
+    saveCalendarEvents(events);
+    $("calTitle").value = "";
+    $("calNotes").value = "";
+    renderCalendar();
+  }
+
+  function removeCalendarEvent(id){
+    const events = getCalendarEvents().filter(e => e.id !== id);
+    saveCalendarEvents(events);
+    renderCalendar();
+  }
+
+  function timeToMins(t){
+    const [h, m] = String(t || "00:00").split(":").map(Number);
+    return (h * 60) + m;
+  }
+
+  function renderCalendar(){
+    const start = getCurrentWeekStart();
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    $("calendarRange").textContent =
+      `${start.toLocaleDateString(undefined, { month: "short", day: "numeric" })} - ${end.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}`;
+
+    const timeCol = $("calendarTimeCol");
+    if(timeCol){
+      timeCol.innerHTML = "";
+      for(let h = 8; h <= 17; h++){
+        const div = document.createElement("div");
+        div.className = "t";
+        div.textContent = `${pad(h)}:00`;
+        timeCol.appendChild(div);
+      }
+    }
+
+    const events = getCalendarEvents();
+    const weekGrid = $("calendarWeekGrid");
+    if(weekGrid){
+      weekGrid.innerHTML = "";
+      for(let i = 0; i < 7; i++){
+        const day = new Date(start);
+        day.setDate(start.getDate() + i);
+        const iso = formatDateISO(day);
+        const col = document.createElement("div");
+        col.className = "calendar-day-col";
+        col.innerHTML = `
+          <div class="calendar-day-head">
+            <span>${day.toLocaleDateString(undefined, { weekday: "short" })}</span>
+            <strong>${day.getDate()}</strong>
+          </div>
+          <div class="calendar-day-body" data-day="${iso}"></div>
+        `;
+        const body = col.querySelector(".calendar-day-body");
+        events.filter(e => e.date === iso).forEach(evt => {
+          const startM = Math.max(8 * 60, timeToMins(evt.start));
+          const endM = Math.min(18 * 60, timeToMins(evt.end));
+          const top = ((startM - (8 * 60)) / 60) * 60;
+          const height = Math.max(28, ((endM - startM) / 60) * 60);
+          const block = document.createElement("div");
+          const c = CAL_CATEGORIES[evt.category]?.color || "rgba(125,211,252,.7)";
+          block.className = "cal-event";
+          block.style.top = `${top + 4}px`;
+          block.style.height = `${height - 8}px`;
+          block.style.background = c;
+          block.title = evt.notes || evt.title;
+          block.innerHTML = `
+            <div class="title">${escapeHtml(evt.title)}</div>
+            <div class="time">${escapeHtml(evt.start)} - ${escapeHtml(evt.end)}</div>
+          `;
+          body.appendChild(block);
+        });
+        weekGrid.appendChild(col);
+      }
+    }
+
+    const categoryRoot = $("calendarCategories");
+    if(categoryRoot){
+      const counts = events.reduce((acc, e) => {
+        acc[e.category] = (acc[e.category] || 0) + 1;
+        return acc;
+      }, {});
+      categoryRoot.innerHTML = Object.keys(CAL_CATEGORIES).map(cat =>
+        `<div class="widget-item">${cat}: ${counts[cat] || 0}</div>`
+      ).join("");
+    }
+
+    const list = $("calendarEventList");
+    if(list){
+      const upcoming = [...events].sort((a, b) => `${a.date} ${a.start}`.localeCompare(`${b.date} ${b.start}`));
+      list.innerHTML = upcoming.map(e => `
+        <div class="widget-item">
+          <strong>${escapeHtml(e.title)}</strong> • ${escapeHtml(e.category)}<br/>
+          <span class="sub">${escapeHtml(e.date)} • ${escapeHtml(e.start)}-${escapeHtml(e.end)}</span>
+          ${e.notes ? `<div class="sub" style="margin-top:4px">${escapeHtml(e.notes)}</div>` : ""}
+          <div class="pillrow" style="margin-top:8px"><button onclick="removeCalendarEvent('${e.id}')">Delete</button></div>
+        </div>
+      `).join("") || `<div class="sub">No events yet.</div>`;
+    }
+
+    const mini = $("calendarMiniMonth");
+    if(mini){
+      mini.innerHTML = "";
+      const monthStart = new Date(start.getFullYear(), start.getMonth(), 1);
+      const firstDay = monthStart.getDay();
+      const padCount = firstDay === 0 ? 6 : firstDay - 1;
+      for(let i = 0; i < padCount; i++){
+        const blank = document.createElement("div");
+        blank.className = "d";
+        mini.appendChild(blank);
+      }
+      const monthEnd = new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate();
+      for(let d = 1; d <= monthEnd; d++){
+        const date = new Date(start.getFullYear(), start.getMonth(), d);
+        const iso = formatDateISO(date);
+        const cell = document.createElement("div");
+        cell.className = "d";
+        cell.textContent = String(d);
+        if(iso >= formatDateISO(start) && iso <= formatDateISO(end)){
+          cell.classList.add("in-week");
+        }
+        mini.appendChild(cell);
+      }
+    }
+  }
+
+  function initCalendar(){
+    if($("calDate") && !$("calDate").value){
+      $("calDate").value = formatDateISO(new Date());
+    }
+    renderCalendar();
+  }
+
   // ====== Utilities ======
   function copyText(t){
     navigator.clipboard.writeText(t);
@@ -3080,6 +3496,7 @@ Daily rule:
     bindGlassSlider();
     bindBlurSlider();
     bindPageGap();
+    initCalendar();
     renderMetrics();
     renderKPIs();
     renderIdeas();
