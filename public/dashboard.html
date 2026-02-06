@@ -111,6 +111,7 @@
       pointer-events:none;
       z-index:-1;
     }
+    body.dragging-active{user-select:none}
     a{color:var(--accent)}
     .wrap{max-width:1800px;margin:0 auto;padding:18px}
     html,body{min-height:100%}
@@ -510,7 +511,9 @@
     .sidebar .sb-avatar img{width:100%;height:100%;object-fit:cover}
     .sidebar .sb-title{font-size:12px;color:var(--muted)}
     .sidebar .sb-name{font-size:13px;font-weight:600}
-    .sidebar .nav{display:flex;flex-direction:column;gap:8px}
+    .sidebar .nav{display:flex;flex-direction:column;gap:8px;height:100%}
+    .sidebar .nav-main{display:flex;flex-direction:column;gap:8px}
+    .sidebar .nav-bottom{margin-top:auto;display:flex;flex-direction:column;gap:8px}
     .sidebar .nav button{
       width:100%;text-align:left;border-radius:14px;
       padding:8px 10px;font-size:12px;display:flex;align-items:center;gap:10px;
@@ -651,6 +654,7 @@
           </div>
           </div>
           <div class="nav">
+            <div class="nav-main">
             <div class="subhead">Main</div>
             <button data-page="welcome" data-label="Daily Brief">
               <span class="icon">
@@ -711,44 +715,34 @@
             </button>
             <div class="subhead">Tools</div>
             <div class="sb-actions" id="pageTools"></div>
-            <button onclick="openSettings()">Settings</button>
-            <button class="danger" onclick="logout()">Lock</button>
-            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M14 6l-6 6 6 6"/>
-              </svg>
-            </button>
+            </div>
+            <div class="nav-bottom">
+              <button onclick="openSettings()">Settings</button>
+              <button class="danger" onclick="logout()">Lock</button>
+              <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M14 6l-6 6 6 6"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </aside>
         <div class="main">
           <div class="page" id="page-dashboard" data-page="dashboard">
-      <div class="topbar" id="marketingTopbar">
-        <div class="brand">
-          <div class="logo" id="brandLogo">
-            <img id="brandLogoImg" alt="Brand logo" class="hidden"/>
-          </div>
-          <div>
-            <h1 id="brandTitle">Rosario’s AI Marketing Assistant</h1>
-            <p id="brandTagline">Marketing Command Center</p>
-            <div class="pillrow">
-              <span class="badge" id="todayLine">Today</span>
-              <span class="badge tiktok-badge" id="tiktokBadge">TikTok: Not connected</span>
-            </div>
+      <div class="page-header">
+        <div>
+          <div class="title">Marketing</div>
+          <div class="subtitle">Content planning, analytics, and ideas.</div>
+          <div class="pillrow">
+            <span class="badge" id="todayLine">Today</span>
+            <span class="badge tiktok-badge" id="tiktokBadge">TikTok: Not connected</span>
           </div>
         </div>
-        <div class="topbar-actions">
-          <div class="profile">
-            <div class="avatar" id="brandAvatar">
-              <img id="brandAvatarImg" alt="Profile avatar" class="hidden"/>
-            </div>
-            <div class="meta" id="profileLabel">Owner • Private</div>
-          </div>
-          <div class="btnrow">
-            <button onclick="toggleTheme()" id="themeToggleBtn">Light Mode</button>
-            <button class="primary" onclick="generateAll()">Generate Ideas</button>
-            <button onclick="build7DayPlan()">Build 7-Day Plan</button>
-            <button onclick="exportData()">Export</button>
-          </div>
+        <div class="pillrow">
+          <button onclick="toggleTheme()" id="themeToggleBtn">Light Mode</button>
+          <button class="primary" onclick="generateAll()">Generate Ideas</button>
+          <button onclick="build7DayPlan()">Build 7-Day Plan</button>
+          <button onclick="exportData()">Export</button>
         </div>
       </div>
 
@@ -1242,10 +1236,9 @@
           </div>
 
           <div class="hr"></div>
-          <h2>Page Layout</h2>
-          <div class="sub" id="pageSettingsLabel" style="margin-bottom:8px">Current page: company</div>
+          <h2>Widgets</h2>
           <div class="field">
-            <label>Widget spacing (current page)</label>
+            <label>Widget spacing (all pages)</label>
             <input id="pageGap" type="range" min="10" max="28" step="1"/>
           </div>
 
@@ -1779,8 +1772,8 @@
     renderPageTools(page);
     const topbar = $("marketingTopbar");
     if(topbar) topbar.style.display = page === "dashboard" ? "flex" : "none";
-    const gap = localStorage.getItem(`page_gap_${page}`);
-    document.documentElement.style.setProperty("--widget-gap", gap || "16px");
+    const gap = localStorage.getItem("widget_gap_global") || "16";
+    document.documentElement.style.setProperty("--widget-gap", `${gap}px`);
     const url = new URL(window.location.href);
     url.searchParams.set("page", page);
     window.history.replaceState({}, "", url.toString());
@@ -2119,40 +2112,45 @@
 
   function initWidgetDrag(page, root){
     const widgets = Array.from(root.querySelectorAll(".widget"));
-    let placeholder = null;
     let dragged = null;
+    let pointerId = null;
 
     widgets.forEach(w=>{
-      w.setAttribute("draggable", "true");
-      w.addEventListener("dragstart", (e)=>{
+      w.setAttribute("draggable", "false");
+      w.addEventListener("pointerdown", (e)=>{
+        if(e.button !== 0) return;
+        const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
+        if(["input","textarea","select","button","label"].includes(tag)) return;
+        if(e.target.isContentEditable) return;
+        if(e.target.closest(".resize-handle")) return;
         dragged = w;
-        e.dataTransfer?.setData("text/plain", w.dataset.widget || "");
-        e.dataTransfer?.setDragImage(w, 20, 20);
+        pointerId = e.pointerId;
         w.classList.add("dragging");
-        placeholder = document.createElement("div");
-        placeholder.className = "widget drag-placeholder";
-        placeholder.style.gridColumn = w.style.gridColumn || "span 6";
-        placeholder.style.gridRow = w.style.gridRow || "span 10";
-        w.parentElement?.insertBefore(placeholder, w.nextSibling);
+        w.setPointerCapture(pointerId);
+        document.body.classList.add("dragging-active");
       });
-      w.addEventListener("dragover", (e)=>{
-        e.preventDefault();
-        if(!dragged || dragged === w) return;
-        const rect = w.getBoundingClientRect();
+      w.addEventListener("pointermove", (e)=>{
+        if(!dragged || e.pointerId !== pointerId) return;
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const over = el && el.closest(".widget");
+        if(!over || over === dragged || !root.contains(over)) return;
+        const rect = over.getBoundingClientRect();
         const before = e.clientY < rect.top + rect.height / 2;
         if(before){
-          root.insertBefore(dragged, w);
+          root.insertBefore(dragged, over);
         }else{
-          root.insertBefore(dragged, w.nextSibling);
+          root.insertBefore(dragged, over.nextSibling);
         }
         saveWidgetLayout(page, root);
       });
-    });
-
-    root.addEventListener("dragend", ()=>{
-      if(dragged) dragged.classList.remove("dragging");
-      if(placeholder){ placeholder.remove(); placeholder = null; }
-      dragged = null;
+      w.addEventListener("pointerup", (e)=>{
+        if(!dragged || e.pointerId !== pointerId) return;
+        dragged.classList.remove("dragging");
+        dragged.releasePointerCapture(pointerId);
+        dragged = null;
+        pointerId = null;
+        document.body.classList.remove("dragging-active");
+      });
     });
   }
 
@@ -2169,6 +2167,7 @@
     root.querySelectorAll(".resize-handle").forEach(handle=>{
       handle.addEventListener("pointerdown", (e)=>{
         e.preventDefault();
+        e.stopPropagation();
         const w = handle.closest(".widget");
         if(!w) return;
         active = w;
@@ -2296,20 +2295,17 @@
     const slider = $("pageGap");
     if(!slider) return;
     slider.addEventListener("input", ()=>{
-      const params = new URLSearchParams(window.location.search);
-      const page = params.get("page") || "company";
-      localStorage.setItem(`page_gap_${page}`, slider.value);
+      localStorage.setItem("widget_gap_global", slider.value);
       document.documentElement.style.setProperty("--widget-gap", `${slider.value}px`);
     });
   }
 
   function openSettings(){
     $("settingsModal").classList.add("open");
+    const gap = localStorage.getItem("widget_gap_global") || "16";
+    $("pageGap").value = gap;
     const params = new URLSearchParams(window.location.search);
     const page = params.get("page") || "company";
-    const gap = localStorage.getItem(`page_gap_${page}`) || "16";
-    $("pageGap").value = gap;
-    $("pageSettingsLabel").textContent = `Current page: ${page}`;
     $("dashboardSettings").style.display = page === "dashboard" ? "block" : "none";
   }
   function closeSettings(){
@@ -2925,6 +2921,8 @@ Daily rule:
     $("mDate").value = todayISO;
     document.body.classList.remove("layout-locked");
     loadPublicSettings().finally(()=>{
+      const gap = localStorage.getItem("widget_gap_global") || "16";
+      document.documentElement.style.setProperty("--widget-gap", `${gap}px`);
       renderLoginBrand();
       applyTheme(localStorage.getItem(KEY.theme) || "dark");
       applyMotion(localStorage.getItem(KEY.motion) || "full");
