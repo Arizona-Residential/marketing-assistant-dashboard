@@ -512,7 +512,7 @@
     .app-shell{display:flex;gap:18px;align-items:flex-start}
     .sidebar{
       position:sticky;top:18px;align-self:flex-start;
-      width:210px;min-width:210px;
+      width:230px;min-width:230px;
       padding:16px 12px;border-radius:22px;
       border:1px solid var(--glass-border);
       background:var(--glass-strong);
@@ -520,7 +520,11 @@
       box-shadow: var(--shadow);
       display:flex;flex-direction:column;gap:14px;
     }
+    .sidebar.collapsed{
+      width:74px;min-width:74px;padding:12px 8px;
+    }
     .sidebar .sb-profile{display:flex;align-items:center;gap:10px}
+    .sidebar .sb-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .sidebar .sb-avatar{
       width:44px;height:44px;border-radius:14px;
       border:1px solid var(--glass-border);
@@ -533,13 +537,40 @@
     .sidebar .nav{display:flex;flex-direction:column;gap:6px}
     .sidebar .nav button{
       width:100%;text-align:left;border-radius:14px;
-      padding:8px 10px;font-size:12px;
+      padding:8px 10px;font-size:12px;display:flex;align-items:center;gap:10px;
+      position:relative;
     }
     .sidebar .nav button.active{
       border-color: rgba(251,191,36,.55);
       color: var(--text);
       background: rgba(251,191,36,.08);
     }
+    .nav .icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
+    .nav .label{white-space:nowrap}
+    .sidebar.collapsed .sb-name,
+    .sidebar.collapsed .sb-title,
+    .sidebar.collapsed .nav .label,
+    .sidebar.collapsed .subhead,
+    .sidebar.collapsed .sb-actions{
+      display:none;
+    }
+    .sidebar.collapsed .nav button{
+      justify-content:center;padding:10px 0;
+    }
+    .sidebar.collapsed .nav button::after{
+      content: attr(data-label);
+      position:absolute;left:76px;top:50%;transform:translateY(-50%);
+      background: rgba(15,23,42,.85);color:#fff;font-size:11px;
+      padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.18);
+      opacity:0;pointer-events:none;transition:opacity .15s ease;
+      white-space:nowrap;
+    }
+    .sidebar.collapsed .nav button:hover::after{opacity:1}
+    .sidebar-toggle{
+      width:28px;height:28px;border-radius:10px;border:1px solid var(--glass-border);
+      background:var(--glass);display:grid;place-items:center;
+    }
+    .sidebar-toggle svg{width:14px;height:14px}
     .sidebar .nav .subhead{
       font-size:10px;text-transform:uppercase;letter-spacing:.14em;
       color:var(--muted);margin:8px 0 4px 6px;
@@ -607,8 +638,9 @@
   <div id="appView" class="hidden">
     <div class="wrap">
       <div class="app-shell">
-        <aside class="sidebar">
-          <div class="sb-profile">
+        <aside class="sidebar" id="sidebar">
+          <div class="sb-top">
+            <div class="sb-profile">
             <div class="sb-avatar" id="sidebarLogo">
               <img id="sidebarLogoImg" alt="Brand logo" class="hidden"/>
             </div>
@@ -617,13 +649,63 @@
               <div class="sb-title" id="sidebarTagline">Dashboard</div>
             </div>
           </div>
+            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M14 6l-6 6 6 6"/>
+              </svg>
+            </button>
+          </div>
           <div class="nav">
             <div class="subhead">Main</div>
-            <button data-page="dashboard" class="active">Dashboard</button>
-            <button data-page="company">Company</button>
-            <button data-page="email">Email</button>
-            <button data-page="housecall">Housecall Pro</button>
-            <button data-page="estimator">AI Estimator</button>
+            <button data-page="dashboard" data-label="Dashboard" class="active">
+              <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <rect x="3" y="3" width="7" height="7" rx="2"/>
+                  <rect x="14" y="3" width="7" height="7" rx="2"/>
+                  <rect x="3" y="14" width="7" height="7" rx="2"/>
+                  <rect x="14" y="14" width="7" height="7" rx="2"/>
+                </svg>
+              </span>
+              <span class="label">Dashboard</span>
+            </button>
+            <button data-page="company" data-label="Company">
+              <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M4 20h16"/>
+                  <path d="M6 20V6l6-3 6 3v14"/>
+                  <path d="M9 20v-6h6v6"/>
+                </svg>
+              </span>
+              <span class="label">Company</span>
+            </button>
+            <button data-page="email" data-label="Email">
+              <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <rect x="3" y="5" width="18" height="14" rx="2"/>
+                  <path d="M3 7l9 6 9-6"/>
+                </svg>
+              </span>
+              <span class="label">Email</span>
+            </button>
+            <button data-page="housecall" data-label="Housecall Pro">
+              <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M4 12l8-7 8 7"/>
+                  <path d="M6 10v9h12v-9"/>
+                  <path d="M10 19v-5h4v5"/>
+                </svg>
+              </span>
+              <span class="label">Housecall Pro</span>
+            </button>
+            <button data-page="estimator" data-label="AI Estimator">
+              <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M4 6h10a4 4 0 010 8H9l-5 4V6z"/>
+                  <path d="M15 16h5v3"/>
+                </svg>
+              </span>
+              <span class="label">AI Estimator</span>
+            </button>
             <div class="subhead">Tools</div>
             <div class="sb-actions" id="pageTools"></div>
             <button onclick="openSettings()">Settings</button>
@@ -1611,6 +1693,12 @@
     });
     const params = new URLSearchParams(window.location.search);
     setActivePage(params.get("page") || "dashboard");
+  }
+
+  function toggleSidebar(){
+    const sb = $("sidebar");
+    sb.classList.toggle("collapsed");
+    localStorage.setItem("sidebar_collapsed", sb.classList.contains("collapsed") ? "1" : "0");
   }
 
   async function loadPublicSettings(){
@@ -2630,6 +2718,10 @@ Daily rule:
     hydrateInputs();
     hydrateBrand();
     bindPageNav();
+    const sb = $("sidebar");
+    if(localStorage.getItem("sidebar_collapsed") === "1"){
+      sb.classList.add("collapsed");
+    }
     restoreLayout();
     initDrag();
     initResize();
