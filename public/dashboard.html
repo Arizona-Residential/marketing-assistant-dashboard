@@ -577,7 +577,8 @@
     }
     .sidebar.collapsed .nav button:hover::after{opacity:1}
     .sidebar-toggle{
-      position:absolute;right:-12px;top:24px;
+      margin-top:auto;
+      align-self:center;
       width:26px;height:26px;border-radius:10px;border:1px solid var(--glass-border);
       background:var(--glass);display:grid;place-items:center;
       z-index:2;
@@ -608,12 +609,8 @@
       backdrop-filter: blur(var(--blur));box-shadow: var(--shadow);
       position:relative;
     }
-    .widget .drag-handle{
-      position:absolute;right:12px;top:10px;
-      font-size:10px;color:var(--muted);cursor:grab;
-      border:1px dashed var(--glass-border);padding:2px 6px;border-radius:999px;
-      background:var(--glass);
-    }
+    .widget{cursor:grab}
+    .widget:active{cursor:grabbing}
     .widget .resize-handle{
       position:absolute;right:8px;bottom:8px;
       width:18px;height:18px;border-radius:6px;
@@ -668,7 +665,7 @@
     <div class="wrap">
       <div class="app-shell">
         <aside class="sidebar" id="sidebar">
-          <div class="sb-top" style="position:relative;">
+          <div class="sb-top">
             <div class="sb-profile">
             <div class="sb-avatar" id="sidebarLogo">
               <img id="sidebarLogoImg" alt="Brand logo" class="hidden"/>
@@ -678,11 +675,6 @@
               <div class="sb-title" id="sidebarTagline">Dashboard</div>
             </div>
           </div>
-            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M14 6l-6 6 6 6"/>
-              </svg>
-            </button>
           </div>
           <div class="nav">
             <div class="subhead">Main</div>
@@ -747,11 +739,16 @@
             <div class="sb-actions" id="pageTools"></div>
             <button onclick="openSettings()">Settings</button>
             <button class="danger" onclick="logout()">Lock</button>
+            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M14 6l-6 6 6 6"/>
+              </svg>
+            </button>
           </div>
         </aside>
         <div class="main">
           <div class="page" id="page-dashboard" data-page="dashboard">
-      <div class="topbar">
+      <div class="topbar" id="marketingTopbar">
         <div class="brand">
           <div class="logo" id="brandLogo">
             <img id="brandLogoImg" alt="Brand logo" class="hidden"/>
@@ -1107,9 +1104,9 @@
                     <stop offset="100%" stop-color="rgba(253,186,116,.9)"/>
                   </linearGradient>
                 </defs>
-                <path d="M20 180 C 80 120, 140 130, 200 140 C 260 150, 300 110, 340 90 C 380 70, 430 85, 470 110 C 510 135, 540 120, 580 80"
-                  stroke="url(#revGrad)" stroke-width="6" fill="none" stroke-linecap="round"/>
-                <path d="M20 180 C 80 120, 140 130, 200 140 C 260 150, 300 110, 340 90 C 380 70, 430 85, 470 110 C 510 135, 540 120, 580 80 L 580 200 L 20 200 Z"
+                <path d="M20 180 L 90 140 L 160 150 L 230 130 L 300 95 L 370 120 L 440 85 L 510 110 L 580 70"
+                  stroke="url(#revGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <path d="M20 180 L 90 140 L 160 150 L 230 130 L 300 95 L 370 120 L 440 85 L 510 110 L 580 70 L 580 200 L 20 200 Z"
                   fill="rgba(251,191,36,.12)"/>
                 <g stroke="rgba(255,255,255,.12)" stroke-width="1">
                   <line x1="20" y1="200" x2="580" y2="200"/>
@@ -1803,6 +1800,8 @@
     });
     $("sidebarTagline").textContent = PAGE_LABELS[page] || "Dashboard";
     renderPageTools(page);
+    const topbar = $("marketingTopbar");
+    if(topbar) topbar.style.display = page === "dashboard" ? "flex" : "none";
     const gap = localStorage.getItem(`page_gap_${page}`);
     document.documentElement.style.setProperty("--widget-gap", gap || "16px");
     const url = new URL(window.location.href);
@@ -2245,7 +2244,11 @@
           const h = document.createElement("div");
           h.className = "drag-handle";
           h.setAttribute("draggable","true");
-          h.textContent = "Move";
+          h.textContent = "";
+          h.style.position = "absolute";
+          h.style.inset = "0";
+          h.style.cursor = "grab";
+          h.style.background = "transparent";
           w.appendChild(h);
         }
         if(!w.querySelector(".resize-handle")){
