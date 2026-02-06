@@ -509,6 +509,75 @@
       backdrop-filter: blur(var(--blur));
       padding:10px;border-radius:14px;font-size:12px;color:var(--muted);
     }
+    .app-shell{display:flex;gap:18px;align-items:flex-start}
+    .sidebar{
+      position:sticky;top:18px;align-self:flex-start;
+      width:210px;min-width:210px;
+      padding:16px 12px;border-radius:22px;
+      border:1px solid var(--glass-border);
+      background:var(--glass-strong);
+      backdrop-filter: blur(var(--blur));
+      box-shadow: var(--shadow);
+      display:flex;flex-direction:column;gap:14px;
+    }
+    .sidebar .sb-profile{display:flex;align-items:center;gap:10px}
+    .sidebar .sb-avatar{
+      width:44px;height:44px;border-radius:14px;
+      border:1px solid var(--glass-border);
+      background:var(--glass);backdrop-filter: blur(var(--blur));
+      overflow:hidden;display:grid;place-items:center;
+    }
+    .sidebar .sb-avatar img{width:100%;height:100%;object-fit:cover}
+    .sidebar .sb-title{font-size:12px;color:var(--muted)}
+    .sidebar .sb-name{font-size:13px;font-weight:600}
+    .sidebar .nav{display:flex;flex-direction:column;gap:6px}
+    .sidebar .nav button{
+      width:100%;text-align:left;border-radius:14px;
+      padding:8px 10px;font-size:12px;
+    }
+    .sidebar .nav button.active{
+      border-color: rgba(251,191,36,.55);
+      color: var(--text);
+      background: rgba(251,191,36,.08);
+    }
+    .sidebar .nav .subhead{
+      font-size:10px;text-transform:uppercase;letter-spacing:.14em;
+      color:var(--muted);margin:8px 0 4px 6px;
+    }
+    .sidebar .sb-actions{display:flex;flex-direction:column;gap:8px}
+    .sidebar .sb-actions button{width:100%}
+    .main{flex:1;min-width:0}
+    .page{display:none}
+    .page.active{display:block}
+    .page-header{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:14px 16px;border:1px solid var(--glass-border);border-radius:var(--radius);
+      background:var(--glass-strong);backdrop-filter: blur(var(--blur));
+      box-shadow: var(--shadow);
+    }
+    .page-header .title{font-size:16px;font-weight:600}
+    .page-header .subtitle{font-size:12px;color:var(--muted)}
+    .widget-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:16px}
+    .widget{grid-column:span 6; padding:14px;border-radius:20px;
+      border:1px solid var(--glass-border);background:var(--glass-strong);
+      backdrop-filter: blur(var(--blur));box-shadow: var(--shadow);
+    }
+    .widget.small{grid-column:span 4}
+    .widget.large{grid-column:span 8}
+    .widget.full{grid-column:span 12}
+    .widget h3{margin:0 0 6px 0;font-size:13px}
+    .widget p{margin:0;color:var(--muted);font-size:12px}
+    .widget-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .widget-item{
+      border:1px solid var(--glass-border);background:var(--glass);
+      padding:10px;border-radius:14px;font-size:12px;
+    }
+    .widget-row{display:flex;gap:10px;align-items:center}
+    .widget-row .pill{padding:4px 8px;border-radius:999px;border:1px solid var(--glass-border);font-size:11px}
+    @media (max-width: 980px){
+      .app-shell{flex-direction:column}
+      .sidebar{width:100%;min-width:0;position:relative}
+    }
   </style>
 </head>
 <body>
@@ -537,6 +606,32 @@
   <!-- APP -->
   <div id="appView" class="hidden">
     <div class="wrap">
+      <div class="app-shell">
+        <aside class="sidebar">
+          <div class="sb-profile">
+            <div class="sb-avatar" id="sidebarLogo">
+              <img id="sidebarLogoImg" alt="Brand logo" class="hidden"/>
+            </div>
+            <div>
+              <div class="sb-name" id="sidebarTitle">AI Marketing Assistant</div>
+              <div class="sb-title" id="sidebarTagline">Dashboard</div>
+            </div>
+          </div>
+          <div class="nav">
+            <div class="subhead">Main</div>
+            <button data-page="dashboard" class="active">Dashboard</button>
+            <button data-page="company">Company</button>
+            <button data-page="email">Email</button>
+            <button data-page="housecall">Housecall Pro</button>
+            <button data-page="estimator">AI Estimator</button>
+            <div class="subhead">Tools</div>
+            <div class="sb-actions" id="pageTools"></div>
+            <button onclick="openSettings()">Settings</button>
+            <button class="danger" onclick="logout()">Lock</button>
+          </div>
+        </aside>
+        <div class="main">
+      <div class="page active" id="page-dashboard" data-page="dashboard">
       <div class="topbar">
         <div class="brand">
           <div class="logo" id="brandLogo">
@@ -821,6 +916,149 @@
         <div class="list" id="liveRecs"></div>
           </div>
         </section>
+      </div>
+      </div>
+      <div class="page" id="page-company" data-page="company">
+        <div class="page-header">
+          <div>
+            <div class="title">Company Dashboard</div>
+            <div class="subtitle">Sales, pipeline, and team overview.</div>
+          </div>
+          <div class="pillrow">
+            <span class="badge">Today</span>
+          </div>
+        </div>
+        <div class="widget-grid">
+          <div class="widget small">
+            <h3>Revenue</h3>
+            <p>$128,400 • +6.2% MoM</p>
+          </div>
+          <div class="widget small">
+            <h3>Jobs Won</h3>
+            <p>27 this month • +3</p>
+          </div>
+          <div class="widget small">
+            <h3>Active Leads</h3>
+            <p>41 in pipeline</p>
+          </div>
+          <div class="widget large">
+            <h3>Pipeline</h3>
+            <div class="widget-list">
+              <div class="widget-item">Exterior repaint • $14,200 • Proposal sent</div>
+              <div class="widget-item">Kitchen remodel • $28,900 • Site visit tomorrow</div>
+              <div class="widget-item">Commercial roof • $62,000 • Awaiting approval</div>
+            </div>
+          </div>
+          <div class="widget large">
+            <h3>Team Schedule</h3>
+            <div class="widget-list">
+              <div class="widget-item">Maria — Walkthroughs • 9:00 AM</div>
+              <div class="widget-item">Luis — Estimate prep • 1:00 PM</div>
+              <div class="widget-item">Jason — Follow‑ups • 3:30 PM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-email" data-page="email">
+        <div class="page-header">
+          <div>
+            <div class="title">Email Center</div>
+            <div class="subtitle">Draft, send, and track proposals.</div>
+          </div>
+        </div>
+        <div class="widget-grid">
+          <div class="widget large">
+            <h3>Inbox</h3>
+            <div class="widget-list">
+              <div class="widget-item">Re: Exterior Estimate — John D. • 9:42 AM</div>
+              <div class="widget-item">New lead — Sarah K. • 8:19 AM</div>
+              <div class="widget-item">Follow up — Beacon Roofing • Yesterday</div>
+            </div>
+          </div>
+          <div class="widget large">
+            <h3>Compose</h3>
+            <div class="field"><label>To</label><input placeholder="client@email.com"/></div>
+            <div class="field"><label>Subject</label><input placeholder="Estimate for your project"/></div>
+            <div class="field"><label>Message</label><textarea rows="6" placeholder="Hi ..."></textarea></div>
+            <div class="pillrow" style="margin-top:10px">
+              <button class="primary">Send</button>
+              <button>Save Draft</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-housecall" data-page="housecall">
+        <div class="page-header">
+          <div>
+            <div class="title">Housecall Pro</div>
+            <div class="subtitle">Jobs, estimates, and schedule.</div>
+          </div>
+        </div>
+        <div class="widget-grid">
+          <div class="widget large">
+            <h3>Upcoming Jobs</h3>
+            <div class="widget-list">
+              <div class="widget-item">Feb 7 • Exterior paint • Mesa</div>
+              <div class="widget-item">Feb 8 • Remodel walkthrough • Scottsdale</div>
+              <div class="widget-item">Feb 9 • Commercial bid • Tempe</div>
+            </div>
+          </div>
+          <div class="widget small">
+            <h3>Open Estimates</h3>
+            <p>12 active • 4 awaiting approval</p>
+          </div>
+          <div class="widget small">
+            <h3>Jobs Completed</h3>
+            <p>18 this month</p>
+          </div>
+          <div class="widget full">
+            <h3>Schedule</h3>
+            <div class="widget-list">
+              <div class="widget-item">Mon • 8:00 AM — Site walk</div>
+              <div class="widget-item">Wed • 2:00 PM — Estimate review</div>
+              <div class="widget-item">Fri • 1:30 PM — Final walkthrough</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-estimator" data-page="estimator">
+        <div class="page-header">
+          <div>
+            <div class="title">AI Estimator</div>
+            <div class="subtitle">Chat + structured estimate builder.</div>
+          </div>
+        </div>
+        <div class="widget-grid">
+          <div class="widget large">
+            <h3>Estimator Chat</h3>
+            <div class="widget-list">
+              <div class="widget-item">AI: Upload photos and measurements to begin.</div>
+              <div class="widget-item">You: 2,400 sq ft exterior, 2 stories.</div>
+            </div>
+            <div class="field"><input placeholder="Ask the estimator..."/></div>
+            <div class="pillrow" style="margin-top:10px">
+              <button class="primary">Send</button>
+              <button>Attach Photos</button>
+            </div>
+          </div>
+          <div class="widget large">
+            <h3>Estimate Summary</h3>
+            <div class="widget-list">
+              <div class="widget-item">Labor: $4,600</div>
+              <div class="widget-item">Materials: $1,900</div>
+              <div class="widget-item">Prep: $850</div>
+            </div>
+            <div class="widget-row" style="margin-top:10px">
+              <span class="pill">Total: $7,350</span>
+              <span class="pill">Margin: 32%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
       </div>
 
       <!-- SETTINGS MODAL -->
@@ -1131,12 +1369,17 @@
     $("brandTitle").textContent = b.title || DEFAULT_BRAND.title;
     $("brandTagline").textContent = b.tagline || DEFAULT_BRAND.tagline;
     $("profileLabel").textContent = b.profileLabel || DEFAULT_BRAND.profileLabel;
+    $("sidebarTitle").textContent = b.title || DEFAULT_BRAND.title;
+    $("sidebarTagline").textContent = "Dashboard";
 
     if(b.logo){
       $("brandLogoImg").src = b.logo;
       $("brandLogoImg").classList.remove("hidden");
+      $("sidebarLogoImg").src = b.logo;
+      $("sidebarLogoImg").classList.remove("hidden");
     }else{
       $("brandLogoImg").classList.add("hidden");
+      $("sidebarLogoImg").classList.add("hidden");
     }
 
     if(b.avatar){
@@ -1305,6 +1548,69 @@
         body: JSON.stringify(payload)
       }).catch(()=>{});
     }, 500);
+  }
+
+  const PAGE_TOOLS = {
+    dashboard: [
+      { label: "Customize Layout", action: "toggleLayout()" },
+      { label: "Light/Dark", action: "toggleTheme()" },
+      { label: "Generate Ideas", action: "generateAll()", primary: true },
+      { label: "Build 7-Day Plan", action: "build7DayPlan()" },
+      { label: "Export", action: "exportData()" }
+    ],
+    company: [
+      { label: "Back to Dashboard", action: "setActivePage('dashboard')" },
+      { label: "Add Report", action: "alert('Report builder coming next.')" }
+    ],
+    email: [
+      { label: "Back to Dashboard", action: "setActivePage('dashboard')" },
+      { label: "New Email", action: "alert('Compose flow coming next.')" }
+    ],
+    housecall: [
+      { label: "Back to Dashboard", action: "setActivePage('dashboard')" },
+      { label: "Sync Jobs", action: "alert('Housecall Pro sync coming next.')" }
+    ],
+    estimator: [
+      { label: "Back to Dashboard", action: "setActivePage('dashboard')" },
+      { label: "New Estimate", action: "alert('Estimator workflow coming next.')" }
+    ]
+  };
+
+  function renderPageTools(page){
+    const root = $("pageTools");
+    if(!root) return;
+    root.innerHTML = "";
+    const items = PAGE_TOOLS[page] || [];
+    items.forEach(item=>{
+      const btn = document.createElement("button");
+      btn.textContent = item.label;
+      if(item.primary) btn.classList.add("primary");
+      btn.setAttribute("onclick", item.action);
+      root.appendChild(btn);
+    });
+  }
+
+  function setActivePage(page){
+    const pages = document.querySelectorAll(".page");
+    pages.forEach(p=>p.classList.remove("active"));
+    const target = document.querySelector(`.page[data-page=\"${page}\"]`);
+    if(target) target.classList.add("active");
+    document.querySelectorAll(".nav button[data-page]").forEach(btn=>{
+      btn.classList.toggle("active", btn.getAttribute("data-page") === page);
+    });
+    $("sidebarTagline").textContent = page === "dashboard" ? "Dashboard" : page[0].toUpperCase() + page.slice(1);
+    renderPageTools(page);
+    const url = new URL(window.location.href);
+    url.searchParams.set("page", page);
+    window.history.replaceState({}, "", url.toString());
+  }
+
+  function bindPageNav(){
+    document.querySelectorAll(".nav button[data-page]").forEach(btn=>{
+      btn.addEventListener("click", ()=> setActivePage(btn.getAttribute("data-page")));
+    });
+    const params = new URLSearchParams(window.location.search);
+    setActivePage(params.get("page") || "dashboard");
   }
 
   async function loadPublicSettings(){
@@ -2323,6 +2629,7 @@ Daily rule:
     renderLoginBrand();
     hydrateInputs();
     hydrateBrand();
+    bindPageNav();
     restoreLayout();
     initDrag();
     initResize();
