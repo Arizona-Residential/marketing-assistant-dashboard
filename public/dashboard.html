@@ -555,6 +555,7 @@
     }
     .nav svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round}
     .nav .icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
+    .nav .icon{color:var(--text)}
     .nav .label{white-space:nowrap}
     .sidebar.collapsed .sb-name,
     .sidebar.collapsed .sb-title,
@@ -582,6 +583,7 @@
       z-index:2;
     }
     .sidebar-toggle svg{width:14px;height:14px}
+    .sidebar.collapsed .sidebar-toggle svg{transform:rotate(180deg)}
     .sidebar .nav .subhead{
       font-size:10px;text-transform:uppercase;letter-spacing:.14em;
       color:var(--muted);margin:8px 0 4px 6px;
@@ -604,7 +606,22 @@
     .widget{grid-column:span 6; padding:14px;border-radius:20px;
       border:1px solid var(--glass-border);background:var(--glass-strong);
       backdrop-filter: blur(var(--blur));box-shadow: var(--shadow);
+      position:relative;
     }
+    .widget .drag-handle{
+      position:absolute;right:12px;top:10px;
+      font-size:10px;color:var(--muted);cursor:grab;
+      border:1px dashed var(--glass-border);padding:2px 6px;border-radius:999px;
+      background:var(--glass);
+    }
+    .widget .resize-handle{
+      position:absolute;right:8px;bottom:8px;
+      width:18px;height:18px;border-radius:6px;
+      border:1px solid var(--glass-border);
+      background:var(--glass);
+      cursor:nwse-resize;
+    }
+    .widget.dragging{opacity:.6}
     .widget.small{grid-column:span 4}
     .widget.large{grid-column:span 8}
     .widget.full{grid-column:span 12}
@@ -766,9 +783,9 @@
         </div>
       </div>
 
-      <div class="sections" id="sections">
+            <div class="widget-grid" id="widgets-dashboard">
         <!-- LEFT -->
-        <section class="section" data-section="inputs">
+        <section class="section widget" data-widget="inputs">
           <div class="drag-handle" draggable="true">Move</div>
           <div class="resize-handle"></div>
           <div class="card">
@@ -925,7 +942,7 @@
         </section>
 
         <!-- RIGHT -->
-        <section class="section" data-section="ideas">
+        <section class="section widget" data-widget="ideas">
           <div class="drag-handle" draggable="true">Move</div>
           <div class="resize-handle"></div>
           <div class="card">
@@ -980,7 +997,7 @@
           </div>
         </section>
 
-        <section class="section" data-section="plan">
+        <section class="section widget" data-widget="plan">
           <div class="drag-handle" draggable="true">Move</div>
           <div class="resize-handle"></div>
           <div class="card">
@@ -995,7 +1012,7 @@
           </div>
         </section>
 
-        <section class="section" data-section="live">
+        <section class="section widget" data-widget="live">
           <div class="drag-handle" draggable="true">Move</div>
           <div class="resize-handle"></div>
           <div class="card">
@@ -1029,7 +1046,7 @@
             <span class="badge" id="welcomeDate">Today</span>
           </div>
         </div>
-        <div class="widget-grid">
+        <div class="widget-grid" id="widgets-welcome">
           <div class="widget large">
             <h3>Today’s Priorities</h3>
             <div class="widget-list">
@@ -1067,7 +1084,7 @@
             <span class="badge">Today</span>
           </div>
         </div>
-        <div class="widget-grid">
+        <div class="widget-grid" id="widgets-company">
           <div class="widget small">
             <h3>Revenue</h3>
             <p>$128,400 • +6.2% MoM</p>
@@ -1129,7 +1146,7 @@
             <div class="subtitle">Draft, send, and track proposals.</div>
           </div>
         </div>
-        <div class="widget-grid">
+        <div class="widget-grid" id="widgets-email">
           <div class="widget large">
             <h3>Inbox</h3>
             <div class="widget-list">
@@ -1158,7 +1175,7 @@
             <div class="subtitle">Jobs, estimates, and schedule.</div>
           </div>
         </div>
-        <div class="widget-grid">
+        <div class="widget-grid" id="widgets-housecall">
           <div class="widget large">
             <h3>Upcoming Jobs</h3>
             <div class="widget-list">
@@ -1193,7 +1210,7 @@
             <div class="subtitle">Chat + structured estimate builder.</div>
           </div>
         </div>
-        <div class="widget-grid">
+        <div class="widget-grid" id="widgets-estimator">
           <div class="widget large">
             <h3>Estimator Chat</h3>
             <div class="widget-list">
@@ -1975,149 +1992,217 @@
     el.style.gridRow = `span ${rowSpan}`;
   }
 
+  function getDashboardRoot(){
+    return $("widgets-dashboard") || $("sections");
+  }
+
   function saveLayout(){
-    const root = $("sections");
+    const root = getDashboardRoot();
     if(!root) return;
-    const ids = Array.from(root.querySelectorAll(".section")).map(el=>el.dataset.section);
+    const selector = ".widget";
+    const ids = Array.from(root.querySelectorAll(selector)).map(el=>el.dataset.widget);
     const spans = {};
     const hidden = {};
-    Array.from(root.querySelectorAll(".section")).forEach(el=>{
-      spans[el.dataset.section] = {
-        c: Number(el.dataset.colSpan || 12),
-        r: Number(el.dataset.rowSpan || 12)
+    Array.from(root.querySelectorAll(selector)).forEach(el=>{
+      spans[el.dataset.widget] = {
+        c: Number(el.dataset.colSpan || 6),
+        r: Number(el.dataset.rowSpan || 10)
       };
-      hidden[el.dataset.section] = el.classList.contains("hidden");
+      hidden[el.dataset.widget] = el.classList.contains("hidden");
     });
     saveJSON(KEY.layout, { order: ids, spans, hidden });
     scheduleSettingsSync();
   }
 
   function restoreLayout(){
-    const root = $("sections");
+    const root = getDashboardRoot();
     if(!root) return;
     const layout = getLayout();
     const order = layout.order;
     if(order && Array.isArray(order)){
       order.forEach(id=>{
-        const el = root.querySelector(`.section[data-section="${id}"]`);
+        const el = root.querySelector(`.widget[data-widget="${id}"]`);
         if(el) root.appendChild(el);
       });
     }
     const spans = layout.spans || {};
     const hidden = layout.hidden || {};
-    Array.from(root.querySelectorAll(".section")).forEach(el=>{
-      const id = el.dataset.section;
-      const span = spans[id] || DEFAULT_LAYOUT.spans[id] || { c: 12, r: 12 };
+    Array.from(root.querySelectorAll(".widget")).forEach(el=>{
+      const id = el.dataset.widget;
+      const span = spans[id] || DEFAULT_LAYOUT.spans[id] || { c: 6, r: 10 };
       el.dataset.colSpan = span.c;
       el.dataset.rowSpan = span.r;
-      applySectionSize(el, span.c, span.r);
+      applyWidgetSize(el, span.c, span.r);
       if(hidden[id]) el.classList.add("hidden");
       else el.classList.remove("hidden");
     });
   }
 
   function initDrag(){
-    const root = $("sections");
+    const root = $("widgets-dashboard");
     if(!root) return;
-    const sections = Array.from(root.querySelectorAll(".section"));
+    initWidgetDrag("dashboard", root);
+  }
+
+  function initResize(){
+    const root = $("widgets-dashboard");
+    if(!root) return;
+    initWidgetResize("dashboard", root);
+  }
+
+  function applyPreset(name){
+    const root = getDashboardRoot();
+    if(!root) return;
+    if(name === "analytics"){
+      const preset = {
+        order: ["live", "plan", "ideas", "inputs"],
+        spans: {
+          live: { c: 12, r: 22 },
+          plan: { c: 12, r: 10 },
+          ideas: { c: 6, r: 16 },
+          inputs: { c: 6, r: 16 }
+        },
+        hidden: {
+          inputs: true,
+          ideas: false,
+          plan: false,
+          live: false
+        }
+      };
+      saveJSON(KEY.layout, preset);
+    }
+    if(name === "two-column"){
+      const preset = {
+        order: ["inputs", "ideas", "plan", "live"],
+        spans: {
+          inputs: { c: 6, r: 18 },
+          ideas: { c: 6, r: 18 },
+          plan: { c: 12, r: 10 },
+          live: { c: 12, r: 20 }
+        },
+        hidden: {
+          inputs: false,
+          ideas: false,
+          plan: false,
+          live: false
+        }
+      };
+      saveJSON(KEY.layout, preset);
+    }
+    restoreLayout();
+    updateVisibilityToggles();
+    saveLayout();
+  }
+
+  // ====== Widget Pages (all pages) ======
+  const WIDGET_PAGES = [
+    { page: "welcome", id: "widgets-welcome" },
+    { page: "company", id: "widgets-company" },
+    { page: "dashboard", id: "widgets-dashboard" },
+    { page: "email", id: "widgets-email" },
+    { page: "housecall", id: "widgets-housecall" },
+    { page: "estimator", id: "widgets-estimator" }
+  ];
+
+  function widgetKey(page){ return `widget_layout_${page}`; }
+
+  function applyWidgetSize(el, c, r){
+    el.style.gridColumn = `span ${c}`;
+    el.style.gridRow = `span ${r}`;
+  }
+
+  function saveWidgetLayout(page, root){
+    const ids = Array.from(root.querySelectorAll(".widget")).map(el=>el.dataset.widget);
+    const spans = {};
+    Array.from(root.querySelectorAll(".widget")).forEach(el=>{
+      spans[el.dataset.widget] = {
+        c: Number(el.dataset.colSpan || 6),
+        r: Number(el.dataset.rowSpan || 10)
+      };
+    });
+    saveJSON(widgetKey(page), { order: ids, spans });
+  }
+
+  function restoreWidgetLayout(page, root){
+    const layout = loadJSON(widgetKey(page), null);
+    if(layout && Array.isArray(layout.order)){
+      layout.order.forEach(id=>{
+        const el = root.querySelector(`.widget[data-widget="${id}"]`);
+        if(el) root.appendChild(el);
+      });
+    }
+    const spans = (layout && layout.spans) || {};
+    Array.from(root.querySelectorAll(".widget")).forEach(el=>{
+      const id = el.dataset.widget;
+      const span = spans[id] || { c: 6, r: 10 };
+      el.dataset.colSpan = span.c;
+      el.dataset.rowSpan = span.r;
+      applyWidgetSize(el, span.c, span.r);
+    });
+  }
+
+  function initWidgetDrag(page, root){
+    const widgets = Array.from(root.querySelectorAll(".widget"));
     const handles = Array.from(root.querySelectorAll(".drag-handle"));
-    const scrollThreshold = 80;
-    const scrollSpeed = 18;
     let placeholder = null;
+    let dragged = null;
 
     handles.forEach(h=>{
       h.addEventListener("dragstart", (e)=>{
-        const section = h.closest(".section");
-        if(!section) return;
-        draggedId = section.dataset.section || null;
-        e.dataTransfer?.setData("text/plain", draggedId || "");
-        e.dataTransfer?.setDragImage(section, 20, 20);
-        section.classList.add("dragging");
+        const w = h.closest(".widget");
+        if(!w) return;
+        dragged = w;
+        e.dataTransfer?.setData("text/plain", w.dataset.widget || "");
+        e.dataTransfer?.setDragImage(w, 20, 20);
+        w.classList.add("dragging");
         placeholder = document.createElement("div");
-        placeholder.className = "section drag-placeholder";
-        placeholder.style.gridColumn = section.style.gridColumn || "span 12";
-        placeholder.style.gridRow = section.style.gridRow || "span 10";
-        section.parentElement?.insertBefore(placeholder, section.nextSibling);
+        placeholder.className = "widget drag-placeholder";
+        placeholder.style.gridColumn = w.style.gridColumn || "span 6";
+        placeholder.style.gridRow = w.style.gridRow || "span 10";
+        w.parentElement?.insertBefore(placeholder, w.nextSibling);
       });
     });
 
-    sections.forEach(sec=>{
-      sec.addEventListener("dragover", (e)=>{
+    widgets.forEach(w=>{
+      w.addEventListener("dragover", (e)=>{
         e.preventDefault();
-        sec.classList.add("drag-over");
-        if(!draggedId) return;
-        const dragged = root.querySelector(`.section[data-section="${draggedId}"]`);
-        if(!dragged || dragged === sec) return;
-        const rect = sec.getBoundingClientRect();
+        if(!dragged || dragged === w) return;
+        const rect = w.getBoundingClientRect();
         const before = e.clientY < rect.top + rect.height / 2;
-        sec.classList.toggle("hover-top", before);
-        sec.classList.toggle("hover-bottom", !before);
         if(before){
-          root.insertBefore(dragged, sec);
+          root.insertBefore(dragged, w);
         }else{
-          root.insertBefore(dragged, sec.nextSibling);
+          root.insertBefore(dragged, w.nextSibling);
         }
-        saveLayout();
-      });
-      sec.addEventListener("dragleave", ()=>{
-        sec.classList.remove("drag-over");
-        sec.classList.remove("hover-top");
-        sec.classList.remove("hover-bottom");
-      });
-      sec.addEventListener("drop", (e)=>{
-        e.preventDefault();
-        sec.classList.remove("drag-over");
-        sec.classList.remove("hover-top");
-        sec.classList.remove("hover-bottom");
-        draggedId = null;
+        saveWidgetLayout(page, root);
       });
     });
 
     root.addEventListener("dragend", ()=>{
-      const dragged = root.querySelector(".section.dragging");
       if(dragged) dragged.classList.remove("dragging");
-      if(placeholder){
-        placeholder.remove();
-        placeholder = null;
-      }
-      draggedId = null;
-      root.querySelectorAll(".section").forEach(sec=>{
-        sec.classList.remove("hover-top","hover-bottom","drag-over");
-      });
-    });
-
-    window.addEventListener("dragover", (e)=>{
-      const y = e.clientY;
-      if(y < scrollThreshold){
-        window.scrollBy({ top: -scrollSpeed, behavior: "auto" });
-      }else if(window.innerHeight - y < scrollThreshold){
-        window.scrollBy({ top: scrollSpeed, behavior: "auto" });
-      }
+      if(placeholder){ placeholder.remove(); placeholder = null; }
+      dragged = null;
     });
   }
 
-  function initResize(){
-    const root = $("sections");
-    if(!root) return;
+  function initWidgetResize(page, root){
     const cols = 12;
     const gap = 16;
     const rowHeight = 24;
     const minCols = 3;
     const maxCols = 12;
-    const minRows = 8;
-    const maxRows = 40;
-
+    const minRows = 6;
+    const maxRows = 30;
     let active = null;
 
     root.querySelectorAll(".resize-handle").forEach(handle=>{
       handle.addEventListener("pointerdown", (e)=>{
         e.preventDefault();
-        const section = handle.closest(".section");
-        if(!section) return;
-        active = section;
+        const w = handle.closest(".widget");
+        if(!w) return;
+        active = w;
         handle.setPointerCapture(e.pointerId);
       });
-
       handle.addEventListener("pointermove", (e)=>{
         if(!active) return;
         const gridRect = root.getBoundingClientRect();
@@ -2139,60 +2224,40 @@
         );
         active.dataset.colSpan = colSpan;
         active.dataset.rowSpan = rowSpan;
-        applySectionSize(active, colSpan, rowSpan);
+        applyWidgetSize(active, colSpan, rowSpan);
       });
-
       handle.addEventListener("pointerup", ()=>{
         if(active){
-          saveLayout();
+          saveWidgetLayout(page, root);
           active = null;
         }
       });
     });
   }
 
-  function applyPreset(name){
-    const root = $("sections");
-    if(!root) return;
-    if(name === "analytics"){
-      const preset = {
-        order: ["live", "plan", "ideas", "inputs"],
-        spans: {
-          live: { c: 12, r: 26 },
-          plan: { c: 12, r: 10 },
-          ideas: { c: 6, r: 18 },
-          inputs: { c: 6, r: 18 }
-        },
-        hidden: {
-          inputs: true,
-          ideas: false,
-          plan: false,
-          live: false
+  function setupWidgetPages(){
+    WIDGET_PAGES.forEach(({ page, id })=>{
+      const root = $(id);
+      if(!root) return;
+      Array.from(root.querySelectorAll(".widget")).forEach((w, idx)=>{
+        if(!w.dataset.widget) w.dataset.widget = `${page}-${idx + 1}`;
+        if(!w.querySelector(".drag-handle")){
+          const h = document.createElement("div");
+          h.className = "drag-handle";
+          h.setAttribute("draggable","true");
+          h.textContent = "Move";
+          w.appendChild(h);
         }
-      };
-      saveJSON(KEY.layout, preset);
-    }
-    if(name === "two-column"){
-      const preset = {
-        order: ["inputs", "ideas", "plan", "live"],
-        spans: {
-          inputs: { c: 6, r: 22 },
-          ideas: { c: 6, r: 22 },
-          plan: { c: 12, r: 10 },
-          live: { c: 12, r: 22 }
-        },
-        hidden: {
-          inputs: false,
-          ideas: false,
-          plan: false,
-          live: false
+        if(!w.querySelector(".resize-handle")){
+          const r = document.createElement("div");
+          r.className = "resize-handle";
+          w.appendChild(r);
         }
-      };
-      saveJSON(KEY.layout, preset);
-    }
-    restoreLayout();
-    updateVisibilityToggles();
-    saveLayout();
+      });
+      restoreWidgetLayout(page, root);
+      initWidgetDrag(page, root);
+      initWidgetResize(page, root);
+    });
   }
 
   function resetLayout(){
@@ -2223,7 +2288,7 @@
       if(!el) return;
       el.addEventListener("change", ()=>{
         const sectionId = map[id];
-        const section = document.querySelector(`.section[data-section="${sectionId}"]`);
+        const section = document.querySelector(`.widget[data-widget="${sectionId}"]`);
         if(!section) return;
         section.classList.toggle("hidden", !el.checked);
         saveLayout();
@@ -2841,6 +2906,7 @@ Daily rule:
     hydrateInputs();
     hydrateBrand();
     bindPageNav();
+    setupWidgetPages();
     const sb = $("sidebar");
     if(localStorage.getItem("sidebar_collapsed") === "1"){
       sb.classList.add("collapsed");
