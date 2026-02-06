@@ -466,6 +466,41 @@
       font-size:11px;border:1px solid rgba(125,211,252,.4);
       padding:3px 8px;border-radius:999px;color:rgba(125,211,252,.95)
     }
+    .tiktok-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      border-color: rgba(148,163,184,.45);
+      color: var(--muted);
+    }
+    .tiktok-badge::before{
+      content:"";
+      width:6px;height:6px;border-radius:999px;
+      background: var(--muted);
+      box-shadow: 0 0 6px rgba(148,163,184,.4);
+    }
+    .tiktok-badge.connected{
+      border-color: rgba(52,211,153,.6);
+      color: var(--good);
+    }
+    .tiktok-badge.connected::before{
+      background: var(--good);
+      box-shadow: 0 0 8px rgba(52,211,153,.6);
+    }
+    .tiktok-badge.needs{
+      border-color: rgba(251,191,36,.6);
+      color: var(--warn);
+    }
+    .tiktok-badge.needs::before{
+      background: var(--warn);
+      box-shadow: 0 0 8px rgba(251,191,36,.5);
+    }
+    .tiktok-badge.error{
+      border-color: rgba(251,113,133,.6);
+      color: var(--bad);
+    }
+    .tiktok-badge.error::before{
+      background: var(--bad);
+      box-shadow: 0 0 8px rgba(251,113,133,.5);
+    }
     .social-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
     .social-item{
       display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -512,6 +547,7 @@
             <p id="brandTagline">Private dashboard</p>
             <div class="pillrow">
               <span class="badge" id="todayLine">Today</span>
+              <span class="badge tiktok-badge" id="tiktokBadge">TikTok: Not connected</span>
             </div>
           </div>
         </div>
@@ -1184,13 +1220,29 @@
   function setSocialProfile(platform, profile){
     const next = { ...getSocialProfile(), [platform]: profile };
     saveJSON(KEY.socialProfile, next);
+    updateTiktokBadge();
     renderSocial();
   }
 
   function setSocial(platform, status){
     const next = { ...getSocial(), [platform]: status };
     saveJSON(KEY.social, next);
+    updateTiktokBadge();
     renderSocial();
+  }
+
+  function updateTiktokBadge(){
+    const badge = $("tiktokBadge");
+    if(!badge) return;
+    const state = getSocial();
+    const profiles = getSocialProfile();
+    const status = state["TikTok"] || "Not connected";
+    const name = profiles["TikTok"];
+    badge.classList.remove("connected","needs","error");
+    if(status === "Connected") badge.classList.add("connected");
+    if(status === "Needs setup") badge.classList.add("needs");
+    if(status === "Error") badge.classList.add("error");
+    badge.textContent = name ? `TikTok: ${status} • ${name}` : `TikTok: ${status}`;
   }
 
   function connectSocial(platform){
@@ -1208,6 +1260,7 @@
       await fetch("/api/tiktok/disconnect", { method: "POST" });
       setSocial(platform, "Not connected");
       setSocialProfile(platform, "");
+      updateTiktokBadge();
       const liveOut = $("liveOut");
       if(liveOut) liveOut.textContent = "Connect TikTok to see live data.";
       const liveKpi = $("liveKpi");
@@ -1336,6 +1389,7 @@
     const profiles = getSocialProfile();
     const root = $("socialList");
     root.innerHTML = "";
+    renderConnectedBadge();
     SOCIAL_PLATFORMS.forEach(p=>{
       const status = state[p] || "Not connected";
       const profile = profiles[p] || "";
@@ -1354,6 +1408,7 @@
       `;
       root.appendChild(row);
     });
+    updateTiktokBadge();
   }
 
   // ====== Layout (drag to reorder + snap resize) ======
@@ -1733,6 +1788,7 @@
       if(user.display_name){
         setSocial("TikTok", "Connected");
         setSocialProfile("TikTok", user.display_name);
+        renderConnectedBadge();
         loadSettingsFromServer();
       }
       const topLine = top
@@ -2261,6 +2317,7 @@ Daily rule:
     const message = params.get("message");
     if(tiktok === "connected"){
       setSocial("TikTok", "Connected");
+      renderConnectedBadge();
       loadSettingsFromServer();
       loadLiveAnalytics();
     }else if(tiktok === "missing-config"){
