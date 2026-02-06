@@ -541,12 +541,14 @@
     .sidebar .sb-title,
     .sidebar .nav .label,
     .sidebar .subhead{
-      transition: opacity .32s ease, transform .32s ease, max-width .32s ease;
-      max-width:160px;
+      transition: opacity .28s ease;
     }
     .sidebar .sb-actions{
       transition: opacity .32s ease, max-height .32s ease;
       max-height:200px;
+      overflow:hidden;
+    }
+    .sidebar:not(:hover){
       overflow:hidden;
     }
     .sidebar:not(:hover) .sb-name,
@@ -554,9 +556,6 @@
     .sidebar:not(:hover) .nav .label,
     .sidebar:not(:hover) .subhead{
       opacity:0;
-      transform: translateX(-6px);
-      max-width:0;
-      overflow:hidden;
     }
     .sidebar:not(:hover) .sb-actions{
       opacity:0;
