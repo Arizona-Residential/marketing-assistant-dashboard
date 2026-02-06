@@ -289,6 +289,110 @@
       padding:16px;
     }
     .modal .panel h2{margin-top:0}
+    .settings-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+      position:sticky;
+      top:0;
+      z-index:2;
+      padding:8px 0;
+      background: linear-gradient(180deg, rgba(7,11,18,.88), rgba(7,11,18,.72));
+      backdrop-filter: blur(var(--blur));
+    }
+    .settings-head .title-wrap h2{margin:0 0 4px 0}
+    .settings-head .title-wrap p{margin:0;color:var(--muted);font-size:12px}
+    .settings-tools{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:260px;
+      justify-content:flex-end;
+    }
+    .settings-search{
+      max-width:260px;
+      margin:0;
+    }
+    .settings-shell{
+      display:grid;
+      grid-template-columns:220px 1fr;
+      gap:14px;
+      align-items:start;
+    }
+    .settings-nav{
+      position:sticky;
+      top:60px;
+      border:1px solid var(--glass-border);
+      background: var(--glass);
+      backdrop-filter: blur(var(--blur));
+      border-radius:16px;
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .settings-nav .sub{
+      margin:2px 4px 8px 4px;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted);
+    }
+    .settings-nav a{
+      border:1px solid transparent;
+      border-radius:12px;
+      padding:8px 10px;
+      font-size:12px;
+      color:var(--muted);
+      text-decoration:none;
+      display:block;
+    }
+    .settings-nav a:hover{
+      color:var(--text);
+      background: rgba(255,255,255,.06);
+      border-color: var(--glass-border);
+    }
+    .settings-main{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .settings-card{
+      border:1px solid var(--glass-border);
+      background: var(--glass);
+      backdrop-filter: blur(var(--blur));
+      border-radius:16px;
+      padding:12px;
+    }
+    .settings-card h3{
+      margin:0 0 8px 0;
+      font-size:14px;
+    }
+    .settings-card .sub{
+      margin-bottom:10px;
+    }
+    .settings-grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 980px){
+      .settings-shell{
+        grid-template-columns:1fr;
+      }
+      .settings-nav{
+        position:relative;
+        top:0;
+      }
+      .settings-tools{
+        min-width:0;
+      }
+      .settings-search{
+        max-width:180px;
+      }
+    }
     .toggle{
       display:flex;align-items:center;gap:10px;
       border:1px solid var(--glass-border);
@@ -1267,145 +1371,158 @@
       <!-- SETTINGS MODAL -->
       <div class="modal" id="settingsModal">
         <div class="panel">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-            <h2>Settings</h2>
-            <button onclick="closeSettings()">Close</button>
-          </div>
-
-          <div id="dashboardSettings">
-          <h2>Appearance</h2>
-          <div class="pillrow">
-            <button onclick="toggleTheme()" id="themeToggleBtnSettings">Light/Dark</button>
-          </div>
-
-          <div class="hr"></div>
-          <h2>Marketing Layout</h2>
-          <div class="pillrow">
-            <button onclick="applyPreset('analytics')">Analytics Focus</button>
-            <button onclick="applyPreset('two-column')">Two Column</button>
-            <button onclick="resetLayout()">Reset Layout</button>
-          </div>
-
-            <div class="hr"></div>
-            <h2>Section Visibility</h2>
-            <div class="pillrow">
-              <label class="toggle"><input type="checkbox" id="toggleInputs"/> Inputs</label>
-              <label class="toggle"><input type="checkbox" id="toggleIdeas"/> Ideas</label>
-              <label class="toggle"><input type="checkbox" id="togglePlan"/> 7‑Day Plan</label>
-              <label class="toggle"><input type="checkbox" id="toggleLive"/> Live Analytics</label>
+          <div class="settings-head">
+            <div class="title-wrap">
+              <h2>Settings</h2>
+              <p>Organized controls for appearance, layout, brand, and account setup.</p>
+            </div>
+            <div class="settings-tools">
+              <input class="settings-search" type="text" placeholder="Search settings"/>
+              <button onclick="closeSettings()">Close</button>
             </div>
           </div>
 
-          <div class="hr"></div>
-          <h2>Widgets</h2>
-          <div class="field">
-            <label>Widget spacing (all pages)</label>
-            <input id="pageGap" type="range" min="10" max="28" step="1"/>
-          </div>
+          <div class="settings-shell">
+            <aside class="settings-nav">
+              <div class="sub">Sections</div>
+              <a href="#sec-appearance">Appearance & Motion</a>
+              <a href="#sec-marketing" id="settingsNavMarketing">Marketing Page</a>
+              <a href="#sec-brand">Brand Studio</a>
+              <a href="#sec-social">Social Accounts</a>
+              <a href="#sec-security">Security</a>
+            </aside>
 
-          <div class="hr"></div>
-          <h2>Motion</h2>
-          <div class="pillrow">
-            <label class="toggle"><input type="checkbox" id="toggleMotion"/> Reduce Motion</label>
-          </div>
+            <div class="settings-main">
+              <section class="settings-card" id="sec-appearance">
+                <h3>Appearance & Motion</h3>
+                <div class="settings-grid-2">
+                  <div>
+                    <div class="field">
+                      <label>Theme</label>
+                      <div class="pillrow">
+                        <button onclick="toggleTheme()" id="themeToggleBtnSettings">Light/Dark</button>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label>Widget spacing (all pages)</label>
+                      <input id="pageGap" type="range" min="10" max="28" step="1"/>
+                    </div>
+                    <div class="field">
+                      <label>Motion</label>
+                      <div class="pillrow">
+                        <label class="toggle"><input type="checkbox" id="toggleMotion"/> Reduce Motion</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="field">
+                      <label>Glass transparency</label>
+                      <input id="glassSlider" type="range" min="0.01" max="0.30" step="0.005"/>
+                    </div>
+                    <div class="field">
+                      <label>Current transparency</label>
+                      <input id="glassValue" type="text" readonly/>
+                    </div>
+                    <div class="field">
+                      <label>Glass blur (px)</label>
+                      <input id="blurSlider" type="range" min="6" max="28" step="1"/>
+                    </div>
+                    <div class="field">
+                      <label>Current blur</label>
+                      <input id="blurValue" type="text" readonly/>
+                    </div>
+                  </div>
+                </div>
+              </section>
 
-          <div class="hr"></div>
-          <h2>Glass Transparency</h2>
-          <div class="row">
-            <div class="field">
-              <label>Opacity (lower = clearer glass)</label>
-              <input id="glassSlider" type="range" min="0.01" max="0.30" step="0.005"/>
-            </div>
-            <div class="field">
-              <label>Current</label>
-              <input id="glassValue" type="text" readonly/>
+              <section class="settings-card" id="sec-marketing">
+                <div id="dashboardSettings">
+                  <h3>Marketing Page</h3>
+                  <p class="sub">These controls apply to the Marketing page widgets and visibility only.</p>
+                  <div class="pillrow">
+                    <button onclick="applyPreset('analytics')">Analytics Focus</button>
+                    <button onclick="applyPreset('two-column')">Two Column</button>
+                    <button onclick="resetLayout()">Reset Layout</button>
+                  </div>
+                  <div class="hr"></div>
+                  <div class="pillrow">
+                    <label class="toggle"><input type="checkbox" id="toggleInputs"/> Inputs</label>
+                    <label class="toggle"><input type="checkbox" id="toggleIdeas"/> Ideas</label>
+                    <label class="toggle"><input type="checkbox" id="togglePlan"/> 7‑Day Plan</label>
+                    <label class="toggle"><input type="checkbox" id="toggleLive"/> Live Analytics</label>
+                  </div>
+                </div>
+              </section>
+
+              <section class="settings-card" id="sec-brand">
+                <h3>Brand Studio</h3>
+                <p class="sub">Update colors, logo, and profile without editing the file.</p>
+                <div class="row">
+                  <div class="field">
+                    <label>Brand Title</label>
+                    <input id="brandTitleInput" placeholder="Rosario’s AI Marketing Assistant"/>
+                  </div>
+                  <div class="field">
+                    <label>Tagline / Status</label>
+                    <input id="brandTaglineInput" placeholder="Marketing Command Center • Phoenix AZ"/>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Profile Label</label>
+                  <input id="profileLabelInput" placeholder="Owner • Private"/>
+                </div>
+                <div class="row">
+                  <div class="field">
+                    <label>Primary Accent</label>
+                    <input id="accentColor" type="color"/>
+                  </div>
+                  <div class="field">
+                    <label>Secondary Accent</label>
+                    <input id="accent2Color" type="color"/>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="field">
+                    <label>Background Color</label>
+                    <input id="bgColor" type="color"/>
+                  </div>
+                  <div class="field">
+                    <label>Card / Panel Color</label>
+                    <input id="cardColor" type="color"/>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="field">
+                    <label>Logo Image (square works best)</label>
+                    <input id="logoUpload" type="file" accept="image/*"/>
+                  </div>
+                  <div class="field">
+                    <label>Profile Avatar</label>
+                    <input id="avatarUpload" type="file" accept="image/*"/>
+                  </div>
+                </div>
+                <div class="pillrow">
+                  <button onclick="resetBrand()">Reset Brand</button>
+                </div>
+              </section>
+
+              <section class="settings-card" id="sec-social">
+                <h3>Social Accounts (Live Data)</h3>
+                <p class="sub">Connect accounts to pull analytics. Requires backend + API keys.</p>
+                <div class="mini">Live analytics needs OAuth and platform approvals.</div>
+                <div class="social-list" id="socialList"></div>
+              </section>
+
+              <section class="settings-card" id="sec-security">
+                <h3>Security</h3>
+                <div class="field">
+                  <label>Change Password</label>
+                  <input id="newPw" type="password" placeholder="New password"/>
+                </div>
+                <button onclick="setPassword()">Update Password</button>
+              </section>
             </div>
           </div>
-
-          <div class="hr"></div>
-          <h2>Glass Blur</h2>
-          <div class="row">
-            <div class="field">
-              <label>Blur (px)</label>
-              <input id="blurSlider" type="range" min="6" max="28" step="1"/>
-            </div>
-            <div class="field">
-              <label>Current</label>
-              <input id="blurValue" type="text" readonly/>
-            </div>
-          </div>
-
-          <div class="hr"></div>
-          <h2>Brand Studio</h2>
-          <p class="sub">Update colors, logo, and profile without editing the file.</p>
-
-          <div class="row">
-            <div class="field">
-              <label>Brand Title</label>
-              <input id="brandTitleInput" placeholder="Rosario’s AI Marketing Assistant"/>
-            </div>
-            <div class="field">
-              <label>Tagline / Status</label>
-              <input id="brandTaglineInput" placeholder="Marketing Command Center • Phoenix AZ"/>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Profile Label</label>
-            <input id="profileLabelInput" placeholder="Owner • Private"/>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label>Primary Accent</label>
-              <input id="accentColor" type="color"/>
-            </div>
-            <div class="field">
-              <label>Secondary Accent</label>
-              <input id="accent2Color" type="color"/>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label>Background Color</label>
-              <input id="bgColor" type="color"/>
-            </div>
-            <div class="field">
-              <label>Card / Panel Color</label>
-              <input id="cardColor" type="color"/>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label>Logo Image (square works best)</label>
-              <input id="logoUpload" type="file" accept="image/*"/>
-            </div>
-            <div class="field">
-              <label>Profile Avatar</label>
-              <input id="avatarUpload" type="file" accept="image/*"/>
-            </div>
-          </div>
-
-          <div class="pillrow">
-            <button onclick="resetBrand()">Reset Brand</button>
-          </div>
-
-          <div class="hr"></div>
-          <h2>Social Accounts (Live Data)</h2>
-          <p class="sub">Connect accounts to pull analytics. Requires a backend + API keys.</p>
-          <div class="mini">
-            Live analytics needs OAuth and platform approvals. I can wire this up once you’re ready.
-          </div>
-          <div class="social-list" id="socialList"></div>
-
-          <div class="hr"></div>
-          <div class="field">
-            <label>Change Password</label>
-            <input id="newPw" type="password" placeholder="New password"/>
-          </div>
-          <button onclick="setPassword()">Update Password</button>
         </div>
       </div>
     </div>
@@ -2388,7 +2505,12 @@
     $("pageGap").value = gap;
     const params = new URLSearchParams(window.location.search);
     const page = params.get("page") || "company";
-    $("dashboardSettings").style.display = page === "dashboard" ? "block" : "none";
+    const isMarketing = page === "dashboard";
+    $("dashboardSettings").style.display = isMarketing ? "block" : "none";
+    const secMarketing = $("sec-marketing");
+    if(secMarketing) secMarketing.style.display = isMarketing ? "block" : "none";
+    const navMarketing = $("settingsNavMarketing");
+    if(navMarketing) navMarketing.style.display = isMarketing ? "block" : "none";
   }
   function closeSettings(){
     $("settingsModal").classList.remove("open");
