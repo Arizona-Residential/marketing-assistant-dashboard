@@ -1541,27 +1541,44 @@
     document.documentElement.style.setProperty("--bg", b.bg);
     document.documentElement.style.setProperty("--card", b.card);
     document.documentElement.style.setProperty("--panel", hexToRgba(b.card, 0.78));
-    $("brandTitle").textContent = b.title || DEFAULT_BRAND.title;
-    $("brandTagline").textContent = b.tagline || DEFAULT_BRAND.tagline;
-    $("profileLabel").textContent = b.profileLabel || DEFAULT_BRAND.profileLabel;
-    $("sidebarTitle").textContent = b.title || DEFAULT_BRAND.title;
-    $("sidebarTagline").textContent = "Dashboard";
+    const brandTitle = $("brandTitle");
+    if(brandTitle) brandTitle.textContent = b.title || DEFAULT_BRAND.title;
+    const brandTagline = $("brandTagline");
+    if(brandTagline) brandTagline.textContent = b.tagline || DEFAULT_BRAND.tagline;
+    const profileLabel = $("profileLabel");
+    if(profileLabel) profileLabel.textContent = b.profileLabel || DEFAULT_BRAND.profileLabel;
+    const sidebarTitle = $("sidebarTitle");
+    if(sidebarTitle) sidebarTitle.textContent = b.title || DEFAULT_BRAND.title;
+    const sidebarTagline = $("sidebarTagline");
+    if(sidebarTagline) sidebarTagline.textContent = "Dashboard";
 
     if(b.logo){
-      $("brandLogoImg").src = b.logo;
-      $("brandLogoImg").classList.remove("hidden");
-      $("sidebarLogoImg").src = b.logo;
-      $("sidebarLogoImg").classList.remove("hidden");
+      const brandLogoImg = $("brandLogoImg");
+      if(brandLogoImg){
+        brandLogoImg.src = b.logo;
+        brandLogoImg.classList.remove("hidden");
+      }
+      const sidebarLogoImg = $("sidebarLogoImg");
+      if(sidebarLogoImg){
+        sidebarLogoImg.src = b.logo;
+        sidebarLogoImg.classList.remove("hidden");
+      }
     }else{
-      $("brandLogoImg").classList.add("hidden");
-      $("sidebarLogoImg").classList.add("hidden");
+      const brandLogoImg = $("brandLogoImg");
+      if(brandLogoImg) brandLogoImg.classList.add("hidden");
+      const sidebarLogoImg = $("sidebarLogoImg");
+      if(sidebarLogoImg) sidebarLogoImg.classList.add("hidden");
     }
 
     if(b.avatar){
-      $("brandAvatarImg").src = b.avatar;
-      $("brandAvatarImg").classList.remove("hidden");
+      const brandAvatarImg = $("brandAvatarImg");
+      if(brandAvatarImg){
+        brandAvatarImg.src = b.avatar;
+        brandAvatarImg.classList.remove("hidden");
+      }
     }else{
-      $("brandAvatarImg").classList.add("hidden");
+      const brandAvatarImg = $("brandAvatarImg");
+      if(brandAvatarImg) brandAvatarImg.classList.add("hidden");
     }
   }
 
