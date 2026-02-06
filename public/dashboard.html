@@ -112,7 +112,8 @@
       z-index:-1;
     }
     a{color:var(--accent)}
-    .wrap{max-width:1600px;margin:0 auto;padding:20px}
+    .wrap{max-width:1800px;margin:0 auto;padding:18px}
+    html,body{min-height:100%}
     .topbar{
       display:flex;gap:14px;align-items:center;justify-content:space-between;
       padding:14px 16px;border:1px solid var(--glass-border);border-radius:var(--radius);
@@ -519,11 +520,12 @@
       backdrop-filter: blur(var(--blur));
       box-shadow: var(--shadow);
       display:flex;flex-direction:column;gap:14px;
+      height:calc(100vh - 36px);
     }
     .sidebar.collapsed{
       width:74px;min-width:74px;padding:12px 8px;
     }
-    .sidebar .sb-profile{display:flex;align-items:center;gap:10px}
+    .sidebar .sb-profile{display:flex;align-items:center;gap:10px;padding-left:4px}
     .sidebar .sb-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .sidebar .sb-avatar{
       width:44px;height:44px;border-radius:14px;
@@ -534,19 +536,24 @@
     .sidebar .sb-avatar img{width:100%;height:100%;object-fit:cover}
     .sidebar .sb-title{font-size:12px;color:var(--muted)}
     .sidebar .sb-name{font-size:13px;font-weight:600}
-    .sidebar .nav{display:flex;flex-direction:column;gap:6px}
+    .sidebar .nav{display:flex;flex-direction:column;gap:8px}
     .sidebar .nav button{
       width:100%;text-align:left;border-radius:14px;
       padding:8px 10px;font-size:12px;display:flex;align-items:center;gap:10px;
       position:relative;
       color: var(--muted);
+      height:38px;
     }
     .sidebar .nav button.active{
       border-color: rgba(251,191,36,.55);
       color: var(--text);
       background: rgba(251,191,36,.08);
     }
-    .nav svg{width:18px;height:18px;stroke:currentColor;fill:none}
+    .sidebar .nav button:hover{
+      color: var(--text);
+      background: rgba(255,255,255,.05);
+    }
+    .nav svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round}
     .nav .icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
     .nav .label{white-space:nowrap}
     .sidebar.collapsed .sb-name,
@@ -557,7 +564,7 @@
       display:none;
     }
     .sidebar.collapsed .nav button{
-      justify-content:center;padding:10px 0;
+      justify-content:center;padding:10px 0;height:38px;
     }
     .sidebar.collapsed .nav button::after{
       content: attr(data-label);
@@ -569,8 +576,10 @@
     }
     .sidebar.collapsed .nav button:hover::after{opacity:1}
     .sidebar-toggle{
-      width:28px;height:28px;border-radius:10px;border:1px solid var(--glass-border);
+      position:absolute;right:-12px;top:24px;
+      width:26px;height:26px;border-radius:10px;border:1px solid var(--glass-border);
       background:var(--glass);display:grid;place-items:center;
+      z-index:2;
     }
     .sidebar-toggle svg{width:14px;height:14px}
     .sidebar .nav .subhead{
@@ -579,7 +588,8 @@
     }
     .sidebar .sb-actions{display:flex;flex-direction:column;gap:8px}
     .sidebar .sb-actions button{width:100%}
-    .main{flex:1;min-width:0}
+    .main{flex:1;min-width:0;min-height:calc(100vh - 36px)}
+    .page{min-height:calc(100vh - 36px)}
     .page{display:none}
     .page.active{display:block}
     .page-header{
@@ -590,7 +600,7 @@
     }
     .page-header .title{font-size:16px;font-weight:600}
     .page-header .subtitle{font-size:12px;color:var(--muted)}
-    .widget-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--widget-gap,16px);margin-top:16px}
+    .widget-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--widget-gap,16px);margin-top:16px;margin-bottom:18px}
     .widget{grid-column:span 6; padding:14px;border-radius:20px;
       border:1px solid var(--glass-border);background:var(--glass-strong);
       backdrop-filter: blur(var(--blur));box-shadow: var(--shadow);
@@ -641,7 +651,7 @@
     <div class="wrap">
       <div class="app-shell">
         <aside class="sidebar" id="sidebar">
-          <div class="sb-top">
+          <div class="sb-top" style="position:relative;">
             <div class="sb-profile">
             <div class="sb-avatar" id="sidebarLogo">
               <img id="sidebarLogoImg" alt="Brand logo" class="hidden"/>
@@ -659,15 +669,15 @@
           </div>
           <div class="nav">
             <div class="subhead">Main</div>
-            <button data-page="welcome" data-label="Welcome">
+            <button data-page="welcome" data-label="Daily Brief">
               <span class="icon">
                 <svg viewBox="0 0 24 24" stroke-width="1.8">
                   <path d="M12 3l3 6 6 .9-4.5 4.3 1 6-5.5-3-5.5 3 1-6L3 9.9 9 9z"/>
                 </svg>
               </span>
-              <span class="label">Welcome</span>
+              <span class="label">Daily Brief</span>
             </button>
-            <button data-page="company" data-label="Company" class="active">
+            <button data-page="company" data-label="Operations" class="active">
               <span class="icon">
                 <svg viewBox="0 0 24 24" stroke-width="1.8">
                   <path d="M4 20h16"/>
@@ -675,46 +685,46 @@
                   <path d="M9 20v-6h6v6"/>
                 </svg>
               </span>
-              <span class="label">Company</span>
+              <span class="label">Operations</span>
             </button>
-            <button data-page="dashboard" data-label="Dashboard">
+            <button data-page="dashboard" data-label="Marketing">
               <span class="icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <svg viewBox="0 0 24 24" stroke-width="1.8">
                   <rect x="3" y="3" width="7" height="7" rx="2"/>
                   <rect x="14" y="3" width="7" height="7" rx="2"/>
                   <rect x="3" y="14" width="7" height="7" rx="2"/>
                   <rect x="14" y="14" width="7" height="7" rx="2"/>
                 </svg>
               </span>
-              <span class="label">Dashboard</span>
+              <span class="label">Marketing</span>
             </button>
-            <button data-page="email" data-label="Email">
+            <button data-page="email" data-label="Inbox">
               <span class="icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <svg viewBox="0 0 24 24" stroke-width="1.8">
                   <rect x="3" y="5" width="18" height="14" rx="2"/>
                   <path d="M3 7l9 6 9-6"/>
                 </svg>
               </span>
-              <span class="label">Email</span>
+              <span class="label">Inbox</span>
             </button>
-            <button data-page="housecall" data-label="Housecall Pro">
+            <button data-page="housecall" data-label="Jobs">
               <span class="icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <svg viewBox="0 0 24 24" stroke-width="1.8">
                   <path d="M4 12l8-7 8 7"/>
                   <path d="M6 10v9h12v-9"/>
                   <path d="M10 19v-5h4v5"/>
                 </svg>
               </span>
-              <span class="label">Housecall Pro</span>
+              <span class="label">Jobs</span>
             </button>
-            <button data-page="estimator" data-label="AI Estimator">
+            <button data-page="estimator" data-label="Estimator">
               <span class="icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <svg viewBox="0 0 24 24" stroke-width="1.8">
                   <path d="M4 6h10a4 4 0 010 8H9l-5 4V6z"/>
                   <path d="M15 16h5v3"/>
                 </svg>
               </span>
-              <span class="label">AI Estimator</span>
+              <span class="label">Estimator</span>
             </button>
             <div class="subhead">Tools</div>
             <div class="sb-actions" id="pageTools"></div>
@@ -731,7 +741,7 @@
           </div>
           <div>
             <h1 id="brandTitle">Rosario’s AI Marketing Assistant</h1>
-            <p id="brandTagline">Private dashboard</p>
+            <p id="brandTagline">Marketing Command Center</p>
             <div class="pillrow">
               <span class="badge" id="todayLine">Today</span>
               <span class="badge tiktok-badge" id="tiktokBadge">TikTok: Not connected</span>
@@ -1050,7 +1060,7 @@
       <div class="page" id="page-company" data-page="company">
         <div class="page-header">
           <div>
-            <div class="title">Company Dashboard</div>
+            <div class="title">Operations Dashboard</div>
             <div class="subtitle">Sales, pipeline, and team overview.</div>
           </div>
           <div class="pillrow">
@@ -1069,6 +1079,29 @@
           <div class="widget small">
             <h3>Active Leads</h3>
             <p>41 in pipeline</p>
+          </div>
+          <div class="widget full">
+            <h3>Revenue Trend</h3>
+            <div class="widget-item" style="padding:12px">
+              <svg viewBox="0 0 600 220" style="width:100%;height:auto">
+                <defs>
+                  <linearGradient id="revGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="rgba(251,191,36,.9)"/>
+                    <stop offset="100%" stop-color="rgba(253,186,116,.9)"/>
+                  </linearGradient>
+                </defs>
+                <path d="M20 180 C 80 120, 140 130, 200 140 C 260 150, 300 110, 340 90 C 380 70, 430 85, 470 110 C 510 135, 540 120, 580 80"
+                  stroke="url(#revGrad)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                <path d="M20 180 C 80 120, 140 130, 200 140 C 260 150, 300 110, 340 90 C 380 70, 430 85, 470 110 C 510 135, 540 120, 580 80 L 580 200 L 20 200 Z"
+                  fill="rgba(251,191,36,.12)"/>
+                <g stroke="rgba(255,255,255,.12)" stroke-width="1">
+                  <line x1="20" y1="200" x2="580" y2="200"/>
+                  <line x1="20" y1="160" x2="580" y2="160"/>
+                  <line x1="20" y1="120" x2="580" y2="120"/>
+                  <line x1="20" y1="80" x2="580" y2="80"/>
+                </g>
+              </svg>
+            </div>
           </div>
           <div class="widget large">
             <h3>Pipeline</h3>
@@ -1092,7 +1125,7 @@
       <div class="page" id="page-email" data-page="email">
         <div class="page-header">
           <div>
-            <div class="title">Email Center</div>
+            <div class="title">Inbox</div>
             <div class="subtitle">Draft, send, and track proposals.</div>
           </div>
         </div>
@@ -1121,7 +1154,7 @@
       <div class="page" id="page-housecall" data-page="housecall">
         <div class="page-header">
           <div>
-            <div class="title">Housecall Pro</div>
+            <div class="title">Jobs</div>
             <div class="subtitle">Jobs, estimates, and schedule.</div>
           </div>
         </div>
@@ -1156,7 +1189,7 @@
       <div class="page" id="page-estimator" data-page="estimator">
         <div class="page-header">
           <div>
-            <div class="title">AI Estimator</div>
+            <div class="title">Estimator Studio</div>
             <div class="subtitle">Chat + structured estimate builder.</div>
           </div>
         </div>
@@ -1198,24 +1231,27 @@
             <button onclick="closeSettings()">Close</button>
           </div>
 
-          <h2>Layout Presets</h2>
-          <div class="pillrow">
-            <button onclick="applyPreset('analytics')">Analytics Focus</button>
-            <button onclick="applyPreset('two-column')">Two Column</button>
-            <button onclick="resetLayout()">Reset Layout</button>
-          </div>
+          <div id="dashboardSettings">
+            <h2>Layout Presets</h2>
+            <div class="pillrow">
+              <button onclick="applyPreset('analytics')">Analytics Focus</button>
+              <button onclick="applyPreset('two-column')">Two Column</button>
+              <button onclick="resetLayout()">Reset Layout</button>
+            </div>
 
-          <div class="hr"></div>
-          <h2>Section Visibility</h2>
-          <div class="pillrow">
-            <label class="toggle"><input type="checkbox" id="toggleInputs"/> Inputs</label>
-            <label class="toggle"><input type="checkbox" id="toggleIdeas"/> Ideas</label>
-            <label class="toggle"><input type="checkbox" id="togglePlan"/> 7‑Day Plan</label>
-            <label class="toggle"><input type="checkbox" id="toggleLive"/> Live Analytics</label>
+            <div class="hr"></div>
+            <h2>Section Visibility</h2>
+            <div class="pillrow">
+              <label class="toggle"><input type="checkbox" id="toggleInputs"/> Inputs</label>
+              <label class="toggle"><input type="checkbox" id="toggleIdeas"/> Ideas</label>
+              <label class="toggle"><input type="checkbox" id="togglePlan"/> 7‑Day Plan</label>
+              <label class="toggle"><input type="checkbox" id="toggleLive"/> Live Analytics</label>
+            </div>
           </div>
 
           <div class="hr"></div>
           <h2>Page Layout</h2>
+          <div class="sub" id="pageSettingsLabel" style="margin-bottom:8px">Current page: company</div>
           <div class="field">
             <label>Widget spacing (current page)</label>
             <input id="pageGap" type="range" min="10" max="28" step="1"/>
@@ -1264,7 +1300,7 @@
             </div>
             <div class="field">
               <label>Tagline / Status</label>
-              <input id="brandTaglineInput" placeholder="Private dashboard • Phoenix AZ"/>
+              <input id="brandTaglineInput" placeholder="Marketing Command Center • Phoenix AZ"/>
             </div>
           </div>
 
@@ -1475,7 +1511,7 @@
   // ====== Brand Studio ======
   const DEFAULT_BRAND = {
     title: "Rosario’s AI Marketing Assistant",
-    tagline: "Private dashboard",
+    tagline: "Marketing Command Center",
     accent: "#7dd3fc",
     accent2: "#a78bfa",
     bg: "#0b0f14",
@@ -1731,6 +1767,15 @@
     });
   }
 
+  const PAGE_LABELS = {
+    welcome: "Daily Brief",
+    company: "Operations",
+    dashboard: "Marketing",
+    email: "Inbox",
+    housecall: "Jobs",
+    estimator: "Estimator"
+  };
+
   function setActivePage(page){
     const pages = document.querySelectorAll(".page");
     pages.forEach(p=>p.classList.remove("active"));
@@ -1739,7 +1784,7 @@
     document.querySelectorAll(".nav button[data-page]").forEach(btn=>{
       btn.classList.toggle("active", btn.getAttribute("data-page") === page);
     });
-    $("sidebarTagline").textContent = page === "dashboard" ? "Dashboard" : page[0].toUpperCase() + page.slice(1);
+    $("sidebarTagline").textContent = PAGE_LABELS[page] || "Dashboard";
     renderPageTools(page);
     const gap = localStorage.getItem(`page_gap_${page}`);
     document.documentElement.style.setProperty("--widget-gap", gap || "16px");
@@ -2230,6 +2275,8 @@
     const page = params.get("page") || "company";
     const gap = localStorage.getItem(`page_gap_${page}`) || "16";
     $("pageGap").value = gap;
+    $("pageSettingsLabel").textContent = `Current page: ${page}`;
+    $("dashboardSettings").style.display = page === "dashboard" ? "block" : "none";
   }
   function closeSettings(){
     $("settingsModal").classList.remove("open");
