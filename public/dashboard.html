@@ -248,40 +248,14 @@
       position:relative;
       min-height:0;
     }
-    .section.drag-over .card{
-      outline:2px dashed rgba(125,211,252,.6);
-      outline-offset:4px;
-    }
+    .section.drag-over .card{outline:none}
     .section.drag-placeholder{
-      border:2px dashed rgba(125,211,252,.5);
+      border:1px dashed rgba(255,255,255,.12);
       border-radius:var(--radius);
       min-height:140px;
-      background: rgba(125,211,252,.06);
+      background: rgba(255,255,255,.03);
     }
-    .section.hover-top::before,
-    .section.hover-bottom::after{
-      content:"";
-      position:absolute;
-      left:0; right:0;
-      height:2px;
-      background: linear-gradient(90deg, transparent, rgba(125,211,252,.9), transparent);
-    }
-    .section.hover-top::before{top:-6px}
-    .section.hover-bottom::after{bottom:-6px}
-    .drag-handle{
-      position:absolute;
-      top:10px; right:10px;
-      border:1px solid var(--line);
-      background: rgba(9,14,22,.6);
-      color: var(--muted);
-      padding:4px 8px;
-      border-radius:999px;
-      font-size:11px;
-      cursor:grab;
-      user-select:none;
-      z-index:2;
-    }
-    .drag-handle:active{cursor:grabbing}
+    .drag-handle{display:none}
     .resize-handle{
       position:absolute;
       width:18px;height:18px;
@@ -770,12 +744,10 @@
             <div class="meta" id="profileLabel">Owner • Private</div>
           </div>
           <div class="btnrow">
-            <button onclick="toggleLayout()" id="layoutToggleBtn">Customize Layout</button>
             <button onclick="toggleTheme()" id="themeToggleBtn">Light Mode</button>
             <button class="primary" onclick="generateAll()">Generate Ideas</button>
             <button onclick="build7DayPlan()">Build 7-Day Plan</button>
             <button onclick="exportData()">Export</button>
-            <button class="danger" onclick="logout()">Lock</button>
           </div>
         </div>
       </div>
@@ -1246,12 +1218,18 @@
           </div>
 
           <div id="dashboardSettings">
-            <h2>Layout Presets</h2>
-            <div class="pillrow">
-              <button onclick="applyPreset('analytics')">Analytics Focus</button>
-              <button onclick="applyPreset('two-column')">Two Column</button>
-              <button onclick="resetLayout()">Reset Layout</button>
-            </div>
+          <h2>Appearance</h2>
+          <div class="pillrow">
+            <button onclick="toggleTheme()" id="themeToggleBtnSettings">Light/Dark</button>
+          </div>
+
+          <div class="hr"></div>
+          <h2>Marketing Layout</h2>
+          <div class="pillrow">
+            <button onclick="applyPreset('analytics')">Analytics Focus</button>
+            <button onclick="applyPreset('two-column')">Two Column</button>
+            <button onclick="resetLayout()">Reset Layout</button>
+          </div>
 
             <div class="hr"></div>
             <h2>Section Visibility</h2>
@@ -1740,14 +1718,13 @@
 
   const PAGE_TOOLS = {
     welcome: [
-      { label: "Back to Dashboard", action: "setActivePage('dashboard')" }
+      { label: "Back to Marketing", action: "setActivePage('dashboard')" }
     ],
     company: [
-      { label: "Back to Dashboard", action: "setActivePage('dashboard')" },
+      { label: "Back to Marketing", action: "setActivePage('dashboard')" },
       { label: "Add Report", action: "alert('Report builder coming next.')" }
     ],
     dashboard: [
-      { label: "Customize Layout", action: "toggleLayout()" },
       { label: "Light/Dark", action: "toggleTheme()" },
       { label: "Generate Ideas", action: "generateAll()", primary: true },
       { label: "Build 7-Day Plan", action: "build7DayPlan()" },
@@ -2142,14 +2119,12 @@
 
   function initWidgetDrag(page, root){
     const widgets = Array.from(root.querySelectorAll(".widget"));
-    const handles = Array.from(root.querySelectorAll(".drag-handle"));
     let placeholder = null;
     let dragged = null;
 
-    handles.forEach(h=>{
-      h.addEventListener("dragstart", (e)=>{
-        const w = h.closest(".widget");
-        if(!w) return;
+    widgets.forEach(w=>{
+      w.setAttribute("draggable", "true");
+      w.addEventListener("dragstart", (e)=>{
         dragged = w;
         e.dataTransfer?.setData("text/plain", w.dataset.widget || "");
         e.dataTransfer?.setDragImage(w, 20, 20);
@@ -2160,9 +2135,6 @@
         placeholder.style.gridRow = w.style.gridRow || "span 10";
         w.parentElement?.insertBefore(placeholder, w.nextSibling);
       });
-    });
-
-    widgets.forEach(w=>{
       w.addEventListener("dragover", (e)=>{
         e.preventDefault();
         if(!dragged || dragged === w) return;
@@ -2243,12 +2215,6 @@
         if(!w.querySelector(".drag-handle")){
           const h = document.createElement("div");
           h.className = "drag-handle";
-          h.setAttribute("draggable","true");
-          h.textContent = "";
-          h.style.position = "absolute";
-          h.style.inset = "0";
-          h.style.cursor = "grab";
-          h.style.background = "transparent";
           w.appendChild(h);
         }
         if(!w.querySelector(".resize-handle")){
@@ -2350,11 +2316,7 @@
     $("settingsModal").classList.remove("open");
   }
 
-  function toggleLayout(){
-    document.body.classList.toggle("layout-locked");
-    const locked = document.body.classList.contains("layout-locked");
-    $("layoutToggleBtn").textContent = locked ? "Customize Layout" : "Lock Layout";
-  }
+  function toggleLayout(){ }
 
   // ====== Live Analytics (TikTok) ======
   async function loadLiveAnalytics(){
@@ -2961,8 +2923,7 @@ Daily rule:
   // Auto-set date on load
   window.addEventListener("load", ()=>{
     $("mDate").value = todayISO;
-    document.body.classList.add("layout-locked");
-    $("layoutToggleBtn").textContent = "Customize Layout";
+    document.body.classList.remove("layout-locked");
     loadPublicSettings().finally(()=>{
       renderLoginBrand();
       applyTheme(localStorage.getItem(KEY.theme) || "dark");
