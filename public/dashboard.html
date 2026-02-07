@@ -693,7 +693,7 @@
       backdrop-filter: blur(var(--blur));
       padding:10px;border-radius:14px;font-size:12px;color:var(--muted);
     }
-    .app-shell{display:flex;gap:32px;align-items:flex-start}
+    .app-shell{display:flex;gap:46px;align-items:flex-start}
     .sidebar{
       position:sticky;top:18px;align-self:flex-start;
       width:74px;min-width:74px;
@@ -704,9 +704,10 @@
       box-shadow: var(--shadow);
       display:flex;flex-direction:column;gap:14px;
       height:calc(100vh - 36px);
-      transition: width .38s cubic-bezier(.22,1,.36,1), min-width .38s cubic-bezier(.22,1,.36,1), padding .38s cubic-bezier(.22,1,.36,1), background .28s ease;
-      will-change: width, padding;
+      transition: width .3s cubic-bezier(.2,.9,.2,1), min-width .3s cubic-bezier(.2,.9,.2,1), padding .3s cubic-bezier(.2,.9,.2,1), background .25s ease;
+      will-change: width, min-width, padding;
       z-index:4;
+      overflow:visible;
     }
     .sidebar:hover{
       width:230px;min-width:230px;padding:16px 12px;
@@ -738,6 +739,8 @@
       position:relative;
       color: var(--muted);
       height:38px;
+      overflow:hidden;
+      transition: background .2s ease, color .2s ease, border-color .2s ease, width .2s ease, padding .2s ease;
     }
     .sidebar .nav button.active{
       border-color: rgba(251,191,36,.55);
@@ -756,29 +759,36 @@
     .sidebar .sb-title,
     .sidebar .nav .label,
     .sidebar .subhead{
-      transition: opacity .2s ease;
+      opacity:0;
+      max-width:0;
+      overflow:hidden;
+      transform:translateX(-5px);
+      transition: opacity .16s ease, max-width .22s ease, transform .22s ease;
+      pointer-events:none;
+    }
+    .sidebar:hover .sb-name,
+    .sidebar:hover .sb-title,
+    .sidebar:hover .nav .label,
+    .sidebar:hover .subhead{
+      opacity:1;
+      max-width:180px;
+      transform:translateX(0);
+      pointer-events:auto;
     }
     .sidebar .sb-actions{
-      transition: opacity .32s ease, max-height .32s ease;
-      max-height:200px;
-      overflow:hidden;
-    }
-    .sidebar:not(:hover){
-      overflow:hidden;
-    }
-    .sidebar:not(:hover) .sb-name,
-    .sidebar:not(:hover) .sb-title,
-    .sidebar:not(:hover) .subhead{
-      display:none;
-    }
-    .sidebar:not(:hover) .nav .label{
-      display:none;
-    }
-    .sidebar:not(:hover) .sb-actions{
       opacity:0;
       max-height:0;
       overflow:hidden;
       pointer-events:none;
+      transition: opacity .2s ease, max-height .24s ease;
+    }
+    .sidebar:hover .sb-actions{
+      opacity:1;
+      max-height:220px;
+      pointer-events:auto;
+    }
+    .sidebar:not(:hover){
+      overflow:visible;
     }
     .sidebar:not(:hover) .nav button{
       justify-content:center;
@@ -812,6 +822,9 @@
       border:1px solid var(--glass-border);background:var(--glass-strong);
       backdrop-filter: blur(var(--blur));box-shadow: var(--shadow);
       position:relative;
+      content-visibility:auto;
+      contain-intrinsic-size: 260px;
+      contain: layout paint style;
     }
     .widget{cursor:grab}
     .widget:active{cursor:grabbing}
@@ -832,6 +845,12 @@
       opacity:.75;
       transform:scale(1.02);
       box-shadow: 0 26px 60px rgba(0,0,0,.45);
+    }
+    body.dragging-active .widget,
+    body.dragging-active .settings-card,
+    body.dragging-active .page-header{
+      backdrop-filter:none !important;
+      box-shadow:none !important;
     }
     .widget.small{grid-column:span 4}
     .widget.large{grid-column:span 8}
@@ -1106,24 +1125,24 @@
       .app-shell{flex-direction:column}
       .sidebar{width:100%;min-width:0;position:relative;padding:16px 12px}
       .sidebar:hover{width:100%;min-width:0}
-      .sidebar:not(:hover) .sb-name,
-      .sidebar:not(:hover) .sb-title,
-      .sidebar:not(:hover) .nav .label,
-      .sidebar:not(:hover) .subhead,
-      .sidebar:not(:hover) .sb-actions{
-        display:block;
+      .sidebar .sb-name,
+      .sidebar .sb-title,
+      .sidebar .nav .label,
+      .sidebar .subhead{
+        opacity:1;max-width:180px;transform:none;pointer-events:auto;
       }
+      .sidebar .sb-actions{opacity:1;max-height:220px;pointer-events:auto}
       .sidebar:not(:hover) .nav button{justify-content:flex-start;padding:8px 10px}
     }
     @media (hover: none){
       .sidebar{width:230px;min-width:230px;padding:16px 12px}
-      .sidebar:not(:hover) .sb-name,
-      .sidebar:not(:hover) .sb-title,
-      .sidebar:not(:hover) .nav .label,
-      .sidebar:not(:hover) .subhead,
-      .sidebar:not(:hover) .sb-actions{
-        display:block;
+      .sidebar .sb-name,
+      .sidebar .sb-title,
+      .sidebar .nav .label,
+      .sidebar .subhead{
+        opacity:1;max-width:180px;transform:none;pointer-events:auto;
       }
+      .sidebar .sb-actions{opacity:1;max-height:220px;pointer-events:auto}
       .sidebar:not(:hover) .nav button{justify-content:flex-start;padding:8px 10px}
       .sidebar:not(:hover) .nav button::after{display:none}
     }
@@ -2485,6 +2504,7 @@
   }
 
   let settingsSyncTimer = null;
+  let lastSettingsSyncPayload = "";
   function scheduleSettingsSync(){
     if(settingsSyncTimer) clearTimeout(settingsSyncTimer);
     settingsSyncTimer = setTimeout(async ()=>{
@@ -2498,19 +2518,22 @@
         widgetGap: localStorage.getItem("widget_gap_global") || "16",
         calendarEvents: loadJSON(KEY.calendar, [])
       };
+      const serialized = JSON.stringify(payload);
+      if(serialized === lastSettingsSyncPayload) return;
+      lastSettingsSyncPayload = serialized;
       if(isTikTokConnected()){
         await fetch("/api/settings", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: serialized
         }).catch(()=>{});
       }
       await fetch("/api/public-settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: serialized
       }).catch(()=>{});
-    }, 500);
+    }, 800);
   }
 
   const PAGE_TOOLS = {
@@ -2584,7 +2607,7 @@
     const gap = localStorage.getItem("widget_gap_global") || "16";
     document.documentElement.style.setProperty("--widget-gap", `${gap}px`);
     if(page === "calendar"){
-      renderCalendar();
+      renderCalendar(true);
     }
     const url = new URL(window.location.href);
     url.searchParams.set("page", page);
@@ -2633,19 +2656,17 @@
   }
 
   function applyTheme(theme){
-    if(theme === "light"){
+    const shouldLight = theme === "light";
+    const isLight = document.body.classList.contains("light");
+    if(shouldLight && !isLight){
       document.body.classList.add("light");
-      const t = $("themeToggleBtn");
-      if(t) t.textContent = "Dark Mode";
-      const ts = $("themeToggleBtnSettings");
-      if(ts) ts.textContent = "Dark Mode";
-    }else{
+    }else if(!shouldLight && isLight){
       document.body.classList.remove("light");
-      const t = $("themeToggleBtn");
-      if(t) t.textContent = "Light Mode";
-      const ts = $("themeToggleBtnSettings");
-      if(ts) ts.textContent = "Light Mode";
     }
+    const t = $("themeToggleBtn");
+    if(t) t.textContent = shouldLight ? "Dark Mode" : "Light Mode";
+    const ts = $("themeToggleBtnSettings");
+    if(ts) ts.textContent = shouldLight ? "Dark Mode" : "Light Mode";
     localStorage.setItem(KEY.theme, theme);
   }
 
@@ -2668,6 +2689,14 @@
 
   function applyGlass(value){
     const v = Math.max(0.01, Math.min(0.3, Number(value)));
+    const current = Number(localStorage.getItem(KEY.glass));
+    if(Number.isFinite(current) && Math.abs(current - v) < 0.0005){
+      const display = $("glassValue");
+      const slider = $("glassSlider");
+      if(display) display.value = v.toFixed(3);
+      if(slider) slider.value = v.toFixed(3);
+      return;
+    }
     document.documentElement.style.setProperty("--glass-opacity", v.toFixed(3));
     document.documentElement.style.setProperty("--glass-strong-opacity", Math.min(0.6, v * 2.1).toFixed(3));
     document.documentElement.style.setProperty("--glass-border-opacity", Math.min(0.28, v * 7).toFixed(3));
@@ -2682,6 +2711,14 @@
 
   function applyBlur(value){
     const v = Math.max(6, Math.min(28, Number(value)));
+    const current = Number(localStorage.getItem(KEY.blur));
+    if(Number.isFinite(current) && Math.abs(current - v) < 0.5){
+      const display = $("blurValue");
+      const slider = $("blurSlider");
+      if(display) display.value = `${v}`;
+      if(slider) slider.value = `${v}`;
+      return;
+    }
     document.documentElement.style.setProperty("--blur", `${v}px`);
     localStorage.setItem(KEY.blur, String(v));
     const display = $("blurValue");
@@ -2942,6 +2979,56 @@
     let dragged = null;
     let pointerId = null;
     let placeholder = null;
+    let dragFrame = 0;
+    let lastPoint = null;
+    let lastDropKey = "";
+
+    function processDragPoint(){
+      dragFrame = 0;
+      if(!dragged || !lastPoint) return;
+      const el = document.elementFromPoint(lastPoint.x, lastPoint.y);
+      const over = el && el.closest(".widget");
+      if(!over || over === dragged || !root.contains(over)) return;
+      const rect = over.getBoundingClientRect();
+      const before = lastPoint.y < rect.top + rect.height / 2;
+      const dropKey = `${over.dataset.widget || ""}:${before ? "b" : "a"}`;
+      if(dropKey === lastDropKey) return;
+      lastDropKey = dropKey;
+      if(before){
+        root.insertBefore(placeholder, over);
+      }else{
+        root.insertBefore(placeholder, over.nextSibling);
+      }
+    }
+
+    function scheduleDragPoint(e){
+      lastPoint = { x: e.clientX, y: e.clientY };
+      if(dragFrame) return;
+      dragFrame = requestAnimationFrame(processDragPoint);
+    }
+
+    function finishDrag(e){
+      if(!dragged || e.pointerId !== pointerId) return;
+      if(dragFrame){
+        cancelAnimationFrame(dragFrame);
+        dragFrame = 0;
+      }
+      if(placeholder){
+        root.insertBefore(dragged, placeholder);
+        placeholder.remove();
+        placeholder = null;
+      }
+      dragged.classList.remove("dragging");
+      if(dragged.hasPointerCapture(pointerId)){
+        dragged.releasePointerCapture(pointerId);
+      }
+      dragged = null;
+      pointerId = null;
+      lastPoint = null;
+      lastDropKey = "";
+      document.body.classList.remove("dragging-active");
+      saveWidgetLayout(page, root);
+    }
 
     widgets.forEach(w=>{
       w.setAttribute("draggable", "false");
@@ -2956,6 +3043,8 @@
         w.classList.add("dragging");
         w.setPointerCapture(pointerId);
         document.body.classList.add("dragging-active");
+        lastDropKey = "";
+        lastPoint = { x: e.clientX, y: e.clientY };
         placeholder = document.createElement("div");
         placeholder.className = "widget drag-placeholder";
         placeholder.style.gridColumn = w.style.gridColumn || "span 6";
@@ -2964,43 +3053,85 @@
       });
       w.addEventListener("pointermove", (e)=>{
         if(!dragged || e.pointerId !== pointerId) return;
-        const el = document.elementFromPoint(e.clientX, e.clientY);
-        const over = el && el.closest(".widget");
-        if(!over || over === dragged || !root.contains(over)) return;
-        const rect = over.getBoundingClientRect();
-        const before = e.clientY < rect.top + rect.height / 2;
-        if(before){
-          root.insertBefore(placeholder, over);
-        }else{
-          root.insertBefore(placeholder, over.nextSibling);
-        }
+        scheduleDragPoint(e);
       });
-      w.addEventListener("pointerup", (e)=>{
-        if(!dragged || e.pointerId !== pointerId) return;
-        if(placeholder){
-          root.insertBefore(dragged, placeholder);
-          placeholder.remove();
-          placeholder = null;
-        }
-        dragged.classList.remove("dragging");
-        dragged.releasePointerCapture(pointerId);
-        dragged = null;
-        pointerId = null;
-        document.body.classList.remove("dragging-active");
-        saveWidgetLayout(page, root);
-      });
+      w.addEventListener("pointerup", finishDrag);
+      w.addEventListener("pointercancel", finishDrag);
     });
   }
 
   function initWidgetResize(page, root){
     const cols = 12;
-    const gap = 16;
     const rowHeight = 24;
     const minCols = 3;
     const maxCols = 12;
     const minRows = 6;
     const maxRows = 30;
     let active = null;
+    let activePointerId = null;
+    let resizeFrame = 0;
+    let pointerPos = null;
+    let gridRect = null;
+    let activeRect = null;
+    let gap = 16;
+
+    function getGridMetrics(){
+      const styles = window.getComputedStyle(root);
+      const parsed = Number.parseFloat(styles.columnGap || styles.gap || "16");
+      gap = Number.isFinite(parsed) ? parsed : 16;
+      gridRect = root.getBoundingClientRect();
+      activeRect = active ? active.getBoundingClientRect() : null;
+    }
+
+    function applyResizeStep(){
+      resizeFrame = 0;
+      if(!active || !pointerPos || !gridRect || !activeRect) return;
+      const colWidth = (gridRect.width - gap * (cols - 1)) / cols;
+      const colSpan = Math.max(
+        minCols,
+        Math.min(
+          maxCols,
+          Math.round((pointerPos.x - activeRect.left + colWidth / 2) / (colWidth + gap))
+        )
+      );
+      const rowSpan = Math.max(
+        minRows,
+        Math.min(
+          maxRows,
+          Math.round((pointerPos.y - activeRect.top + rowHeight / 2) / (rowHeight + gap))
+        )
+      );
+      if(
+        Number(active.dataset.colSpan || 0) !== colSpan ||
+        Number(active.dataset.rowSpan || 0) !== rowSpan
+      ){
+        active.dataset.colSpan = colSpan;
+        active.dataset.rowSpan = rowSpan;
+        applyWidgetSize(active, colSpan, rowSpan);
+      }
+    }
+
+    function scheduleResize(e){
+      pointerPos = { x: e.clientX, y: e.clientY };
+      if(resizeFrame) return;
+      resizeFrame = requestAnimationFrame(applyResizeStep);
+    }
+
+    function finishResize(){
+      if(resizeFrame){
+        cancelAnimationFrame(resizeFrame);
+        resizeFrame = 0;
+      }
+      if(active){
+        saveWidgetLayout(page, root);
+      }
+      active = null;
+      activePointerId = null;
+      pointerPos = null;
+      activeRect = null;
+      gridRect = null;
+      document.body.classList.remove("dragging-active");
+    }
 
     root.querySelectorAll(".resize-handle").forEach(handle=>{
       handle.addEventListener("pointerdown", (e)=>{
@@ -3009,37 +3140,18 @@
         const w = handle.closest(".widget");
         if(!w) return;
         active = w;
+        activePointerId = e.pointerId;
         handle.setPointerCapture(e.pointerId);
+        document.body.classList.add("dragging-active");
+        getGridMetrics();
+        pointerPos = { x: e.clientX, y: e.clientY };
       });
       handle.addEventListener("pointermove", (e)=>{
-        if(!active) return;
-        const gridRect = root.getBoundingClientRect();
-        const rect = active.getBoundingClientRect();
-        const colWidth = (gridRect.width - gap * (cols - 1)) / cols;
-        const colSpan = Math.max(
-          minCols,
-          Math.min(
-            maxCols,
-            Math.round((e.clientX - rect.left + colWidth / 2) / (colWidth + gap))
-          )
-        );
-        const rowSpan = Math.max(
-          minRows,
-          Math.min(
-            maxRows,
-            Math.round((e.clientY - rect.top + rowHeight / 2) / (rowHeight + gap))
-          )
-        );
-        active.dataset.colSpan = colSpan;
-        active.dataset.rowSpan = rowSpan;
-        applyWidgetSize(active, colSpan, rowSpan);
+        if(!active || e.pointerId !== activePointerId) return;
+        scheduleResize(e);
       });
-      handle.addEventListener("pointerup", ()=>{
-        if(active){
-          saveWidgetLayout(page, root);
-          active = null;
-        }
-      });
+      handle.addEventListener("pointerup", finishResize);
+      handle.addEventListener("pointercancel", finishResize);
     });
   }
 
@@ -4256,7 +4368,23 @@ Daily rule:
     });
   }
 
-  function renderCalendar(){
+  let calendarRenderFrame = 0;
+  let calendarRenderForce = false;
+  function renderCalendar(force = false){
+    calendarRenderForce = calendarRenderForce || !!force;
+    if(calendarRenderFrame) return;
+    calendarRenderFrame = requestAnimationFrame(()=>{
+      const shouldForce = calendarRenderForce;
+      calendarRenderForce = false;
+      calendarRenderFrame = 0;
+      const activePage = document.querySelector('.page[data-page="calendar"]');
+      const isActive = !!(activePage && activePage.classList.contains("active"));
+      if(!shouldForce && !isActive) return;
+      renderCalendarNow();
+    });
+  }
+
+  function renderCalendarNow(){
     const events = getCalendarEvents();
     const prefs = getCalendarPrefs();
     syncCalendarFilters(events);
