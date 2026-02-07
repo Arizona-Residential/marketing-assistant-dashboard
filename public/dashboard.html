@@ -875,27 +875,67 @@
     }
     .widget-row{display:flex;gap:10px;align-items:center}
     .widget-row .pill{padding:4px 8px;border-radius:999px;border:1px solid var(--glass-border);font-size:11px}
+    .calendar-layout{
+      grid-template-columns:repeat(12,minmax(0,1fr));
+      gap:16px;
+      align-items:start;
+    }
+    .calendar-rail{
+      grid-column:span 3;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:780px;
+    }
+    .calendar-shell{
+      grid-column:span 9;
+      padding:12px;
+      min-height:780px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .calendar-card{
+      border:1px solid var(--glass-border);
+      background:var(--glass);
+      border-radius:16px;
+      padding:12px;
+    }
+    .calendar-card h3{
+      margin:0 0 6px 0;
+      font-size:13px;
+    }
+    .calendar-card .mini{
+      margin:0;
+      font-size:11px;
+      color:var(--muted);
+    }
     .calendar-mini-head{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:8px;
-      margin:0 0 8px 0;
+      margin:0 0 10px 0;
     }
     .calendar-mini-head .month{
-      font-size:12px;
+      font-size:13px;
       font-weight:600;
       color:var(--text);
     }
+    .calendar-mini-head .pillrow{
+      display:flex;
+      gap:6px;
+    }
     .calendar-mini-head .pillrow button{
-      padding:6px 8px;
+      padding:5px 8px;
       border-radius:10px;
       font-size:11px;
       min-width:30px;
     }
     .calendar-mini-weekdays{
       display:grid;
-      grid-template-columns:repeat(7, 1fr);
+      grid-template-columns:repeat(7,1fr);
       gap:6px;
       margin-bottom:6px;
       font-size:10px;
@@ -905,21 +945,21 @@
     }
     .calendar-mini-weekdays span{
       text-align:center;
-      opacity:.85;
+      opacity:.9;
     }
     .calendar-mini-month{
       border:1px solid var(--glass-border);
-      background: var(--glass);
+      background:var(--glass-soft);
       border-radius:14px;
       padding:10px;
       display:grid;
-      grid-template-columns:repeat(7, 1fr);
+      grid-template-columns:repeat(7,1fr);
       gap:6px;
       font-size:11px;
       color:var(--muted);
     }
     .calendar-mini-month .d{
-      height:24px;
+      height:25px;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -929,17 +969,17 @@
       transition: background .16s ease, border-color .16s ease, color .16s ease;
     }
     .calendar-mini-month .d:hover{
-      background: rgba(255,255,255,.08);
+      background:rgba(255,255,255,.09);
       color:var(--text);
     }
     .calendar-mini-month .d.in-week{
       border:1px solid rgba(251,191,36,.45);
       color:var(--text);
-      background: rgba(251,191,36,.12);
+      background:rgba(251,191,36,.12);
     }
     .calendar-mini-month .d.selected{
-      border-color: color-mix(in srgb, var(--accent) 68%, #ffffff 32%);
-      background: color-mix(in srgb, var(--accent) 26%, transparent);
+      border-color:color-mix(in srgb, var(--accent) 68%, #ffffff 32%);
+      background:color-mix(in srgb, var(--accent) 26%, transparent);
       color:var(--text);
     }
     .calendar-filter-list{
@@ -954,7 +994,7 @@
       justify-content:space-between;
       gap:10px;
       border:1px solid var(--glass-border);
-      background:var(--glass);
+      background:var(--glass-soft);
       border-radius:12px;
       padding:8px 10px;
       font-size:12px;
@@ -989,8 +1029,11 @@
     .calendar-quickstats{
       display:grid;
       grid-template-columns:1fr;
-      gap:10px;
+      gap:8px;
       margin-top:10px;
+    }
+    .calendar-quickstats .widget-item{
+      background:var(--glass-soft);
     }
     .calendar-quickstats .widget-item strong{
       display:block;
@@ -999,20 +1042,88 @@
       margin-bottom:2px;
       color:var(--text);
     }
-    .calendar-board{
-      margin-top:8px;
+    .calendar-shell-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
       border:1px solid var(--glass-border);
       border-radius:14px;
-      background: var(--glass);
+      background:var(--glass-soft);
+      padding:10px 12px;
+      flex-wrap:wrap;
+    }
+    .calendar-shell-head .title-wrap{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:220px;
+    }
+    .calendar-shell-head .title{
+      font-size:15px;
+      font-weight:600;
+      color:var(--text);
+    }
+    .calendar-view-switch{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid var(--glass-border);
+      border-radius:11px;
+      padding:4px;
+      background:var(--glass);
+    }
+    .calendar-view-switch button{
+      border:none;
+      background:transparent;
+      border-radius:8px;
+      font-size:11px;
+      color:var(--muted);
+      min-height:28px;
+      padding:0 12px;
+      transition:background .18s ease, color .18s ease, border-color .18s ease;
+    }
+    .calendar-view-switch button.active{
+      background:rgba(255,255,255,.12);
+      color:var(--text);
+      border:1px solid var(--glass-border);
+    }
+    .calendar-shell-head .actions{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+    .calendar-shell-bottom{
+      display:grid;
+      grid-template-columns:minmax(340px, 0.9fr) minmax(320px, 1.1fr);
+      gap:12px;
+      align-items:start;
+    }
+    .calendar-editor-card .row{
+      margin-bottom:8px;
+    }
+    .calendar-board-card{
+      border:1px solid var(--glass-border);
+      background:var(--glass);
+      border-radius:16px;
+      padding:10px;
+    }
+    .calendar-board{
+      margin-top:4px;
+      border:1px solid var(--glass-border);
+      border-radius:14px;
+      background:var(--glass-soft);
       display:grid;
       grid-template-columns:58px 1fr;
       overflow:hidden;
-      min-height:520px;
+      min-height:560px;
     }
     .calendar-time-col{
       border-right:1px solid var(--glass-border);
       font-size:11px;
       color:var(--muted);
+      background:rgba(255,255,255,.015);
     }
     .calendar-time-col .t{
       height:60px;
@@ -1024,17 +1135,27 @@
     }
     .calendar-week-grid{
       display:grid;
-      grid-template-columns:repeat(7, minmax(120px,1fr));
-      min-height:520px;
+      grid-template-columns:repeat(7, minmax(108px, 1fr));
+      min-height:560px;
     }
     .calendar-week-grid.single-day{
-      grid-template-columns:minmax(260px,1fr);
+      grid-template-columns:minmax(280px, 1fr);
+    }
+    .calendar-week-grid.month-view{
+      grid-template-columns:repeat(7, minmax(110px, 1fr));
+      min-height:760px;
     }
     .calendar-day-col{
       position:relative;
       border-right:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.01);
     }
-    .calendar-day-col:last-child{border-right:none}
+    .calendar-day-col:last-child{
+      border-right:none;
+    }
+    .calendar-day-col.out-month{
+      opacity:.58;
+    }
     .calendar-day-head{
       height:44px;
       border-bottom:1px solid var(--glass-border);
@@ -1045,12 +1166,29 @@
       font-size:11px;
       color:var(--muted);
       gap:2px;
+      background:rgba(255,255,255,.015);
     }
-    .calendar-day-head strong{font-size:18px;color:var(--text);line-height:1}
+    .calendar-day-head strong{
+      font-size:18px;
+      color:var(--text);
+      line-height:1;
+    }
+    .calendar-week-grid.month-view .calendar-day-head{
+      height:36px;
+      flex-direction:row;
+      justify-content:flex-start;
+      align-items:center;
+      gap:8px;
+      padding:0 8px;
+    }
+    .calendar-week-grid.month-view .calendar-day-head strong{
+      font-size:14px;
+      font-weight:600;
+    }
     .calendar-day-body{
       position:relative;
       height:calc(100% - 44px);
-      min-height:476px;
+      min-height:516px;
       background-image:repeating-linear-gradient(
         to bottom,
         transparent 0,
@@ -1058,6 +1196,15 @@
         rgba(255,255,255,.08) 59px,
         rgba(255,255,255,.08) 60px
       );
+    }
+    .calendar-week-grid.month-view .calendar-day-body{
+      min-height:120px;
+      height:auto;
+      background:none;
+      padding:6px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
     .cal-event{
       position:absolute;
@@ -1070,12 +1217,20 @@
       color:#f8fafc;
       overflow:hidden;
       cursor:pointer;
-      transition: transform .14s ease, filter .14s ease, box-shadow .14s ease;
+      transition:transform .14s ease, filter .14s ease, box-shadow .14s ease;
+    }
+    .calendar-week-grid.month-view .cal-event{
+      position:relative;
+      top:auto !important;
+      left:auto;
+      right:auto;
+      height:auto !important;
+      min-height:38px;
     }
     .cal-event:hover{
-      transform: translateY(-1px);
-      filter: brightness(1.03);
-      box-shadow: 0 8px 16px rgba(15,23,42,.24);
+      transform:translateY(-1px);
+      filter:brightness(1.03);
+      box-shadow:0 8px 16px rgba(15,23,42,.24);
     }
     .cal-event.status-done{
       opacity:.68;
@@ -1131,6 +1286,40 @@
       font-size:11px;
       padding:6px 9px;
       border-radius:10px;
+    }
+    @media (max-width: 1250px){
+      .calendar-rail{
+        grid-column:span 4;
+      }
+      .calendar-shell{
+        grid-column:span 8;
+      }
+      .calendar-shell-bottom{
+        grid-template-columns:1fr;
+      }
+    }
+    @media (max-width: 980px){
+      .calendar-rail,
+      .calendar-shell{
+        grid-column:span 12;
+        min-height:0;
+      }
+      .calendar-board{
+        min-height:440px;
+      }
+      .calendar-week-grid{
+        grid-template-columns:repeat(7,minmax(90px,1fr));
+      }
+      .calendar-week-grid.single-day{
+        grid-template-columns:1fr;
+      }
+      .calendar-shell-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .calendar-shell-head .actions{
+        width:100%;
+      }
     }
     @media (max-width: 980px){
       .app-shell{flex-direction:column;gap:16px}
@@ -1829,45 +2018,34 @@
       </div>
 
       <div class="page" id="page-calendar" data-page="calendar">
-        <div class="page-header">
-          <div>
-            <div class="title">Company Calendar</div>
-            <div class="subtitle" id="calendarRange">Calendar range</div>
-          </div>
-          <div class="pillrow">
-            <button onclick="changeCalendarWeek(-1)">Prev</button>
-            <button onclick="jumpCalendarToToday()">Today</button>
-            <button onclick="changeCalendarWeek(1)">Next</button>
-            <button class="primary" onclick="focusCalendarCreate()">Create Event</button>
-          </div>
-        </div>
-        <div class="widget-grid" id="widgets-calendar">
-          <div class="widget small">
-            <div class="calendar-mini-head">
-              <span class="month" id="calendarMonthLabel">Month</span>
-              <div class="pillrow">
-                <button onclick="changeCalendarMonth(-1)">&#8249;</button>
-                <button onclick="changeCalendarMonth(1)">&#8250;</button>
+        <div class="widget-grid calendar-layout" id="widgets-calendar">
+          <div class="widget calendar-rail" data-widget="calendar-rail">
+            <div class="calendar-card">
+              <div class="widget-row" style="justify-content:space-between">
+                <h3 style="margin:0">Planner</h3>
+                <button class="primary" onclick="focusCalendarCreate()">+ Event</button>
               </div>
+              <p class="mini" id="calendarRange">Calendar range</p>
+              <p class="mini" id="calendarSelectedHint" style="margin-top:4px">Selected date</p>
             </div>
-            <div class="calendar-mini-weekdays">
-              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-            </div>
-            <div id="calendarMiniMonth" class="calendar-mini-month"></div>
-            <div class="mini" id="calendarSelectedHint" style="margin-top:8px">Selected date</div>
-          </div>
-          <div class="widget small">
-            <h3>Filters & View</h3>
-            <div class="field"><label>Search</label><input id="calSearch" placeholder="Search title, notes, location"/></div>
-            <div class="row">
-              <div class="field">
-                <label>View</label>
-                <select id="calViewMode">
-                  <option value="week">Week</option>
-                  <option value="day">Day</option>
-                  <option value="agenda">Agenda</option>
-                </select>
+
+            <div class="calendar-card">
+              <div class="calendar-mini-head">
+                <span class="month" id="calendarMonthLabel">Month</span>
+                <div class="pillrow">
+                  <button onclick="changeCalendarMonth(-1)">&#8249;</button>
+                  <button onclick="changeCalendarMonth(1)">&#8250;</button>
+                </div>
               </div>
+              <div class="calendar-mini-weekdays">
+                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+              </div>
+              <div id="calendarMiniMonth" class="calendar-mini-month"></div>
+            </div>
+
+            <div class="calendar-card">
+              <h3>Filters</h3>
+              <div class="field"><label>Search</label><input id="calSearch" placeholder="Search title, notes, location"/></div>
               <div class="field">
                 <label>Status</label>
                 <select id="calFilterStatus">
@@ -1878,8 +2056,6 @@
                   <option value="canceled">Canceled</option>
                 </select>
               </div>
-            </div>
-            <div class="row">
               <div class="field">
                 <label>Assignee</label>
                 <select id="calFilterAssignee"></select>
@@ -1892,93 +2068,122 @@
                   <option value="priority">Highest priority</option>
                 </select>
               </div>
+              <div class="calendar-filter-list" id="calendarCategories"></div>
+              <div class="mini" id="calendarFilterSummary"></div>
             </div>
-            <div class="calendar-filter-list" id="calendarCategories"></div>
-            <div class="mini" id="calendarFilterSummary"></div>
-          </div>
-          <div class="widget small">
-            <h3>Calendar Stats</h3>
-            <div class="calendar-quickstats">
-              <div class="widget-item"><strong id="calStatTodayCount">0</strong><span>Events today</span></div>
-              <div class="widget-item"><strong id="calStatWeekHours">0h</strong><span>Scheduled this week</span></div>
-              <div class="widget-item"><strong id="calStatOpenCount">0</strong><span>Open events</span></div>
-            </div>
-          </div>
-          <div class="widget large">
-            <h3 id="calFormTitle">Create Event</h3>
-            <input id="calEditId" type="hidden"/>
-            <div class="field"><label>Title</label><input id="calTitle" placeholder="Estimate walkthrough"/></div>
-            <div class="row">
-              <div class="field"><label>Date</label><input id="calDate" type="date"/></div>
-              <div class="field"><label>Category</label>
-                <select id="calCategory">
-                  <option>Estimate</option>
-                  <option>Job</option>
-                  <option>Marketing</option>
-                  <option>Meeting</option>
-                </select>
+
+            <div class="calendar-card">
+              <h3>Stats</h3>
+              <div class="calendar-quickstats">
+                <div class="widget-item"><strong id="calStatTodayCount">0</strong><span>Events today</span></div>
+                <div class="widget-item"><strong id="calStatWeekHours">0h</strong><span>Scheduled this week</span></div>
+                <div class="widget-item"><strong id="calStatOpenCount">0</strong><span>Open events</span></div>
               </div>
-            </div>
-            <div class="row">
-              <div class="field"><label>Start</label><input id="calStart" type="time" value="09:00"/></div>
-              <div class="field"><label>End</label><input id="calEnd" type="time" value="10:00"/></div>
-            </div>
-            <div class="row">
-              <div class="field">
-                <label>Status</label>
-                <select id="calStatus">
-                  <option value="planned">Planned</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="done">Done</option>
-                  <option value="canceled">Canceled</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Priority</label>
-                <select id="calPriority">
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-              </div>
-            </div>
-            <div class="row">
-              <div class="field"><label>Assignee</label><input id="calAssignee" placeholder="Rosario"/></div>
-              <div class="field"><label>Location</label><input id="calLocation" placeholder="Client address / office"/></div>
-            </div>
-            <div class="row">
-              <div class="field">
-                <label>Repeat</label>
-                <select id="calRepeat">
-                  <option value="none">Does not repeat</option>
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>All Day</label>
-                <label class="toggle"><input id="calAllDay" type="checkbox"/> Use full day (9:00-17:00)</label>
-              </div>
-            </div>
-            <div class="field"><label>Notes</label><textarea id="calNotes" rows="3" placeholder="Scope, reminders, team notes"></textarea></div>
-            <div class="pillrow">
-              <button class="primary" id="calSaveBtn" onclick="addCalendarEvent()">Save Event</button>
-              <button id="calCancelBtn" onclick="cancelCalendarEdit()" style="display:none">Cancel</button>
-              <button id="calDuplicateBtn" onclick="duplicateEditingCalendarEvent()" style="display:none">Duplicate</button>
             </div>
           </div>
-          <div class="widget full" id="calendarBoardWidget">
-            <h3 id="calendarBoardTitle">Weekly Planner</h3>
-            <div class="calendar-board" id="calendarBoard">
-              <div class="calendar-time-col" id="calendarTimeCol"></div>
-              <div class="calendar-week-grid" id="calendarWeekGrid"></div>
+
+          <div class="widget calendar-shell" data-widget="calendar-shell">
+            <div class="calendar-shell-head">
+              <div class="title-wrap">
+                <div class="title" id="calendarBoardTitle">Weekly Planner</div>
+              </div>
+              <div class="calendar-view-switch">
+                <button type="button" data-calendar-view="month" onclick="setCalendarView('month')">Month</button>
+                <button type="button" data-calendar-view="week" onclick="setCalendarView('week')">Week</button>
+                <button type="button" data-calendar-view="day" onclick="setCalendarView('day')">Day</button>
+                <button type="button" data-calendar-view="agenda" onclick="setCalendarView('agenda')">Agenda</button>
+              </div>
+              <div class="actions">
+                <div class="pillrow">
+                  <button onclick="changeCalendarWeek(-1)">Prev</button>
+                  <button onclick="jumpCalendarToToday()">Today</button>
+                  <button onclick="changeCalendarWeek(1)">Next</button>
+                  <button class="primary" onclick="focusCalendarCreate()">Create</button>
+                </div>
+              </div>
             </div>
-            <div class="mini" id="calendarBoardHint" style="margin-top:8px"></div>
-          </div>
-          <div class="widget full">
-            <h3>Event Queue</h3>
-            <div class="widget-list" id="calendarEventList"></div>
+
+            <input id="calViewMode" type="hidden" value="week"/>
+
+            <div class="calendar-board-card" id="calendarBoardWidget">
+              <div class="calendar-board" id="calendarBoard">
+                <div class="calendar-time-col" id="calendarTimeCol"></div>
+                <div class="calendar-week-grid" id="calendarWeekGrid"></div>
+              </div>
+              <div class="mini" id="calendarBoardHint" style="margin-top:8px"></div>
+            </div>
+
+            <div class="calendar-shell-bottom">
+              <div class="calendar-card calendar-editor-card">
+                <h3 id="calFormTitle">Create Event</h3>
+                <input id="calEditId" type="hidden"/>
+                <div class="field"><label>Title</label><input id="calTitle" placeholder="Estimate walkthrough"/></div>
+                <div class="row">
+                  <div class="field"><label>Date</label><input id="calDate" type="date"/></div>
+                  <div class="field"><label>Category</label>
+                    <select id="calCategory">
+                      <option>Estimate</option>
+                      <option>Job</option>
+                      <option>Marketing</option>
+                      <option>Meeting</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="field"><label>Start</label><input id="calStart" type="time" value="09:00"/></div>
+                  <div class="field"><label>End</label><input id="calEnd" type="time" value="10:00"/></div>
+                </div>
+                <div class="row">
+                  <div class="field">
+                    <label>Status</label>
+                    <select id="calStatus">
+                      <option value="planned">Planned</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="done">Done</option>
+                      <option value="canceled">Canceled</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Priority</label>
+                    <select id="calPriority">
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="field"><label>Assignee</label><input id="calAssignee" placeholder="Rosario"/></div>
+                  <div class="field"><label>Location</label><input id="calLocation" placeholder="Client address / office"/></div>
+                </div>
+                <div class="row">
+                  <div class="field">
+                    <label>Repeat</label>
+                    <select id="calRepeat">
+                      <option value="none">Does not repeat</option>
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>All Day</label>
+                    <label class="toggle"><input id="calAllDay" type="checkbox"/> Use full day (9:00-17:00)</label>
+                  </div>
+                </div>
+                <div class="field"><label>Notes</label><textarea id="calNotes" rows="3" placeholder="Scope, reminders, team notes"></textarea></div>
+                <div class="pillrow">
+                  <button class="primary" id="calSaveBtn" onclick="addCalendarEvent()">Save Event</button>
+                  <button id="calCancelBtn" onclick="cancelCalendarEdit()" style="display:none">Cancel</button>
+                  <button id="calDuplicateBtn" onclick="duplicateEditingCalendarEvent()" style="display:none">Duplicate</button>
+                </div>
+              </div>
+
+              <div class="calendar-card">
+                <h3>Event Queue</h3>
+                <div class="widget-list" id="calendarEventList"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -4141,7 +4346,7 @@ Daily rule:
       ? raw.categories.filter(cat => !!CAL_CATEGORIES[cat])
       : [];
     return {
-      viewMode: ["week", "day", "agenda"].includes(raw.viewMode) ? raw.viewMode : CAL_DEFAULT_PREFS.viewMode,
+      viewMode: ["month", "week", "day", "agenda"].includes(raw.viewMode) ? raw.viewMode : CAL_DEFAULT_PREFS.viewMode,
       status: ["all", ...CAL_STATUSES].includes(raw.status) ? raw.status : CAL_DEFAULT_PREFS.status,
       assignee: typeof raw.assignee === "string" && raw.assignee ? raw.assignee : CAL_DEFAULT_PREFS.assignee,
       sort: ["soonest", "latest", "priority"].includes(raw.sort) ? raw.sort : CAL_DEFAULT_PREFS.sort,
@@ -4191,10 +4396,19 @@ Daily rule:
   }
 
   function changeCalendarWeek(delta){
-    const start = getCurrentWeekStart();
-    start.setDate(start.getDate() + delta * 7);
-    setCurrentWeekStart(start);
-    saveCalendarPrefs({ selectedDate: formatDateISO(start) });
+    const prefs = getCalendarPrefs();
+    const selected = parseDateISO(prefs.selectedDate) || new Date();
+    if(prefs.viewMode === "month"){
+      selected.setMonth(selected.getMonth() + delta);
+    }else if(prefs.viewMode === "day"){
+      selected.setDate(selected.getDate() + delta);
+    }else if(prefs.viewMode === "agenda"){
+      selected.setDate(selected.getDate() + (delta * 14));
+    }else{
+      selected.setDate(selected.getDate() + (delta * 7));
+    }
+    setCurrentWeekStart(toWeekStart(selected));
+    saveCalendarPrefs({ selectedDate: formatDateISO(selected) });
     renderCalendar();
   }
 
@@ -4213,6 +4427,13 @@ Daily rule:
     setCurrentWeekStart(toWeekStart(selected));
     saveCalendarPrefs({ selectedDate: nextDate });
     renderCalendar();
+  }
+
+  function setCalendarView(mode){
+    if(!["month", "week", "day", "agenda"].includes(mode)) return;
+    if($("calViewMode")) $("calViewMode").value = mode;
+    saveCalendarPrefs({ viewMode: mode });
+    renderCalendar(true);
   }
 
   function setCalendarSelectedDate(dateISO){
@@ -4507,8 +4728,7 @@ Daily rule:
       renderCalendar();
     });
     bind("calViewMode", "change", () => {
-      saveCalendarPrefs({ viewMode: $("calViewMode").value });
-      renderCalendar();
+      setCalendarView($("calViewMode").value);
     });
     bind("calFilterStatus", "change", () => {
       saveCalendarPrefs({ status: $("calFilterStatus").value });
@@ -4560,28 +4780,45 @@ Daily rule:
     setCurrentWeekStart(weekStart);
     const weekStartISO = formatDateISO(weekStart);
     const weekEndISO = addDays(weekStartISO, 6);
+    const monthStart = new Date(selected.getFullYear(), selected.getMonth(), 1);
+    const monthGridStart = toWeekStart(monthStart);
+    const monthGridStartISO = formatDateISO(monthGridStart);
+    const monthGridEndISO = addDays(monthGridStartISO, 41);
 
     let boardStartISO = weekStartISO;
     let boardEndISO = weekEndISO;
     let boardTitle = "Weekly Planner";
-    if(prefs.viewMode === "day"){
+    if(prefs.viewMode === "month"){
+      boardStartISO = monthGridStartISO;
+      boardEndISO = monthGridEndISO;
+      boardTitle = "Monthly Planner";
+    }else if(prefs.viewMode === "day"){
       boardStartISO = selectedDate;
       boardEndISO = selectedDate;
       boardTitle = "Daily Planner";
-    } else if(prefs.viewMode === "agenda"){
+    }else if(prefs.viewMode === "agenda"){
       boardStartISO = selectedDate;
       boardEndISO = addDays(selectedDate, 45);
       boardTitle = "Agenda";
     }
+
+    if($("calViewMode")) $("calViewMode").value = prefs.viewMode;
+    document.querySelectorAll("[data-calendar-view]").forEach(btn => {
+      const mode = btn.getAttribute("data-calendar-view");
+      btn.classList.toggle("active", mode === prefs.viewMode);
+    });
+
     const rangeEl = $("calendarRange");
     if(rangeEl){
-      if(prefs.viewMode === "day"){
+      if(prefs.viewMode === "month"){
+        rangeEl.textContent = selected.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+      }else if(prefs.viewMode === "day"){
         rangeEl.textContent = selected.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric", year: "numeric" });
-      } else if(prefs.viewMode === "week"){
+      }else if(prefs.viewMode === "week"){
         const weekStartDate = parseDateISO(weekStartISO) || selected;
         const weekEndDate = parseDateISO(weekEndISO) || selected;
         rangeEl.textContent = `${weekStartDate.toLocaleDateString(undefined, { month: "short", day: "numeric" })} - ${weekEndDate.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}`;
-      } else {
+      }else{
         const endView = parseDateISO(boardEndISO) || selected;
         rangeEl.textContent = `${selected.toLocaleDateString(undefined, { month: "short", day: "numeric" })} - ${endView.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}`;
       }
@@ -4596,19 +4833,27 @@ Daily rule:
     }
     const boardHint = $("calendarBoardHint");
     if(boardHint){
-      boardHint.textContent = prefs.viewMode === "agenda"
-        ? "Agenda mode hides the planner grid and focuses on the event queue below."
-        : "Click any event block to edit quickly.";
+      if(prefs.viewMode === "agenda"){
+        boardHint.textContent = "Agenda mode hides the time grid and focuses on upcoming events.";
+      }else if(prefs.viewMode === "month"){
+        boardHint.textContent = "Monthly mode shows a six-week planning board.";
+      }else{
+        boardHint.textContent = "Click any event block to edit quickly.";
+      }
     }
 
     const timeCol = $("calendarTimeCol");
     if(timeCol){
+      const hideTime = prefs.viewMode === "month" || prefs.viewMode === "agenda";
+      timeCol.style.display = hideTime ? "none" : "block";
       timeCol.innerHTML = "";
-      for(let h = 6; h <= 20; h++){
-        const div = document.createElement("div");
-        div.className = "t";
-        div.textContent = `${pad(h)}:00`;
-        timeCol.appendChild(div);
+      if(!hideTime){
+        for(let h = 6; h <= 20; h++){
+          const div = document.createElement("div");
+          div.className = "t";
+          div.textContent = `${pad(h)}:00`;
+          timeCol.appendChild(div);
+        }
       }
     }
 
@@ -4616,10 +4861,11 @@ Daily rule:
     const weekGrid = $("calendarWeekGrid");
     if(board && weekGrid){
       board.style.display = prefs.viewMode === "agenda" ? "none" : "grid";
-      if(prefs.viewMode === "day") weekGrid.classList.add("single-day");
-      else weekGrid.classList.remove("single-day");
+      board.style.gridTemplateColumns = prefs.viewMode === "month" ? "1fr" : "58px 1fr";
+      weekGrid.classList.toggle("single-day", prefs.viewMode === "day");
+      weekGrid.classList.toggle("month-view", prefs.viewMode === "month");
       weekGrid.innerHTML = "";
-      const dayCount = prefs.viewMode === "day" ? 1 : 7;
+      const dayCount = prefs.viewMode === "month" ? 42 : (prefs.viewMode === "day" ? 1 : 7);
       const occurrences = getCalendarOccurrences(boardStartISO, boardEndISO);
       for(let i = 0; i < dayCount; i++){
         const day = parseDateISO(boardStartISO) || new Date();
@@ -4627,6 +4873,9 @@ Daily rule:
         const iso = formatDateISO(day);
         const col = document.createElement("div");
         col.className = "calendar-day-col";
+        if(prefs.viewMode === "month" && day.getMonth() !== selected.getMonth()){
+          col.classList.add("out-month");
+        }
         col.innerHTML = `
           <div class="calendar-day-head">
             <span>${day.toLocaleDateString(undefined, { weekday: "short" })}</span>
@@ -4635,28 +4884,55 @@ Daily rule:
           <div class="calendar-day-body" data-day="${iso}"></div>
         `;
         const body = col.querySelector(".calendar-day-body");
-        occurrences.filter(e => e.date === iso).forEach(evt => {
-          const startM = Math.max(6 * 60, timeToMins(evt.start));
-          const endM = Math.min(21 * 60, timeToMins(evt.end));
-          const top = ((startM - (6 * 60)) / 60) * 60;
-          const height = Math.max(28, ((endM - startM) / 60) * 60);
-          const block = document.createElement("div");
-          const c = CAL_CATEGORIES[evt.category]?.color || "rgba(125,211,252,.7)";
-          block.className = "cal-event";
-          if(evt.status === "done") block.classList.add("status-done");
-          if(evt.status === "canceled") block.classList.add("status-canceled");
-          block.style.top = `${top + 4}px`;
-          block.style.height = `${height - 8}px`;
-          block.style.background = c;
-          block.title = evt.notes || evt.title;
-          block.innerHTML = `
-            <div class="title">${escapeHtml(evt.title)}</div>
-            <div class="time">${escapeHtml(evt.start)} - ${escapeHtml(evt.end)}</div>
-            <div class="meta">${escapeHtml(evt.assignee || evt.location || evt.category)}</div>
-          `;
-          block.addEventListener("click", () => editCalendarEvent(evt.sourceId || evt.id, evt.date));
-          body.appendChild(block);
-        });
+        const dayEvents = occurrences.filter(e => e.date === iso);
+        if(prefs.viewMode === "month"){
+          dayEvents.slice(0, 4).forEach(evt => {
+            const block = document.createElement("div");
+            const c = CAL_CATEGORIES[evt.category]?.color || "rgba(125,211,252,.7)";
+            block.className = "cal-event";
+            if(evt.status === "done") block.classList.add("status-done");
+            if(evt.status === "canceled") block.classList.add("status-canceled");
+            block.style.background = c;
+            block.title = evt.notes || evt.title;
+            block.innerHTML = `
+              <div class="title">${escapeHtml(evt.title)}</div>
+              <div class="time">${escapeHtml(evt.start)} - ${escapeHtml(evt.end)}</div>
+            `;
+            block.addEventListener("click", () => editCalendarEvent(evt.sourceId || evt.id, evt.date));
+            body.appendChild(block);
+          });
+          if(dayEvents.length > 4){
+            const more = document.createElement("div");
+            more.className = "widget-item";
+            more.style.padding = "6px 8px";
+            more.style.fontSize = "11px";
+            more.textContent = `+${dayEvents.length - 4} more`;
+            body.appendChild(more);
+          }
+        }else{
+          dayEvents.forEach(evt => {
+            const startM = Math.max(6 * 60, timeToMins(evt.start));
+            const endM = Math.min(21 * 60, timeToMins(evt.end));
+            const top = ((startM - (6 * 60)) / 60) * 60;
+            const height = Math.max(28, ((endM - startM) / 60) * 60);
+            const block = document.createElement("div");
+            const c = CAL_CATEGORIES[evt.category]?.color || "rgba(125,211,252,.7)";
+            block.className = "cal-event";
+            if(evt.status === "done") block.classList.add("status-done");
+            if(evt.status === "canceled") block.classList.add("status-canceled");
+            block.style.top = `${top + 4}px`;
+            block.style.height = `${height - 8}px`;
+            block.style.background = c;
+            block.title = evt.notes || evt.title;
+            block.innerHTML = `
+              <div class="title">${escapeHtml(evt.title)}</div>
+              <div class="time">${escapeHtml(evt.start)} - ${escapeHtml(evt.end)}</div>
+              <div class="meta">${escapeHtml(evt.assignee || evt.location || evt.category)}</div>
+            `;
+            block.addEventListener("click", () => editCalendarEvent(evt.sourceId || evt.id, evt.date));
+            body.appendChild(block);
+          });
+        }
         weekGrid.appendChild(col);
       }
     }
@@ -4725,7 +5001,9 @@ Daily rule:
         const cell = document.createElement("div");
         cell.className = "d";
         cell.textContent = String(d);
-        if(iso >= boardStartISO && iso <= boardEndISO){
+        if(prefs.viewMode === "month" && date.getMonth() === selected.getMonth()){
+          cell.classList.add("in-week");
+        }else if(prefs.viewMode !== "month" && iso >= boardStartISO && iso <= boardEndISO){
           cell.classList.add("in-week");
         }
         if(iso === selectedDate) cell.classList.add("selected");
