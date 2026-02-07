@@ -1181,6 +1181,130 @@
       }
       .sidebar .sb-actions{opacity:1;max-height:220px;pointer-events:auto}
     }
+    @media (max-width: 900px){
+      .wrap{padding:12px}
+      .app-shell{display:block;gap:0}
+      .sidebar{
+        position:fixed;
+        left:10px;
+        right:10px;
+        top:auto;
+        bottom:calc(10px + env(safe-area-inset-bottom));
+        width:auto !important;
+        min-width:0 !important;
+        max-width:none !important;
+        height:64px;
+        padding:8px 10px;
+        border-radius:18px;
+        z-index:60;
+      }
+      .sidebar:hover{
+        width:auto !important;
+        min-width:0 !important;
+        max-width:none !important;
+      }
+      .sidebar .sb-top{display:none}
+      .sidebar .nav{
+        flex-direction:row;
+        align-items:center;
+        gap:8px;
+        height:100%;
+        overflow-x:auto;
+        overflow-y:hidden;
+        scrollbar-width:none;
+        -webkit-overflow-scrolling:touch;
+      }
+      .sidebar .nav::-webkit-scrollbar{display:none}
+      .sidebar .nav-main,
+      .sidebar .nav-bottom,
+      .sidebar .sb-actions{
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        gap:8px;
+        margin:0;
+      }
+      .sidebar .subhead{display:none !important}
+      .sidebar .sb-actions{
+        opacity:1 !important;
+        max-height:none !important;
+        overflow:visible;
+        pointer-events:auto !important;
+      }
+      .sidebar .nav button,
+      .sidebar:hover .nav button,
+      .sidebar .sb-actions button,
+      .sidebar:hover .sb-actions button{
+        width:44px !important;
+        min-width:44px;
+        max-width:44px;
+        height:44px !important;
+        padding:0 !important;
+        justify-content:center !important;
+        align-self:auto !important;
+        gap:0 !important;
+        flex:0 0 auto;
+      }
+      .sidebar .nav .label,
+      .sidebar .sb-name,
+      .sidebar .sb-title,
+      .sidebar #sidebarUser{
+        display:none !important;
+      }
+      .main{
+        min-height:auto;
+        padding-bottom:calc(96px + env(safe-area-inset-bottom));
+      }
+      .page{
+        min-height:calc(100vh - 120px);
+        min-height:calc(100dvh - 120px);
+      }
+      .page-header{
+        flex-wrap:wrap;
+        gap:8px;
+        padding:12px 14px;
+      }
+      .widget-grid{
+        grid-template-columns:1fr !important;
+        gap:12px;
+        margin-top:12px;
+      }
+      .widget{
+        grid-column:1 / -1 !important;
+        padding:12px;
+        border-radius:16px;
+      }
+      .row, .row3, .split, .settings-grid-2{
+        grid-template-columns:1fr !important;
+      }
+      .kpi{
+        grid-template-columns:1fr !important;
+        gap:10px;
+      }
+      .modal .panel{
+        width:100vw;
+        max-width:100vw;
+        height:100dvh;
+        max-height:100dvh;
+        border-radius:0;
+      }
+      .settings-head{
+        padding:12px;
+        flex-wrap:wrap;
+        gap:10px;
+      }
+      .settings-tools{
+        width:100%;
+        justify-content:flex-start;
+      }
+      .settings-search{width:100%}
+      .settings-shell{
+        height:calc(100dvh - 64px);
+        padding:10px;
+        gap:10px;
+      }
+      .settings-nav{display:none}
+    }
   </style>
 </head>
 <body>
@@ -2974,6 +3098,10 @@
 
   function widgetKey(page){ return `widget_layout_${page}`; }
 
+  function canUseWidgetEditMode(){
+    return window.matchMedia("(hover: hover) and (pointer: fine)").matches && window.innerWidth > 900;
+  }
+
   function applyWidgetSize(el, c, r){
     el.style.gridColumn = `span ${c}`;
     el.style.gridRow = `span ${r}`;
@@ -3068,6 +3196,7 @@
     widgets.forEach(w=>{
       w.setAttribute("draggable", "false");
       w.addEventListener("pointerdown", (e)=>{
+        if(!canUseWidgetEditMode()) return;
         if(e.button !== 0) return;
         const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
         if(["input","textarea","select","button","label"].includes(tag)) return;
@@ -3170,6 +3299,7 @@
 
     root.querySelectorAll(".resize-handle").forEach(handle=>{
       handle.addEventListener("pointerdown", (e)=>{
+        if(!canUseWidgetEditMode()) return;
         e.preventDefault();
         e.stopPropagation();
         const w = handle.closest(".widget");
