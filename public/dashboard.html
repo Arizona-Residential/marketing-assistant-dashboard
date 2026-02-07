@@ -692,7 +692,7 @@
       backdrop-filter: blur(var(--blur));
       padding:10px;border-radius:14px;font-size:12px;color:var(--muted);
     }
-    .app-shell{display:flex;gap:104px;align-items:flex-start}
+    .app-shell{display:flex;gap:72px;align-items:flex-start}
     .sidebar{
       position:sticky;top:18px;align-self:flex-start;
       width:74px;min-width:74px;
@@ -703,15 +703,15 @@
       box-shadow: var(--shadow);
       display:flex;flex-direction:column;gap:14px;
       height:calc(100vh - 36px);
-      transition: background .18s ease;
+      transition: width .2s ease, background .18s ease;
       z-index:4;
       overflow:visible;
     }
     .sidebar:hover{
-      width:74px;min-width:74px;
+      width:220px;
     }
-    .sidebar .sb-profile{display:flex;align-items:center;gap:10px;padding-left:4px}
-    .sidebar .sb-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .sidebar .sb-profile{display:flex;align-items:center;gap:0;padding-left:0}
+    .sidebar .sb-top{display:flex;align-items:center;justify-content:center;gap:0}
     .sidebar .sb-avatar{
       width:44px;height:44px;border-radius:14px;
       border:1px solid var(--glass-border);
@@ -725,6 +725,10 @@
     .sidebar:hover .sb-profile{
       justify-content:flex-start;
       padding-left:4px;
+      gap:10px;
+    }
+    .sidebar:hover .sb-top{
+      justify-content:flex-start;
     }
     .sidebar .sb-avatar{
       width:40px;height:40px;
@@ -737,7 +741,7 @@
     .sidebar .nav-bottom{margin-top:auto;display:flex;flex-direction:column;gap:8px}
     .sidebar .nav button{
       width:42px;text-align:left;border-radius:14px;
-      padding:0;font-size:12px;display:flex;align-items:center;gap:10px;
+      padding:0;font-size:12px;display:flex;align-items:center;gap:0;
       position:relative;
       color: var(--muted);
       height:40px;
@@ -755,6 +759,7 @@
       align-self:flex-start;
       padding:8px 10px;
       height:38px;
+      gap:10px;
     }
     .sidebar .nav button.active{
       border-color: rgba(251,191,36,.55);
@@ -1129,6 +1134,8 @@
       .app-shell{flex-direction:column;gap:16px}
       .sidebar{width:100%;min-width:0;position:relative;padding:16px 12px}
       .sidebar:hover{width:100%;min-width:0}
+      .sidebar .sb-top{justify-content:flex-start}
+      .sidebar .sb-profile{justify-content:flex-start;gap:10px;padding-left:4px}
       .sidebar .nav-main{align-items:flex-start}
       .sidebar .nav button{
         width:100%;
@@ -1136,6 +1143,7 @@
         align-self:stretch;
         padding:8px 10px;
         height:38px;
+        gap:10px;
       }
       .sidebar .sb-actions{align-items:flex-start}
       .sidebar .sb-actions button{width:100%}
@@ -1150,6 +1158,8 @@
     }
     @media (hover: none){
       .sidebar{width:230px;min-width:230px;flex:0 0 230px;padding:16px 12px}
+      .sidebar .sb-top{justify-content:flex-start}
+      .sidebar .sb-profile{justify-content:flex-start;gap:10px;padding-left:4px}
       .sidebar .nav-main{align-items:flex-start}
       .sidebar .nav button{
         width:100%;
@@ -1157,6 +1167,7 @@
         align-self:stretch;
         padding:8px 10px;
         height:38px;
+        gap:10px;
       }
       .sidebar .sb-actions{align-items:flex-start}
       .sidebar .sb-actions button{width:100%}
