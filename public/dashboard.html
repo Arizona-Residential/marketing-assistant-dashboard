@@ -879,16 +879,34 @@
       <h1>Private AI Marketing Assistant</h1>
       <p>Local-only dashboard for tracking, monitoring, and generating TikTok/Instagram content ideas for your business.</p>
       <div class="notice">
-        This is a simple privacy gate for a static site. If you need true private login, we can upgrade it later.
+        Employee login is now account-based. Use your assigned username/password, or create an account if this is first setup.
       </div>
       <div class="hr"></div>
       <div class="field">
+        <label>Username</label>
+        <input id="loginUsername" type="text" placeholder="e.g. rosario"/>
+      </div>
+      <div class="field">
         <label>Enter password</label>
-        <input id="pw" type="password" placeholder="Click 'First time? Set password' on first run"/>
+        <input id="pw" type="password" placeholder="Your password"/>
       </div>
       <button class="primary" onclick="login()">Unlock</button>
-      <button onclick="firstTimeSet()">First time? Set password</button>
-      <p class="sub" style="margin-top:12px">Tip: Keep this link private. Use a strong password.</p>
+      <div class="hr"></div>
+      <h2 style="margin-bottom:6px">Create Employee Account</h2>
+      <div class="field">
+        <label>Display Name</label>
+        <input id="regDisplayName" type="text" placeholder="Rosario"/>
+      </div>
+      <div class="field">
+        <label>Username</label>
+        <input id="regUsername" type="text" placeholder="rosario"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="regPassword" type="password" placeholder="At least 8 characters"/>
+      </div>
+      <button onclick="registerUser()">Create Account</button>
+      <p class="sub" id="loginStatus" style="margin-top:12px">Use strong passwords and only share with approved employees.</p>
     </div>
   </div>
 
@@ -905,6 +923,7 @@
             <div>
               <div class="sb-name" id="sidebarTitle">AI Marketing Assistant</div>
               <div class="sb-title" id="sidebarTagline">Dashboard</div>
+              <div class="sb-title" id="sidebarUser"></div>
             </div>
           </div>
           </div>
@@ -1012,12 +1031,6 @@
             <span class="badge" id="todayLine">Today</span>
             <span class="badge tiktok-badge" id="tiktokBadge">TikTok: Not connected</span>
           </div>
-        </div>
-        <div class="pillrow">
-          <button onclick="toggleTheme()" id="themeToggleBtn">Light Mode</button>
-          <button class="primary" onclick="generateAll()">Generate Ideas</button>
-          <button onclick="build7DayPlan()">Build 7-Day Plan</button>
-          <button onclick="exportData()">Export</button>
         </div>
       </div>
 
@@ -1277,7 +1290,7 @@
       <div class="page" id="page-welcome" data-page="welcome">
         <div class="page-header">
           <div>
-            <div class="title">Welcome back</div>
+            <div class="title" id="welcomeTitle">Welcome back</div>
             <div class="subtitle">Here’s what to focus on today.</div>
           </div>
           <div class="pillrow">
@@ -1722,6 +1735,7 @@
   const now = new Date();
   const pad = (n)=> String(n).padStart(2,"0");
   const todayISO = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  let currentUser = null;
 
   function safeNum(v){ const n = Number(v); return Number.isFinite(n) ? n : 0; }
 
@@ -1744,61 +1758,108 @@
     if(line) line.textContent = `Today: ${pretty}`;
     const welcome = $("welcomeDate");
     if(welcome) welcome.textContent = `Today: ${pretty}`;
-    $("mDate").value = todayISO;
+    const mDate = $("mDate");
+    if(mDate) mDate.value = todayISO;
   }
 
   // ====== Login ======
-  function firstTimeSet(){
-    const existing = localStorage.getItem(KEY.pw);
-    if(existing){
-      alert("Password already set. If you forgot it, clear localStorage for this site in your browser settings.");
-      return;
-    }
-    const p1 = prompt("Set a password for this dashboard (store somewhere safe):");
-    if(!p1 || p1.length < 6){ alert("Password too short. Use 6+ characters."); return; }
-    localStorage.setItem(KEY.pw, hash(p1));
-    alert("Password set. Now log in.");
+  function setLoginStatus(msg){
+    const el = $("loginStatus");
+    if(el) el.textContent = msg;
   }
 
-  function login(){
-    const stored = localStorage.getItem(KEY.pw);
-    if(!stored){
-      alert("No password set yet. Click 'First time? Set password'.");
-      return;
+  function applyCurrentUser(user){
+    currentUser = user;
+    const sidebarUser = $("sidebarUser");
+    if(sidebarUser){
+      sidebarUser.textContent = user ? `${user.displayName} (${user.role})` : "";
     }
-    const entered = $("pw").value || "";
-    if(hash(entered) === stored){
+    const welcomeTitle = $("welcomeTitle");
+    if(welcomeTitle){
+      welcomeTitle.textContent = user ? `Welcome back, ${user.displayName}` : "Welcome back";
+    }
+  }
+
+  async function getCurrentSessionUser(){
+    const res = await fetch("/api/auth/me", { cache: "no-store" }).catch(()=>null);
+    if(!res || !res.ok) return null;
+    const data = await res.json().catch(()=>null);
+    return data?.user || null;
+  }
+
+  function showApp(){
+    if($("appView").classList.contains("hidden")){
       $("loginView").classList.add("hidden");
       $("appView").classList.remove("hidden");
-      localStorage.setItem(KEY.session, "1");
       setTodayLine();
       hydrate();
-    }else{
-      alert("Wrong password.");
     }
   }
 
-  function logout(){
+  async function login(){
+    const username = ($("loginUsername").value || "").trim();
+    const password = $("pw").value || "";
+    if(!username || !password){
+      setLoginStatus("Enter username and password.");
+      return;
+    }
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    }).catch(()=>null);
+    if(!res || !res.ok){
+      const err = await res?.json().catch(()=>null);
+      setLoginStatus(err?.message || "Login failed.");
+      return;
+    }
+    const data = await res.json();
+    applyCurrentUser(data.user);
+    setLoginStatus("Login successful.");
+    showApp();
+  }
+
+  async function registerUser(){
+    const displayName = ($("regDisplayName").value || "").trim();
+    const username = ($("regUsername").value || "").trim();
+    const password = $("regPassword").value || "";
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ displayName, username, password })
+    }).catch(()=>null);
+    if(!res || !res.ok){
+      const err = await res?.json().catch(()=>null);
+      setLoginStatus(err?.message || "Registration failed.");
+      return;
+    }
+    const data = await res.json();
+    applyCurrentUser(data.user);
+    setLoginStatus("Account created.");
+    showApp();
+  }
+
+  async function logout(){
+    await fetch("/api/auth/logout", { method: "POST" }).catch(()=>{});
     $("pw").value = "";
-    localStorage.removeItem(KEY.session);
     $("loginView").classList.remove("hidden");
     $("appView").classList.add("hidden");
+    applyCurrentUser(null);
   }
 
-  // Simple hash (privacy gate only — not secure auth)
-  function hash(str){
-    let h = 2166136261;
-    for(let i=0;i<str.length;i++){
-      h ^= str.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    return (h >>> 0).toString(16);
-  }
-
-  function setPassword(){
+  async function setPassword(){
     const np = $("newPw").value || "";
-    if(np.length < 6){ alert("Use at least 6 characters."); return; }
-    localStorage.setItem(KEY.pw, hash(np));
+    if(np.length < 8){ alert("Use at least 8 characters."); return; }
+    const res = await fetch("/api/auth/password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: np })
+    }).catch(()=>null);
+    if(!res || !res.ok){
+      const err = await res?.json().catch(()=>null);
+      alert(err?.message || "Failed to update password.");
+      return;
+    }
     $("newPw").value = "";
     alert("Password updated.");
   }
@@ -2199,10 +2260,16 @@
   function applyTheme(theme){
     if(theme === "light"){
       document.body.classList.add("light");
-      $("themeToggleBtn").textContent = "Dark Mode";
+      const t = $("themeToggleBtn");
+      if(t) t.textContent = "Dark Mode";
+      const ts = $("themeToggleBtnSettings");
+      if(ts) ts.textContent = "Dark Mode";
     }else{
       document.body.classList.remove("light");
-      $("themeToggleBtn").textContent = "Light Mode";
+      const t = $("themeToggleBtn");
+      if(t) t.textContent = "Light Mode";
+      const ts = $("themeToggleBtnSettings");
+      if(ts) ts.textContent = "Light Mode";
     }
     localStorage.setItem(KEY.theme, theme);
   }
@@ -3532,24 +3599,22 @@ Daily rule:
   }
 
   // Auto-set date on load
-  window.addEventListener("load", ()=>{
+  window.addEventListener("load", async ()=>{
     $("mDate").value = todayISO;
     document.body.classList.remove("layout-locked");
-    loadPublicSettings().finally(()=>{
-      const gap = localStorage.getItem("widget_gap_global") || "16";
-      document.documentElement.style.setProperty("--widget-gap", `${gap}px`);
-      renderLoginBrand();
-      applyTheme(localStorage.getItem(KEY.theme) || "dark");
-      applyMotion(localStorage.getItem(KEY.motion) || "full");
-      applyGlass(localStorage.getItem(KEY.glass) || (document.body.classList.contains("light") ? "0.22" : "0.022"));
-      applyBlur(localStorage.getItem(KEY.blur) || "18");
-      if(localStorage.getItem(KEY.session) === "1"){
-        $("loginView").classList.add("hidden");
-        $("appView").classList.remove("hidden");
-        setTodayLine();
-        hydrate();
-      }
-    });
+    await loadPublicSettings().catch(()=>{});
+    const gap = localStorage.getItem("widget_gap_global") || "16";
+    document.documentElement.style.setProperty("--widget-gap", `${gap}px`);
+    renderLoginBrand();
+    applyTheme(localStorage.getItem(KEY.theme) || "dark");
+    applyMotion(localStorage.getItem(KEY.motion) || "full");
+    applyGlass(localStorage.getItem(KEY.glass) || (document.body.classList.contains("light") ? "0.22" : "0.022"));
+    applyBlur(localStorage.getItem(KEY.blur) || "18");
+    const user = await getCurrentSessionUser();
+    if(user){
+      applyCurrentUser(user);
+      showApp();
+    }
   });
 </script>
 </body>

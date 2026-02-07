@@ -2,7 +2,8 @@ import { DatabaseSync } from "node:sqlite";
 import fs from "node:fs";
 import path from "node:path";
 
-const DB_PATH = path.join(process.cwd(), "data", "assistant.db");
+const DB_PATH =
+  process.env.DB_PATH ?? path.join(process.cwd(), "data", "assistant.db");
 
 let db: DatabaseSync | null = null;
 
@@ -12,6 +13,23 @@ export type TikTokTokenRow = {
   expires_at: number;
   scope: string | null;
   open_id: string | null;
+};
+
+export type AppUserRow = {
+  username: string;
+  display_name: string;
+  password_hash: string;
+  role: string;
+  created_at: number;
+  updated_at: number;
+};
+
+export type AppSessionRow = {
+  token: string;
+  username: string;
+  expires_at: number;
+  display_name: string;
+  role: string;
 };
 
 function getDb() {
@@ -51,6 +69,24 @@ function getDb() {
         open_id TEXT PRIMARY KEY,
         data TEXT NOT NULL,
         updated_at INTEGER NOT NULL
+      ) STRICT
+    `);
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS app_users (
+        username TEXT PRIMARY KEY,
+        display_name TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        role TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      ) STRICT
+    `);
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS app_sessions (
+        token TEXT PRIMARY KEY,
+        username TEXT NOT NULL,
+        expires_at INTEGER NOT NULL,
+        created_at INTEGER NOT NULL
       ) STRICT
     `);
   }
@@ -195,4 +231,81 @@ export function saveUserSettings(openId: string, data: string) {
   db.prepare(
     "INSERT INTO user_settings (open_id, data, updated_at) VALUES (?, ?, ?)"
   ).run(openId, data, now);
+}
+
+export function countAppUsers() {
+  const row = getDb()
+    .prepare("SELECT COUNT(*) AS count FROM app_users")
+    .get() as { count: number };
+  return row?.count ?? 0;
+}
+
+export function getAppUser(username: string) {
+  return getDb()
+    .prepare(
+      "SELECT username, display_name, password_hash, role, created_at, updated_at FROM app_users WHERE username = ?"
+    )
+    .get(username) as AppUserRow | undefined;
+}
+
+export function createAppUser(
+  username: string,
+  displayName: string,
+  passwordHash: string,
+  role: string
+) {
+  const now = Date.now();
+  getDb()
+    .prepare(
+      `
+      INSERT INTO app_users (username, display_name, password_hash, role, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?)
+      `
+    )
+    .run(username, displayName, passwordHash, role, now, now);
+}
+
+export function updateAppUserPassword(username: string, passwordHash: string) {
+  const now = Date.now();
+  getDb()
+    .prepare(
+      "UPDATE app_users SET password_hash = ?, updated_at = ? WHERE username = ?"
+    )
+    .run(passwordHash, now, username);
+}
+
+export function createAppSession(token: string, username: string, expiresAt: number) {
+  const now = Date.now();
+  getDb()
+    .prepare(
+      `
+      INSERT INTO app_sessions (token, username, expires_at, created_at)
+      VALUES (?, ?, ?, ?)
+      `
+    )
+    .run(token, username, expiresAt, now);
+}
+
+export function deleteAppSession(token: string) {
+  getDb().prepare("DELETE FROM app_sessions WHERE token = ?").run(token);
+}
+
+export function getAppSession(token: string) {
+  const now = Date.now();
+  const row = getDb()
+    .prepare(
+      `
+      SELECT s.token, s.username, s.expires_at, u.display_name, u.role
+      FROM app_sessions s
+      JOIN app_users u ON u.username = s.username
+      WHERE s.token = ?
+      `
+    )
+    .get(token) as AppSessionRow | undefined;
+  if (!row) return null;
+  if (row.expires_at < now) {
+    deleteAppSession(token);
+    return null;
+  }
+  return row;
 }
