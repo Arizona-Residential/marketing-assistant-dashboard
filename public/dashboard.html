@@ -692,7 +692,7 @@
       backdrop-filter: blur(var(--blur));
       padding:10px;border-radius:14px;font-size:12px;color:var(--muted);
     }
-    .app-shell{display:flex;gap:64px;align-items:flex-start}
+    .app-shell{display:flex;gap:104px;align-items:flex-start}
     .sidebar{
       position:sticky;top:18px;align-self:flex-start;
       width:74px;min-width:74px;
@@ -722,6 +722,10 @@
       justify-content:center;
       padding-left:0;
     }
+    .sidebar:hover .sb-profile{
+      justify-content:flex-start;
+      padding-left:4px;
+    }
     .sidebar .sb-avatar{
       width:40px;height:40px;
     }
@@ -746,7 +750,7 @@
       align-items:flex-start;
     }
     .sidebar:hover .nav button{
-      width:206px;
+      width:186px;
       justify-content:flex-start;
       align-self:flex-start;
       padding:8px 10px;
@@ -781,7 +785,7 @@
     .sidebar:hover .nav .label,
     .sidebar:hover .subhead{
       opacity:1;
-      max-width:180px;
+      max-width:150px;
       pointer-events:auto;
     }
     .sidebar .sb-actions{
@@ -804,7 +808,7 @@
     .sidebar .sb-actions{display:flex;flex-direction:column;gap:8px;align-items:center}
     .sidebar .sb-actions button{width:42px}
     .sidebar:hover .sb-actions{align-items:flex-start}
-    .sidebar:hover .sb-actions button{width:206px}
+    .sidebar:hover .sb-actions button{width:186px}
     .main{flex:1;min-width:0;min-height:calc(100vh - 36px)}
     .page{min-height:calc(100vh - 36px)}
     .page{display:none}
