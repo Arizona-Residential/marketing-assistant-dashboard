@@ -692,26 +692,26 @@
       backdrop-filter: blur(var(--blur));
       padding:10px;border-radius:14px;font-size:12px;color:var(--muted);
     }
-    .app-shell{display:flex;gap:72px;align-items:flex-start}
+    .app-shell{display:flex;gap:96px;align-items:flex-start}
     .sidebar{
       position:sticky;top:18px;align-self:flex-start;
-      width:74px;min-width:74px;
-      flex:0 0 74px;
+      width:78px;min-width:78px;max-width:78px;
+      flex:0 0 auto;
       padding:12px 8px;border-radius:22px;
       border:1px solid var(--glass-border);
       background:var(--glass-strong);
       box-shadow: var(--shadow);
       display:flex;flex-direction:column;gap:14px;
       height:calc(100vh - 36px);
-      transition: width .2s ease, background .18s ease;
+      transition: width .2s ease, min-width .2s ease, max-width .2s ease, background .18s ease;
       z-index:4;
       overflow:visible;
     }
     .sidebar:hover{
-      width:220px;
+      width:236px;min-width:236px;max-width:236px;
     }
     .sidebar .sb-profile{display:flex;align-items:center;gap:0;padding-left:0}
-    .sidebar .sb-top{display:flex;align-items:center;justify-content:center;gap:0}
+    .sidebar .sb-top{display:flex;align-items:center;justify-content:center;gap:0;width:100%}
     .sidebar .sb-avatar{
       width:44px;height:44px;border-radius:14px;
       border:1px solid var(--glass-border);
@@ -734,8 +734,10 @@
       width:40px;height:40px;
     }
     .sidebar .sb-avatar img{width:100%;height:100%;object-fit:cover}
-    .sidebar .sb-title{font-size:12px;color:var(--muted)}
-    .sidebar .sb-name{font-size:13px;font-weight:600}
+    .sidebar .sb-meta{display:flex;flex-direction:column;gap:2px;max-width:150px}
+    .sidebar .sb-title{font-size:11px;color:var(--muted);line-height:1.25}
+    .sidebar .sb-name{font-size:14px;font-weight:650;line-height:1.2;letter-spacing:.01em}
+    .sidebar #sidebarUser{font-size:11px;line-height:1.25;color:var(--muted);opacity:.9}
     .sidebar .nav{display:flex;flex-direction:column;gap:8px;height:100%}
     .sidebar .nav-main{display:flex;flex-direction:column;gap:8px;align-items:center}
     .sidebar .nav-bottom{margin-top:auto;display:flex;flex-direction:column;gap:8px}
@@ -751,12 +753,12 @@
       transition: background .15s ease, color .15s ease, border-color .15s ease, width .2s ease, padding .2s ease;
     }
     .sidebar:hover .nav-main{
-      align-items:flex-start;
+      align-items:stretch;
     }
     .sidebar:hover .nav button{
-      width:186px;
+      width:100%;
       justify-content:flex-start;
-      align-self:flex-start;
+      align-self:stretch;
       padding:8px 10px;
       height:38px;
       gap:10px;
@@ -812,8 +814,8 @@
     }
     .sidebar .sb-actions{display:flex;flex-direction:column;gap:8px;align-items:center}
     .sidebar .sb-actions button{width:42px}
-    .sidebar:hover .sb-actions{align-items:flex-start}
-    .sidebar:hover .sb-actions button{width:186px}
+    .sidebar:hover .sb-actions{align-items:stretch}
+    .sidebar:hover .sb-actions button{width:100%}
     .main{flex:1;min-width:0;min-height:calc(100vh - 36px)}
     .page{min-height:calc(100vh - 36px)}
     .page{display:none}
@@ -1132,8 +1134,8 @@
     }
     @media (max-width: 980px){
       .app-shell{flex-direction:column;gap:16px}
-      .sidebar{width:100%;min-width:0;position:relative;padding:16px 12px}
-      .sidebar:hover{width:100%;min-width:0}
+      .sidebar{width:100%;min-width:0;max-width:100%;position:relative;padding:16px 12px}
+      .sidebar:hover{width:100%;min-width:0;max-width:100%}
       .sidebar .sb-top{justify-content:flex-start}
       .sidebar .sb-profile{justify-content:flex-start;gap:10px;padding-left:4px}
       .sidebar .nav-main{align-items:flex-start}
@@ -1157,7 +1159,7 @@
       .sidebar:not(:hover) .nav button{justify-content:flex-start;padding:8px 10px}
     }
     @media (hover: none){
-      .sidebar{width:230px;min-width:230px;flex:0 0 230px;padding:16px 12px}
+      .sidebar{width:230px;min-width:230px;max-width:230px;flex:0 0 230px;padding:16px 12px}
       .sidebar .sb-top{justify-content:flex-start}
       .sidebar .sb-profile{justify-content:flex-start;gap:10px;padding-left:4px}
       .sidebar .nav-main{align-items:flex-start}
@@ -1232,7 +1234,7 @@
             <div class="sb-avatar" id="sidebarLogo">
               <img id="sidebarLogoImg" alt="Brand logo" class="hidden"/>
             </div>
-            <div>
+            <div class="sb-meta">
               <div class="sb-name" id="sidebarTitle">AI Marketing Assistant</div>
               <div class="sb-title" id="sidebarTagline">Dashboard</div>
               <div class="sb-title" id="sidebarUser"></div>
