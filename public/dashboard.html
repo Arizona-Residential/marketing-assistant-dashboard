@@ -1377,6 +1377,8 @@
         gap:0;
       }
       .sidebar{
+        --mobile-nav-item-h:56px;
+        --mobile-nav-gap:8px;
         position:fixed;
         left:12px;
         right:12px;
@@ -1385,7 +1387,9 @@
         width:auto !important;
         min-width:0 !important;
         max-width:none !important;
-        height:88px;
+        height:calc((var(--mobile-nav-item-h) * 2) + var(--mobile-nav-gap) + 20px + env(safe-area-inset-bottom));
+        max-width:560px;
+        margin:0 auto;
         padding:10px 10px calc(10px + env(safe-area-inset-bottom)) 10px;
         border-radius:22px;
         z-index:60;
@@ -1401,54 +1405,47 @@
       }
       .sidebar .sb-top{display:none}
       .sidebar .nav{
-        flex-direction:row;
-        align-items:flex-start;
-        gap:8px;
-        height:100%;
-        overflow-x:auto;
-        overflow-y:hidden;
-        scrollbar-width:none;
-        -webkit-overflow-scrolling:touch;
-        padding-bottom:2px;
+        display:grid;
+        grid-template-columns:repeat(5,minmax(0,1fr));
+        gap:var(--mobile-nav-gap);
+        grid-auto-rows:var(--mobile-nav-item-h);
+        align-items:stretch;
+        height:auto;
       }
-      .sidebar .nav::-webkit-scrollbar{display:none}
       .sidebar .nav-main,
       .sidebar .nav-bottom,
       .sidebar .sb-actions{
-        display:flex;
-        flex-direction:row;
-        align-items:flex-start;
-        gap:8px;
+        display:contents;
+      }
+      .sidebar .nav-bottom{
+        margin-top:0;
+      }
+      .sidebar .sb-actions{
+        display:none !important;
         margin:0;
       }
       .sidebar .subhead{display:none !important}
-      .sidebar .sb-actions{
-        opacity:1 !important;
-        max-height:none !important;
-        overflow:visible;
-        pointer-events:auto !important;
-      }
       .sidebar .nav button,
       .sidebar:hover .nav button,
       .sidebar .sb-actions button,
       .sidebar:hover .sb-actions button{
-        width:68px !important;
-        min-width:68px;
-        max-width:68px;
-        height:62px !important;
-        padding:7px 6px 6px 6px !important;
+        width:100% !important;
+        min-width:0;
+        max-width:none;
+        height:var(--mobile-nav-item-h) !important;
+        padding:8px 6px 7px 6px !important;
         justify-content:flex-start !important;
         align-items:center !important;
         flex-direction:column !important;
         align-self:auto !important;
-        gap:5px !important;
-        flex:0 0 auto;
+        gap:4px !important;
+        flex:none;
         border-radius:14px;
       }
       .sidebar .nav button .icon,
       .sidebar .sb-actions button .icon{
-        width:18px;
-        height:18px;
+        width:17px;
+        height:17px;
         margin:0;
       }
       .sidebar .nav .label{
@@ -1458,7 +1455,9 @@
         pointer-events:auto !important;
         transform:none !important;
         font-size:10px;
-        line-height:1;
+        line-height:1.1;
+        font-weight:560;
+        letter-spacing:.01em;
         color:var(--text);
         text-align:center;
         white-space:nowrap;
@@ -1471,7 +1470,7 @@
       }
       .main{
         min-height:auto;
-        padding-bottom:calc(122px + env(safe-area-inset-bottom));
+        padding-bottom:calc(168px + env(safe-area-inset-bottom));
       }
       .page{
         min-height:calc(100vh - 142px);
@@ -1590,6 +1589,18 @@
         gap:10px;
       }
       .settings-nav{display:none}
+    }
+    @media (max-width: 420px){
+      .sidebar{
+        --mobile-nav-item-h:52px;
+        --mobile-nav-gap:6px;
+      }
+      .sidebar .nav .label{
+        font-size:9px;
+      }
+      .main{
+        padding-bottom:calc(158px + env(safe-area-inset-bottom));
+      }
     }
   </style>
 </head>
@@ -2455,6 +2466,14 @@
                       <label>Current blur</label>
                       <input id="blurValue" type="text" readonly/>
                     </div>
+                    <div class="field">
+                      <label>UI scale (%)</label>
+                      <input id="uiScaleSlider" type="range" min="85" max="125" step="1"/>
+                    </div>
+                    <div class="field">
+                      <label>Current scale</label>
+                      <input id="uiScaleValue" type="text" readonly/>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -2582,6 +2601,7 @@
     motion: "arm_ai_motion",
     glass: "arm_ai_glass",
     blur: "arm_ai_blur",
+    uiScale: "arm_ai_ui_scale",
     session: "arm_ai_session"
   };
 
@@ -2976,6 +2996,7 @@
         motion: localStorage.getItem(KEY.motion) || "full",
         glass: localStorage.getItem(KEY.glass),
         blur: localStorage.getItem(KEY.blur),
+        uiScale: localStorage.getItem(KEY.uiScale) || "100",
         widgetGap: localStorage.getItem("widget_gap_global") || "16",
         calendarEvents: loadJSON(KEY.calendar, [])
       };
@@ -3106,6 +3127,9 @@
       if(data.data.blur){
         localStorage.setItem(KEY.blur, data.data.blur);
       }
+      if(data.data.uiScale){
+        localStorage.setItem(KEY.uiScale, String(data.data.uiScale));
+      }
       if(data.data.widgetGap){
         localStorage.setItem("widget_gap_global", String(data.data.widgetGap));
       }
@@ -3188,6 +3212,18 @@
     if(slider) slider.value = `${v}`;
   }
 
+  function applyUiScale(value){
+    const raw = Number(value);
+    const v = Number.isFinite(raw) ? Math.round(raw) : 100;
+    const clamped = Math.max(85, Math.min(125, v));
+    document.body.style.zoom = (clamped / 100).toFixed(2);
+    localStorage.setItem(KEY.uiScale, String(clamped));
+    const display = $("uiScaleValue");
+    const slider = $("uiScaleSlider");
+    if(display) display.value = `${clamped}%`;
+    if(slider) slider.value = String(clamped);
+  }
+
   async function loadSettingsFromServer(){
     if(!isTikTokConnected()) return;
     const res = await fetch("/api/settings", { cache: "no-store" }).catch(()=>null);
@@ -3215,6 +3251,9 @@
     }
     if(data.data.blur){
       applyBlur(data.data.blur);
+    }
+    if(data.data.uiScale){
+      applyUiScale(data.data.uiScale);
     }
     if(data.data.widgetGap){
       localStorage.setItem("widget_gap_global", String(data.data.widgetGap));
@@ -3704,6 +3743,15 @@
     if(!slider) return;
     slider.addEventListener("input", ()=>{
       applyBlur(slider.value);
+      scheduleSettingsSync();
+    });
+  }
+
+  function bindUiScale(){
+    const slider = $("uiScaleSlider");
+    if(!slider) return;
+    slider.addEventListener("input", ()=>{
+      applyUiScale(slider.value);
       scheduleSettingsSync();
     });
   }
@@ -5150,6 +5198,7 @@ Daily rule:
     bindMotionToggle();
     bindGlassSlider();
     bindBlurSlider();
+    bindUiScale();
     bindPageGap();
     initCalendar();
     renderMetrics();
@@ -5160,6 +5209,7 @@ Daily rule:
     applyMotion(localStorage.getItem(KEY.motion) || "full");
     applyGlass(localStorage.getItem(KEY.glass) || (document.body.classList.contains("light") ? "0.22" : "0.022"));
     applyBlur(localStorage.getItem(KEY.blur) || "18");
+    applyUiScale(localStorage.getItem(KEY.uiScale) || "100");
 
     const savedPlan = loadJSON(KEY.plan, "");
     if(savedPlan) $("planOut").textContent = savedPlan;
@@ -5198,6 +5248,7 @@ Daily rule:
     applyMotion(localStorage.getItem(KEY.motion) || "full");
     applyGlass(localStorage.getItem(KEY.glass) || (document.body.classList.contains("light") ? "0.22" : "0.022"));
     applyBlur(localStorage.getItem(KEY.blur) || "18");
+    applyUiScale(localStorage.getItem(KEY.uiScale) || "100");
     const user = await getCurrentSessionUser();
     if(user){
       applyCurrentUser(user);
