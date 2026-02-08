@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <title>Private AI Marketing Assistant — Rosario</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
@@ -2740,14 +2740,6 @@
                       <label>Current blur</label>
                       <input id="blurValue" type="text" readonly/>
                     </div>
-                    <div class="field">
-                      <label>UI scale (%)</label>
-                      <input id="uiScaleSlider" type="range" min="85" max="125" step="1"/>
-                    </div>
-                    <div class="field">
-                      <label>Current scale</label>
-                      <input id="uiScaleValue" type="text" readonly/>
-                    </div>
                   </div>
                 </div>
               </section>
@@ -3270,7 +3262,6 @@
         motion: localStorage.getItem(KEY.motion) || "full",
         glass: localStorage.getItem(KEY.glass),
         blur: localStorage.getItem(KEY.blur),
-        uiScale: localStorage.getItem(KEY.uiScale) || "100",
         widgetGap: localStorage.getItem("widget_gap_global") || "16",
         calendarEvents: loadJSON(KEY.calendar, [])
       };
@@ -3419,9 +3410,6 @@
       if(data.data.blur){
         localStorage.setItem(KEY.blur, data.data.blur);
       }
-      if(data.data.uiScale){
-        localStorage.setItem(KEY.uiScale, String(data.data.uiScale));
-      }
       if(data.data.widgetGap){
         localStorage.setItem("widget_gap_global", String(data.data.widgetGap));
       }
@@ -3505,15 +3493,12 @@
   }
 
   function applyUiScale(value){
-    const raw = Number(value);
-    const v = Number.isFinite(raw) ? Math.round(raw) : 100;
-    const clamped = Math.max(85, Math.min(125, v));
-    document.body.style.zoom = (clamped / 100).toFixed(2);
-    localStorage.setItem(KEY.uiScale, String(clamped));
+    document.body.style.zoom = "1";
+    localStorage.setItem(KEY.uiScale, "100");
     const display = $("uiScaleValue");
     const slider = $("uiScaleSlider");
-    if(display) display.value = `${clamped}%`;
-    if(slider) slider.value = String(clamped);
+    if(display) display.value = "100%";
+    if(slider) slider.value = "100";
   }
 
   async function loadSettingsFromServer(){
@@ -3544,9 +3529,7 @@
     if(data.data.blur){
       applyBlur(data.data.blur);
     }
-    if(data.data.uiScale){
-      applyUiScale(data.data.uiScale);
-    }
+    applyUiScale("100");
     if(data.data.widgetGap){
       localStorage.setItem("widget_gap_global", String(data.data.widgetGap));
       document.documentElement.style.setProperty("--widget-gap", `${data.data.widgetGap}px`);
