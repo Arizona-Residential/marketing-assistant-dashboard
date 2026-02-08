@@ -887,7 +887,7 @@
       display:flex;
       flex-direction:column;
       gap:12px;
-      min-height:780px;
+      min-height:680px;
     }
     .calendar-shell{
       grid-column:span 9;
@@ -902,6 +902,28 @@
       background:var(--glass);
       border-radius:16px;
       padding:12px;
+    }
+    .calendar-planner-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .calendar-create-btn{
+      min-height:30px;
+      padding:6px 10px;
+      border-radius:10px;
+      font-size:11px;
+      line-height:1;
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+    .calendar-agenda-list{
+      margin-top:10px;
+      max-height:300px;
+      overflow:auto;
+      padding-right:2px;
     }
     .calendar-card h3{
       margin:0 0 6px 0;
@@ -1097,7 +1119,7 @@
     }
     .calendar-shell-bottom{
       display:grid;
-      grid-template-columns:minmax(340px, 0.9fr) minmax(320px, 1.1fr);
+      grid-template-columns:1fr;
       gap:12px;
       align-items:start;
     }
@@ -1555,6 +1577,9 @@
       }
       .calendar-card{
         padding:10px;
+      }
+      .calendar-agenda-list{
+        max-height:240px;
       }
       .calendar-shell-head{
         align-items:flex-start;
@@ -2190,12 +2215,14 @@
         <div class="widget-grid calendar-layout" id="widgets-calendar">
           <div class="widget calendar-rail" data-widget="calendar-rail">
             <div class="calendar-card">
-              <div class="widget-row" style="justify-content:space-between">
-                <h3 style="margin:0">Planner</h3>
-                <button class="primary" onclick="focusCalendarCreate()">+ Event</button>
+              <div class="calendar-planner-head">
+                <h3 style="margin:0">Planner + Agenda</h3>
+                <button class="primary calendar-create-btn" onclick="focusCalendarCreate()">Create Event</button>
               </div>
               <p class="mini" id="calendarRange">Calendar range</p>
               <p class="mini" id="calendarSelectedHint" style="margin-top:4px">Selected date</p>
+              <div class="mini" style="margin-top:8px">Upcoming events</div>
+              <div class="widget-list calendar-agenda-list" id="calendarEventList"></div>
             </div>
 
             <div class="calendar-card">
@@ -2230,7 +2257,7 @@
                 <select id="calFilterAssignee"></select>
               </div>
               <div class="field">
-                <label>Sort Queue</label>
+                <label>Sort Agenda</label>
                 <select id="calSort">
                   <option value="soonest">Soonest first</option>
                   <option value="latest">Latest first</option>
@@ -2239,15 +2266,6 @@
               </div>
               <div class="calendar-filter-list" id="calendarCategories"></div>
               <div class="mini" id="calendarFilterSummary"></div>
-            </div>
-
-            <div class="calendar-card">
-              <h3>Stats</h3>
-              <div class="calendar-quickstats">
-                <div class="widget-item"><strong id="calStatTodayCount">0</strong><span>Events today</span></div>
-                <div class="widget-item"><strong id="calStatWeekHours">0h</strong><span>Scheduled this week</span></div>
-                <div class="widget-item"><strong id="calStatOpenCount">0</strong><span>Open events</span></div>
-              </div>
             </div>
           </div>
 
@@ -2267,7 +2285,6 @@
                   <button onclick="changeCalendarWeek(-1)">Prev</button>
                   <button onclick="jumpCalendarToToday()">Today</button>
                   <button onclick="changeCalendarWeek(1)">Next</button>
-                  <button class="primary" onclick="focusCalendarCreate()">Create</button>
                 </div>
               </div>
             </div>
@@ -2346,11 +2363,6 @@
                   <button id="calCancelBtn" onclick="cancelCalendarEdit()" style="display:none">Cancel</button>
                   <button id="calDuplicateBtn" onclick="duplicateEditingCalendarEvent()" style="display:none">Duplicate</button>
                 </div>
-              </div>
-
-              <div class="calendar-card">
-                <h3>Event Queue</h3>
-                <div class="widget-list" id="calendarEventList"></div>
               </div>
             </div>
           </div>
