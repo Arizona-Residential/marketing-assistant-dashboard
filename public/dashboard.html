@@ -81,6 +81,10 @@
       }
     }
     *{box-sizing:border-box}
+    html{
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+    }
     body{
       margin:0;
       font-family:var(--sans);
@@ -1065,6 +1069,132 @@
     #widgets-welcome .widget[data-widget="brief-toolbar"]{
       min-height:auto;
     }
+    #widgets-estimator .estimate-left{grid-column:span 4}
+    #widgets-estimator .estimate-main{grid-column:span 8}
+    #widgets-estimator .estimate-ai{grid-column:span 12}
+    .estimate-card{
+      border:1px solid var(--glass-border);
+      background:var(--glass);
+      border-radius:16px;
+      padding:12px;
+      margin-bottom:12px;
+    }
+    .estimate-card:last-child{margin-bottom:0}
+    .estimate-head-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+    .estimate-steps{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .estimate-steps span{
+      border:1px solid var(--glass-border);
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:11px;
+      color:var(--muted);
+      background:var(--glass);
+    }
+    .estimate-steps span.active{
+      color:var(--text);
+      border-color:rgba(251,191,36,.55);
+      background:rgba(251,191,36,.12);
+    }
+    .estimate-table-wrap{
+      overflow:auto;
+      border:1px solid var(--glass-border);
+      border-radius:14px;
+      background:var(--glass);
+    }
+    .estimate-table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:760px;
+      font-size:12px;
+    }
+    .estimate-table th,
+    .estimate-table td{
+      border-bottom:1px solid var(--glass-border);
+      padding:9px 10px;
+      text-align:left;
+      vertical-align:top;
+    }
+    .estimate-table th{
+      color:var(--muted);
+      font-weight:560;
+      background:rgba(255,255,255,.02);
+    }
+    .estimate-table td small{
+      display:block;
+      color:var(--muted);
+      margin-top:4px;
+    }
+    .estimate-table td.actions{
+      white-space:nowrap;
+    }
+    .estimate-table td.actions button{
+      min-height:28px;
+      padding:6px 8px;
+      font-size:11px;
+    }
+    .estimate-totals{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px 14px;
+    }
+    .estimate-totals > div{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid var(--glass-border);
+      border-radius:12px;
+      background:var(--glass);
+      padding:9px 10px;
+      font-size:12px;
+    }
+    .estimate-totals strong{
+      font-size:13px;
+    }
+    .estimate-totals .tax-edit{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .estimate-totals .tax-edit input,
+    #estDeposit{
+      width:90px;
+      padding:7px 8px;
+      min-height:0;
+    }
+    .est-activity-item{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .est-activity-item .meta{
+      color:var(--muted);
+      font-size:11px;
+      margin-top:3px;
+    }
+    .est-activity-item .event{
+      font-weight:560;
+      font-size:12px;
+    }
+    .estimator-item-panel{
+      max-width:640px;
+    }
+    .estimator-item-panel .panel{
+      max-width:640px;
+    }
     .calendar-layout{
       grid-template-columns:repeat(12,minmax(0,1fr));
       gap:16px;
@@ -2010,6 +2140,20 @@
         grid-template-columns:1fr !important;
         gap:10px;
       }
+      #widgets-estimator .estimate-left,
+      #widgets-estimator .estimate-main,
+      #widgets-estimator .estimate-ai{
+        grid-column:1 / -1 !important;
+      }
+      .estimate-card{
+        padding:11px;
+      }
+      .estimate-table{
+        min-width:640px;
+      }
+      .estimate-totals{
+        grid-template-columns:1fr;
+      }
       .calendar-simple-wrap{
         margin-top:12px;
       }
@@ -2139,6 +2283,9 @@
         gap:10px;
       }
       .settings-nav{display:none}
+      input, select, textarea{
+        font-size:16px !important;
+      }
     }
     @media (max-width: 420px){
       .sidebar{
@@ -2162,6 +2309,16 @@
       }
       .brief-stat .metric{
         font-size:22px;
+      }
+      .estimate-table{
+        min-width:560px;
+      }
+      .estimate-steps{
+        gap:6px;
+      }
+      .estimate-steps span{
+        font-size:10px;
+        padding:4px 8px;
       }
       .calendar-time-col .t{
         height:40px;
@@ -2892,35 +3049,192 @@
       <div class="page" id="page-estimator" data-page="estimator">
         <div class="page-header">
           <div>
-            <div class="title">Estimator Studio</div>
-            <div class="subtitle">Chat + structured estimate builder.</div>
+            <div class="title">Estimate Builder</div>
+            <div class="subtitle">Housecall-style estimate workflow with AI-assisted scope drafting.</div>
+          </div>
+          <div class="pillrow">
+            <button onclick="openEstimatorItemModal('service')" class="primary">Add Service</button>
+            <button onclick="openEstimatorItemModal('material')">Add Material</button>
+            <button onclick="saveEstimatorDraft()">Save Estimate</button>
           </div>
         </div>
         <div class="widget-grid" id="widgets-estimator">
-          <div class="widget large">
-            <h3>Estimator Chat</h3>
-            <div class="widget-list">
-              <div class="widget-item">AI: Upload photos and measurements to begin.</div>
-              <div class="widget-item">You: 2,400 sq ft exterior, 2 stories.</div>
+          <section class="widget estimate-left" data-widget="est-left">
+            <div class="estimate-card">
+              <h3>Customer</h3>
+              <div class="field">
+                <label>Name</label>
+                <input id="estCustomerName" placeholder="Julie Sommerfeld"/>
+              </div>
+              <div class="field">
+                <label>Email</label>
+                <input id="estCustomerEmail" placeholder="client@email.com"/>
+              </div>
+              <div class="field">
+                <label>Phone</label>
+                <input id="estCustomerPhone" placeholder="(480) 694-0228"/>
+              </div>
+              <div class="field">
+                <label>Address</label>
+                <textarea id="estCustomerAddress" rows="2" placeholder="Street, city, state"></textarea>
+              </div>
             </div>
-            <div class="field"><input placeholder="Ask the estimator..."/></div>
-            <div class="pillrow" style="margin-top:10px">
-              <button class="primary">Send</button>
-              <button>Attach Photos</button>
+
+            <div class="estimate-card">
+              <h3>Schedule</h3>
+              <div class="row">
+                <div class="field">
+                  <label>From</label>
+                  <input id="estFromDate" type="date"/>
+                </div>
+                <div class="field">
+                  <label>Time</label>
+                  <input id="estFromTime" type="time" value="09:00"/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="field">
+                  <label>To</label>
+                  <input id="estToDate" type="date"/>
+                </div>
+                <div class="field">
+                  <label>Time</label>
+                  <input id="estToTime" type="time" value="10:00"/>
+                </div>
+              </div>
+              <div class="field">
+                <label>Assigned Team</label>
+                <input id="estTeam" placeholder="Rosario + Crew A"/>
+              </div>
             </div>
-          </div>
-          <div class="widget large">
-            <h3>Estimate Summary</h3>
-            <div class="widget-list">
-              <div class="widget-item">Labor: $4,600</div>
-              <div class="widget-item">Materials: $1,900</div>
-              <div class="widget-item">Prep: $850</div>
+
+            <div class="estimate-card">
+              <h3>Project Metadata</h3>
+              <div class="widget-list">
+                <div class="widget-item">Attachments <button onclick="alert('Attachment upload coming next.')">+</button></div>
+                <div class="widget-item">Fields <button onclick="alert('Custom fields coming next.')">+</button></div>
+                <div class="widget-item">Tags <button onclick="alert('Tag management coming next.')">+</button></div>
+                <div class="widget-item">Lead source <button onclick="alert('Lead source mapping coming next.')">+</button></div>
+              </div>
             </div>
-            <div class="widget-row" style="margin-top:10px">
-              <span class="pill">Total: $7,350</span>
-              <span class="pill">Margin: 32%</span>
+          </section>
+
+          <section class="widget estimate-main" data-widget="est-main">
+            <div class="estimate-card">
+              <div class="estimate-head-row">
+                <h3>Private Notes</h3>
+                <div class="pillrow">
+                  <span class="badge">This estimate</span>
+                  <span class="badge">Customer</span>
+                </div>
+              </div>
+              <textarea id="estPrivateNotes" rows="2" placeholder="Add private notes here"></textarea>
             </div>
-          </div>
+
+            <div class="estimate-card">
+              <div class="estimate-head-row">
+                <h3>Workflow</h3>
+                <div class="estimate-steps">
+                  <span class="active">Schedule</span>
+                  <span>QMW</span>
+                  <span>Finish</span>
+                  <span>Send</span>
+                  <span>Approval</span>
+                  <span>Copy to Job</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="estimate-card">
+              <div class="estimate-head-row">
+                <h3>Line Items</h3>
+                <div class="pillrow">
+                  <button onclick="openEstimatorItemModal('service')" class="primary">Add Service</button>
+                  <button onclick="openEstimatorItemModal('material')">Add Material</button>
+                </div>
+              </div>
+              <div class="estimate-table-wrap">
+                <table class="estimate-table">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Description</th>
+                      <th>Qty</th>
+                      <th>Unit Price</th>
+                      <th>Total</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="estLineItemsBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="estimate-card">
+              <h3>Totals</h3>
+              <div class="estimate-totals">
+                <div><span>Subtotal</span><strong id="estSubtotal">$0.00</strong></div>
+                <div>
+                  <span>Tax rate</span>
+                  <div class="tax-edit">
+                    <input id="estTaxRate" type="number" min="0" step="0.1" value="8.6"/>
+                    <small>%</small>
+                  </div>
+                </div>
+                <div><span>Tax</span><strong id="estTaxAmount">$0.00</strong></div>
+                <div><span>Total</span><strong id="estTotal">$0.00</strong></div>
+                <div>
+                  <span>Deposit</span>
+                  <input id="estDeposit" type="number" min="0" step="0.01" value="0"/>
+                </div>
+                <div><span>Total Cost</span><strong id="estCostTotal">$0.00</strong></div>
+                <div><span>Profit/Loss</span><strong id="estProfitLoss">$0.00</strong></div>
+                <div><span>Margin</span><strong id="estMargin">0.0%</strong></div>
+              </div>
+            </div>
+
+            <div class="estimate-card">
+              <h3>Activity Feed</h3>
+              <div class="widget-list" id="estActivityFeed"></div>
+            </div>
+          </section>
+
+          <section class="widget estimate-ai" data-widget="est-ai">
+            <div class="estimate-card">
+              <div class="estimate-head-row">
+                <h3>AI Estimate Copilot</h3>
+                <div class="pillrow">
+                  <span class="badge" id="aiConnectStatus">AI: Disconnected</span>
+                  <button onclick="window.open('https://chatgpt.com','_blank')">Open ChatGPT</button>
+                </div>
+              </div>
+              <p class="mini">Use your OpenAI API key (from your account) to generate scope descriptions and estimate notes inside this builder.</p>
+              <div class="row">
+                <div class="field">
+                  <label>OpenAI API Key</label>
+                  <input id="aiApiKey" type="password" placeholder="sk-..." autocomplete="off"/>
+                </div>
+                <div class="field">
+                  <label>Actions</label>
+                  <div class="pillrow">
+                    <button class="primary" onclick="saveAiKey()">Connect</button>
+                    <button onclick="clearAiKey()">Clear</button>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label>Prompt</label>
+                <textarea id="estAiPrompt" rows="3" placeholder="Create a professional estimate scope for a 2-story exterior repaint, include prep/materials/cleanup and assumptions."></textarea>
+              </div>
+              <div class="pillrow">
+                <button class="primary" onclick="runEstimatorAI('scope')">Draft Scope</button>
+                <button onclick="runEstimatorAI('line-item')">Line Item Description</button>
+                <button onclick="runEstimatorAI('message')">Client Summary</button>
+                <button onclick="copyEstimatorAI()">Copy Output</button>
+              </div>
+              <div class="out mono" id="estAiOut">AI output will appear here.</div>
+            </div>
+          </section>
         </div>
       </div>
         </div>
@@ -3015,6 +3329,48 @@
             <button class="primary" id="calSaveBtn" onclick="addCalendarEvent()">Save Event</button>
             <button id="calCancelBtn" onclick="cancelCalendarEdit()" style="display:none">Cancel</button>
             <button id="calDuplicateBtn" onclick="duplicateEditingCalendarEvent()" style="display:none">Duplicate</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESTIMATOR ITEM MODAL -->
+      <div class="modal" id="estimatorItemModal">
+        <div class="panel estimator-item-panel">
+          <div class="estimate-head-row">
+            <h3 id="estItemModalTitle">New line item</h3>
+            <button onclick="closeEstimatorItemModal()">Close</button>
+          </div>
+          <input type="hidden" id="estItemId"/>
+          <input type="hidden" id="estItemType"/>
+          <div class="field">
+            <label>Name</label>
+            <input id="estItemName" placeholder="Service name"/>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label>Qty</label>
+              <input id="estItemQty" type="number" min="0.1" step="0.1" value="1"/>
+            </div>
+            <div class="field">
+              <label>Unit price</label>
+              <input id="estItemUnitPrice" type="number" min="0" step="0.01" value="0"/>
+            </div>
+            <div class="field">
+              <label>Unit cost</label>
+              <input id="estItemUnitCost" type="number" min="0" step="0.01" value="0"/>
+            </div>
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea id="estItemDescription" rows="3" placeholder="Scope, materials, assumptions, and exclusions"></textarea>
+          </div>
+          <div class="pillrow">
+            <label class="toggle"><input id="estItemTaxable" type="checkbox" checked/> Taxable</label>
+            <label class="toggle"><input id="estItemSavePricebook" type="checkbox"/> Save item to pricebook</label>
+          </div>
+          <div class="pillrow">
+            <button onclick="closeEstimatorItemModal()">Cancel</button>
+            <button class="primary" onclick="saveEstimatorItem()">Save item</button>
           </div>
         </div>
       </div>
@@ -3210,6 +3566,8 @@
     calendar: "arm_company_calendar_events",
     calendarWeek: "arm_company_calendar_week",
     calendarPrefs: "arm_company_calendar_prefs",
+    estimator: "arm_estimator_state",
+    aiKey: "arm_openai_api_key",
     layout: "arm_ai_layout",
     theme: "arm_ai_theme",
     motion: "arm_ai_motion",
@@ -5021,6 +5379,367 @@ Daily rule:
     a.download = "marketing-assistant-export.json";
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  // ====== Estimator builder ======
+  const EST_DEFAULT = {
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
+    customerAddress: "",
+    fromDate: todayISO,
+    fromTime: "09:00",
+    toDate: todayISO,
+    toTime: "10:00",
+    team: "",
+    privateNotes: "",
+    taxRate: 8.6,
+    deposit: 0,
+    services: [],
+    materials: [],
+    activities: []
+  };
+
+  function formatMoney(v){
+    const n = safeNum(v);
+    return `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  function getEstimatorState(){
+    const state = loadJSON(KEY.estimator, {});
+    return {
+      ...EST_DEFAULT,
+      ...state,
+      services: Array.isArray(state.services) ? state.services : [],
+      materials: Array.isArray(state.materials) ? state.materials : [],
+      activities: Array.isArray(state.activities) ? state.activities : []
+    };
+  }
+
+  function saveEstimatorState(next){
+    saveJSON(KEY.estimator, next);
+  }
+
+  function addEstimatorActivity(message){
+    const state = getEstimatorState();
+    state.activities.unshift({
+      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+      message: String(message || "Updated estimate"),
+      at: new Date().toISOString()
+    });
+    state.activities = state.activities.slice(0, 25);
+    saveEstimatorState(state);
+    renderEstimator();
+  }
+
+  function readEstimatorFromInputs(){
+    const state = getEstimatorState();
+    state.customerName = ($("estCustomerName")?.value || "").trim();
+    state.customerEmail = ($("estCustomerEmail")?.value || "").trim();
+    state.customerPhone = ($("estCustomerPhone")?.value || "").trim();
+    state.customerAddress = ($("estCustomerAddress")?.value || "").trim();
+    state.fromDate = $("estFromDate")?.value || todayISO;
+    state.fromTime = $("estFromTime")?.value || "09:00";
+    state.toDate = $("estToDate")?.value || state.fromDate;
+    state.toTime = $("estToTime")?.value || "10:00";
+    state.team = ($("estTeam")?.value || "").trim();
+    state.privateNotes = ($("estPrivateNotes")?.value || "").trim();
+    state.taxRate = safeNum($("estTaxRate")?.value || state.taxRate || 0);
+    state.deposit = safeNum($("estDeposit")?.value || state.deposit || 0);
+    saveEstimatorState(state);
+    renderEstimatorTotals();
+  }
+
+  function bindEstimatorInputs(){
+    [
+      "estCustomerName",
+      "estCustomerEmail",
+      "estCustomerPhone",
+      "estCustomerAddress",
+      "estFromDate",
+      "estFromTime",
+      "estToDate",
+      "estToTime",
+      "estTeam",
+      "estPrivateNotes",
+      "estTaxRate",
+      "estDeposit"
+    ].forEach(id=>{
+      const el = $(id);
+      if(!el || el.dataset.bound === "1") return;
+      el.addEventListener("input", readEstimatorFromInputs);
+      el.addEventListener("change", readEstimatorFromInputs);
+      el.dataset.bound = "1";
+    });
+  }
+
+  function renderEstimatorTotals(){
+    const state = getEstimatorState();
+    const allItems = [...state.services, ...state.materials];
+    const subtotal = allItems.reduce((sum, item)=> sum + (safeNum(item.qty) * safeNum(item.unitPrice)), 0);
+    const taxableBase = allItems
+      .filter(item => !!item.taxable)
+      .reduce((sum, item)=> sum + (safeNum(item.qty) * safeNum(item.unitPrice)), 0);
+    const tax = taxableBase * (safeNum(state.taxRate) / 100);
+    const total = subtotal + tax;
+    const cost = allItems.reduce((sum, item)=> sum + (safeNum(item.qty) * safeNum(item.unitCost)), 0);
+    const profit = total - cost;
+    const margin = total > 0 ? (profit / total) * 100 : 0;
+
+    if($("estSubtotal")) $("estSubtotal").textContent = formatMoney(subtotal);
+    if($("estTaxAmount")) $("estTaxAmount").textContent = formatMoney(tax);
+    if($("estTotal")) $("estTotal").textContent = formatMoney(total);
+    if($("estCostTotal")) $("estCostTotal").textContent = formatMoney(cost);
+    if($("estProfitLoss")) $("estProfitLoss").textContent = formatMoney(profit);
+    if($("estMargin")) $("estMargin").textContent = `${margin.toFixed(1)}%`;
+  }
+
+  function renderEstimatorItems(){
+    const state = getEstimatorState();
+    const body = $("estLineItemsBody");
+    if(!body) return;
+    const rows = [];
+
+    state.services.forEach(item=>{
+      const total = safeNum(item.qty) * safeNum(item.unitPrice);
+      rows.push(`
+        <tr>
+          <td><span class="tag2">Service</span></td>
+          <td>
+            <strong>${escapeHtml(item.name || "Untitled service")}</strong>
+            <small>${escapeHtml(item.description || "No description")}</small>
+          </td>
+          <td>${safeNum(item.qty)}</td>
+          <td>${formatMoney(item.unitPrice)}</td>
+          <td>${formatMoney(total)}</td>
+          <td class="actions">
+            <button onclick="openEstimatorItemModal('service','${item.id}')">Edit</button>
+            <button class="danger" onclick="deleteEstimatorItem('service','${item.id}')">Delete</button>
+          </td>
+        </tr>
+      `);
+    });
+
+    state.materials.forEach(item=>{
+      const total = safeNum(item.qty) * safeNum(item.unitPrice);
+      rows.push(`
+        <tr>
+          <td><span class="tag">Material</span></td>
+          <td>
+            <strong>${escapeHtml(item.name || "Untitled material")}</strong>
+            <small>${escapeHtml(item.description || "No description")}</small>
+          </td>
+          <td>${safeNum(item.qty)}</td>
+          <td>${formatMoney(item.unitPrice)}</td>
+          <td>${formatMoney(total)}</td>
+          <td class="actions">
+            <button onclick="openEstimatorItemModal('material','${item.id}')">Edit</button>
+            <button class="danger" onclick="deleteEstimatorItem('material','${item.id}')">Delete</button>
+          </td>
+        </tr>
+      `);
+    });
+
+    body.innerHTML = rows.length
+      ? rows.join("")
+      : `<tr><td colspan="6"><div class="mini">No line items yet. Use Add Service or Add Material.</div></td></tr>`;
+  }
+
+  function renderEstimatorActivity(){
+    const state = getEstimatorState();
+    const root = $("estActivityFeed");
+    if(!root) return;
+    if(!state.activities.length){
+      root.innerHTML = `<div class="widget-item">No activity yet. Saving changes and line items will appear here.</div>`;
+      return;
+    }
+    root.innerHTML = state.activities.slice(0, 10).map(a=>{
+      const when = new Date(a.at).toLocaleString();
+      return `
+        <div class="widget-item est-activity-item">
+          <div>
+            <div class="event">${escapeHtml(a.message || "Update")}</div>
+            <div class="meta">${escapeHtml(when)}</div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function renderEstimator(){
+    const state = getEstimatorState();
+    if($("estCustomerName")) $("estCustomerName").value = state.customerName || "";
+    if($("estCustomerEmail")) $("estCustomerEmail").value = state.customerEmail || "";
+    if($("estCustomerPhone")) $("estCustomerPhone").value = state.customerPhone || "";
+    if($("estCustomerAddress")) $("estCustomerAddress").value = state.customerAddress || "";
+    if($("estFromDate")) $("estFromDate").value = state.fromDate || todayISO;
+    if($("estFromTime")) $("estFromTime").value = state.fromTime || "09:00";
+    if($("estToDate")) $("estToDate").value = state.toDate || state.fromDate || todayISO;
+    if($("estToTime")) $("estToTime").value = state.toTime || "10:00";
+    if($("estTeam")) $("estTeam").value = state.team || "";
+    if($("estPrivateNotes")) $("estPrivateNotes").value = state.privateNotes || "";
+    if($("estTaxRate")) $("estTaxRate").value = String(safeNum(state.taxRate || 0));
+    if($("estDeposit")) $("estDeposit").value = String(safeNum(state.deposit || 0));
+    renderEstimatorItems();
+    renderEstimatorTotals();
+    renderEstimatorActivity();
+  }
+
+  function saveEstimatorDraft(){
+    readEstimatorFromInputs();
+    addEstimatorActivity("Estimate draft saved.");
+    alert("Estimate saved.");
+  }
+
+  function openEstimatorItemModal(type, editId = ""){
+    const safeType = type === "material" ? "material" : "service";
+    const state = getEstimatorState();
+    const list = safeType === "service" ? state.services : state.materials;
+    const found = list.find(item => item.id === editId) || null;
+
+    $("estItemModalTitle").textContent = found
+      ? `Edit ${safeType}`
+      : `New ${safeType}`;
+    $("estItemType").value = safeType;
+    $("estItemId").value = found?.id || "";
+    $("estItemName").value = found?.name || "";
+    $("estItemQty").value = String(found?.qty ?? 1);
+    $("estItemUnitPrice").value = String(found?.unitPrice ?? 0);
+    $("estItemUnitCost").value = String(found?.unitCost ?? 0);
+    $("estItemDescription").value = found?.description || "";
+    $("estItemTaxable").checked = found ? !!found.taxable : true;
+    $("estItemSavePricebook").checked = false;
+
+    $("estimatorItemModal").classList.add("open");
+    $("estItemName").focus();
+  }
+
+  function closeEstimatorItemModal(){
+    $("estimatorItemModal").classList.remove("open");
+  }
+
+  function saveEstimatorItem(){
+    const type = $("estItemType").value === "material" ? "material" : "service";
+    const id = $("estItemId").value || (crypto.randomUUID ? crypto.randomUUID() : `i_${Date.now()}`);
+    const name = ($("estItemName").value || "").trim();
+    if(!name){
+      alert("Enter item name.");
+      return;
+    }
+    const item = {
+      id,
+      name,
+      qty: Math.max(0.1, safeNum($("estItemQty").value || 1)),
+      unitPrice: Math.max(0, safeNum($("estItemUnitPrice").value || 0)),
+      unitCost: Math.max(0, safeNum($("estItemUnitCost").value || 0)),
+      description: ($("estItemDescription").value || "").trim(),
+      taxable: !!$("estItemTaxable").checked
+    };
+
+    const state = getEstimatorState();
+    const key = type === "service" ? "services" : "materials";
+    const list = state[key] || [];
+    const idx = list.findIndex(x => x.id === id);
+    if(idx >= 0) list[idx] = item;
+    else list.push(item);
+    state[key] = list;
+    saveEstimatorState(state);
+    closeEstimatorItemModal();
+    renderEstimator();
+    addEstimatorActivity(`${idx >= 0 ? "Updated" : "Added"} ${type}: ${item.name}`);
+  }
+
+  function deleteEstimatorItem(type, id){
+    const safeType = type === "material" ? "material" : "service";
+    if(!confirm(`Delete this ${safeType}?`)) return;
+    const state = getEstimatorState();
+    const key = safeType === "service" ? "services" : "materials";
+    state[key] = (state[key] || []).filter(item => item.id !== id);
+    saveEstimatorState(state);
+    renderEstimator();
+    addEstimatorActivity(`Deleted ${safeType} item.`);
+  }
+
+  function updateAiStatus(){
+    const hasKey = !!localStorage.getItem(KEY.aiKey);
+    const badge = $("aiConnectStatus");
+    if(!badge) return;
+    badge.textContent = hasKey ? "AI: Connected" : "AI: Disconnected";
+    badge.classList.toggle("connected", hasKey);
+  }
+
+  function saveAiKey(){
+    const val = ($("aiApiKey").value || "").trim();
+    if(!val){
+      alert("Enter your OpenAI API key.");
+      return;
+    }
+    localStorage.setItem(KEY.aiKey, val);
+    $("aiApiKey").value = "";
+    updateAiStatus();
+    addEstimatorActivity("Connected AI copilot.");
+  }
+
+  function clearAiKey(){
+    localStorage.removeItem(KEY.aiKey);
+    if($("aiApiKey")) $("aiApiKey").value = "";
+    updateAiStatus();
+    $("estAiOut").textContent = "AI output will appear here.";
+  }
+
+  async function runEstimatorAI(mode){
+    const out = $("estAiOut");
+    const prompt = ($("estAiPrompt").value || "").trim();
+    if(!prompt){
+      out.textContent = "Enter a prompt first.";
+      return;
+    }
+    const state = getEstimatorState();
+    const key = localStorage.getItem(KEY.aiKey) || "";
+    out.textContent = "Generating...";
+    try{
+      const res = await fetch("/api/ai/estimate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(key ? { "x-openai-key": key } : {})
+        },
+        body: JSON.stringify({
+          mode,
+          prompt,
+          estimate: {
+            customerName: state.customerName,
+            team: state.team,
+            privateNotes: state.privateNotes,
+            taxRate: state.taxRate,
+            services: state.services,
+            materials: state.materials
+          }
+        })
+      });
+      const data = await res.json().catch(()=>({}));
+      if(!res.ok || data.status !== "ok"){
+        throw new Error(data.message || "AI request failed.");
+      }
+      out.textContent = data.text || "No output returned.";
+      addEstimatorActivity(`Generated AI ${mode} draft.`);
+    }catch(err){
+      const message = err instanceof Error ? err.message : "AI generation failed.";
+      out.textContent = `AI error: ${message}`;
+    }
+  }
+
+  function copyEstimatorAI(){
+    const text = ($("estAiOut").textContent || "").trim();
+    if(!text || text === "AI output will appear here.") return;
+    navigator.clipboard.writeText(text);
+    alert("AI output copied.");
+  }
+
+  function initEstimator(){
+    bindEstimatorInputs();
+    renderEstimator();
+    updateAiStatus();
   }
 
   // ====== Company calendar ======
