@@ -1716,13 +1716,16 @@
       border:1px solid var(--glass-border);
       background:rgba(255,255,255,.02);
       border-radius:10px;
-      padding:8px;
+      padding:8px 34px 8px 8px;
       text-align:left;
       display:flex;
       flex-direction:column;
       gap:4px;
       min-height:44px;
       transition:border-color .16s ease, background .16s ease;
+      position:relative;
+      width:100%;
+      cursor:pointer;
     }
     .est-ai-convo:hover{
       border-color:rgba(125,211,252,.45);
@@ -1742,6 +1745,34 @@
     .est-ai-convo .meta{
       font-size:10px;
       color:var(--muted);
+    }
+    .est-ai-convo .delete{
+      position:absolute;
+      top:6px;
+      right:6px;
+      width:20px;
+      height:20px;
+      border-radius:7px;
+      border:1px solid var(--glass-border);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      font-size:12px;
+      line-height:1;
+      display:grid;
+      place-items:center;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .16s ease, color .16s ease, border-color .16s ease, background .16s ease;
+    }
+    .est-ai-convo:hover .delete,
+    .est-ai-convo.active .delete{
+      opacity:1;
+      pointer-events:auto;
+    }
+    .est-ai-convo .delete:hover{
+      color:#fff;
+      border-color:rgba(251,113,133,.55);
+      background:rgba(251,113,133,.18);
     }
     .est-ai-main{
       min-width:0;
@@ -1835,7 +1866,7 @@
       display:grid;
       grid-template-columns:1fr auto;
       gap:8px;
-      align-items:end;
+      align-items:stretch;
     }
     .est-ai-input-shell{
       border:1px solid var(--glass-border);
@@ -1844,8 +1875,9 @@
       display:grid;
       grid-template-columns:auto 1fr;
       gap:8px;
-      align-items:center;
+      align-items:flex-start;
       padding:8px 10px;
+      min-height:54px;
     }
     .est-ai-input-shell .plus{
       width:22px;
@@ -1864,18 +1896,28 @@
       resize:vertical;
       border:none;
       background:transparent;
-      padding:0;
+      padding:6px 0 4px;
       font-size:13px;
+      line-height:1.45;
+      overflow:auto;
     }
     .est-ai-input textarea:focus{
       box-shadow:none;
     }
     .est-ai-input .send{
-      min-height:40px;
+      min-height:54px;
       border-radius:12px;
-      min-width:72px;
+      min-width:54px;
       font-weight:640;
       align-self:stretch;
+      display:grid;
+      place-items:center;
+      padding:0;
+      height:100%;
+    }
+    .est-ai-input .send.icon{
+      font-size:20px;
+      line-height:1;
     }
 
     .calendar-layout{
@@ -3973,7 +4015,7 @@
                             <textarea id="estAiPrompt" rows="2" placeholder="Ask Estimator GPT anything..."></textarea>
                           </div>
                         </div>
-                        <button class="primary send" onclick="runEstimatorAI()">Send</button>
+                        <button class="primary send icon" onclick="runEstimatorAI()" aria-label="Send prompt" title="Send prompt">&uarr;</button>
                       </div>
                     </div>
                   </section>
@@ -6537,6 +6579,24 @@ Daily rule:
     setEstimatorAiState(conversations, id);
   }
 
+  function deleteEstimatorConversation(id){
+    const { conversations, activeId } = ensureEstimatorAiState();
+    if(!conversations.some((conv)=>conv.id === id)) return;
+
+    if(conversations.length === 1){
+      const only = conversations[0];
+      only.title = "New chat";
+      only.messages = [];
+      only.updatedAt = Date.now();
+      setEstimatorAiState([only], only.id);
+      return;
+    }
+
+    const nextConversations = conversations.filter((conv)=>conv.id !== id);
+    const nextActiveId = activeId === id ? nextConversations[0].id : activeId;
+    setEstimatorAiState(nextConversations, nextActiveId);
+  }
+
   function renderEstimatorAiConversationList(){
     const root = $("estAiConversations");
     if(!root) return;
@@ -6559,10 +6619,17 @@ Daily rule:
     }
 
     visible.forEach((conv)=>{
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = `est-ai-convo${conv.id === activeId ? " active" : ""}`;
-      btn.onclick = () => switchEstimatorConversation(conv.id);
+      const item = document.createElement("div");
+      item.className = `est-ai-convo${conv.id === activeId ? " active" : ""}`;
+      item.setAttribute("role", "button");
+      item.tabIndex = 0;
+      item.onclick = () => switchEstimatorConversation(conv.id);
+      item.addEventListener("keydown", (e)=>{
+        if(e.key === "Enter" || e.key === " "){
+          e.preventDefault();
+          switchEstimatorConversation(conv.id);
+        }
+      });
 
       const title = document.createElement("div");
       title.className = "title";
@@ -6577,9 +6644,22 @@ Daily rule:
         minute: "2-digit"
       });
 
-      btn.appendChild(title);
-      btn.appendChild(meta);
-      root.appendChild(btn);
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "delete";
+      del.textContent = "×";
+      del.title = "Delete chat";
+      del.setAttribute("aria-label", "Delete chat");
+      del.onclick = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        deleteEstimatorConversation(conv.id);
+      };
+
+      item.appendChild(title);
+      item.appendChild(meta);
+      item.appendChild(del);
+      root.appendChild(item);
     });
   }
 
