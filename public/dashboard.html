@@ -1751,24 +1751,33 @@
       top:50%;
       right:8px;
       transform:translateY(-50%);
-      width:20px;
-      height:20px;
+      width:22px;
+      height:22px;
       border-radius:7px;
       border:1px solid var(--glass-border);
       background:rgba(255,255,255,.04);
       color:var(--muted);
-      font-size:12px;
-      line-height:1;
-      display:grid;
-      place-items:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       opacity:0;
       pointer-events:none;
       transition:opacity .16s ease, color .16s ease, border-color .16s ease, background .16s ease;
+      z-index:2;
     }
     .est-ai-convo:hover .delete,
     .est-ai-convo.active .delete{
       opacity:1;
       pointer-events:auto;
+    }
+    .est-ai-convo .delete svg{
+      width:12px;
+      height:12px;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      fill:none;
+      display:block;
     }
     .est-ai-convo .delete:hover{
       color:#fff;
@@ -1851,17 +1860,6 @@
       flex-direction:column;
       gap:8px;
       background:rgba(255,255,255,.02);
-    }
-    .est-ai-presets{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:6px;
-    }
-    .est-ai-presets button{
-      min-height:30px;
-      font-size:11px;
-      padding:6px 8px;
-      border-radius:10px;
     }
     .est-ai-input{
       display:flex;
@@ -4002,13 +4000,6 @@
                     <div class="ai-thread est-ai-thread" id="estAiThread"></div>
 
                     <div class="estimate-ai-side">
-                      <div class="est-ai-presets">
-                        <button onclick="runEstimatorAI('scope')">Draft Scope</button>
-                        <button onclick="runEstimatorAI('line-item')">Line Item</button>
-                        <button onclick="runEstimatorAI('message')">Client Summary</button>
-                        <button onclick="runEstimatorAI('scope')">Rewrite Cleaner</button>
-                      </div>
-
                       <div class="est-ai-input">
                         <div>
                           <select id="estAiMode" class="est-ai-mode" style="margin-bottom:6px">
@@ -6653,7 +6644,7 @@ Daily rule:
       const del = document.createElement("button");
       del.type = "button";
       del.className = "delete";
-      del.textContent = "×";
+      del.innerHTML = "<svg viewBox='0 0 16 16' aria-hidden='true'><path d='M4 4l8 8M12 4L4 12'></path></svg>";
       del.title = "Delete chat";
       del.setAttribute("aria-label", "Delete chat");
       del.onclick = (e)=>{
