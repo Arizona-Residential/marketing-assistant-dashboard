@@ -876,6 +876,195 @@
     }
     .widget-row{display:flex;gap:10px;align-items:center}
     .widget-row .pill{padding:4px 8px;border-radius:999px;border:1px solid var(--glass-border);font-size:11px}
+    .brief-shell{
+      margin-top:16px;
+      border:1px solid var(--glass-border);
+      background:linear-gradient(145deg, color-mix(in srgb, var(--glass-strong) 74%, rgba(251,191,36,.12)), var(--glass));
+      backdrop-filter:blur(var(--blur));
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:12px;
+    }
+    .brief-toolbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid var(--glass-border);
+      background:var(--glass);
+      border-radius:16px;
+      padding:10px 12px;
+      margin-bottom:12px;
+    }
+    .brief-toolbar .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+      flex:1;
+    }
+    .brief-toolbar .chip{
+      width:30px;
+      height:30px;
+      border-radius:10px;
+      border:1px solid var(--glass-border);
+      background:var(--glass-strong);
+      display:grid;
+      place-items:center;
+      font-size:13px;
+      color:var(--muted);
+      flex:0 0 auto;
+    }
+    .brief-toolbar .search{
+      flex:1;
+      min-width:160px;
+      margin:0;
+    }
+    .brief-toolbar .right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex:0 0 auto;
+    }
+    .brief-toolbar .avatar{
+      width:30px;
+      height:30px;
+      border-radius:10px;
+      border:1px solid var(--glass-border);
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .brief-toolbar .avatar img{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+    }
+    .brief-stat{
+      min-height:120px;
+    }
+    .brief-stat .metric{
+      font-size:28px;
+      line-height:1.1;
+      font-weight:670;
+      margin-top:8px;
+    }
+    .brief-stat .mini{
+      margin-top:8px;
+    }
+    .brief-activity .activity-row{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+    .brief-activity .activity-row .widget-item{
+      min-height:78px;
+    }
+    .brief-activity .activity-row strong{
+      display:block;
+      font-size:20px;
+      margin-bottom:3px;
+    }
+    .brief-bars{
+      margin-top:12px;
+      height:132px;
+      border:1px solid var(--glass-border);
+      border-radius:14px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.01));
+      padding:10px 10px 8px;
+      display:flex;
+      align-items:flex-end;
+      gap:8px;
+    }
+    .brief-bar{
+      flex:1;
+      border-radius:10px 10px 8px 8px;
+      background:linear-gradient(180deg, rgba(251,191,36,.92), rgba(251,191,36,.35));
+      min-height:20%;
+      position:relative;
+    }
+    .brief-bar::after{
+      content:attr(data-day);
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:-18px;
+      font-size:10px;
+      color:var(--muted);
+      font-weight:560;
+    }
+    .brief-meetings .meeting-day{
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:6px;
+      margin-top:8px;
+    }
+    .brief-meetings .meeting-day button{
+      min-height:32px;
+      border-radius:10px;
+      padding:0;
+      font-size:11px;
+      border-color:var(--glass-border);
+      background:var(--glass);
+      color:var(--muted);
+    }
+    .brief-meetings .meeting-day button.active{
+      color:var(--text);
+      border-color:rgba(251,191,36,.55);
+      background:rgba(251,191,36,.14);
+    }
+    .brief-pie{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns:170px 1fr;
+      gap:12px;
+      align-items:center;
+    }
+    .brief-ring{
+      width:170px;
+      height:170px;
+      border-radius:999px;
+      background:
+        conic-gradient(rgba(125,211,252,.9) 0 32%, rgba(167,139,250,.88) 32% 61%, rgba(251,191,36,.88) 61% 100%);
+      padding:16px;
+      margin:0 auto;
+    }
+    .brief-ring::before{
+      content:"";
+      width:100%;
+      height:100%;
+      display:block;
+      border-radius:999px;
+      background:var(--bg2);
+      border:1px solid var(--glass-border);
+    }
+    .brief-sales-list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .brief-sales-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border:1px solid var(--glass-border);
+      background:var(--glass);
+      border-radius:12px;
+      padding:10px;
+      font-size:12px;
+    }
+    .brief-sales-row .amt{
+      font-weight:650;
+      color:var(--text);
+    }
+    #widgets-welcome .widget{
+      min-height:140px;
+    }
+    #widgets-welcome .widget[data-widget="brief-toolbar"]{
+      min-height:auto;
+    }
     .calendar-layout{
       grid-template-columns:repeat(12,minmax(0,1fr));
       gap:16px;
@@ -1782,6 +1971,41 @@
         grid-template-columns:1fr !important;
         gap:10px;
       }
+      .brief-toolbar{
+        flex-direction:column;
+        align-items:stretch;
+        padding:10px;
+      }
+      .brief-toolbar .left{
+        width:100%;
+      }
+      .brief-toolbar .right{
+        width:100%;
+        justify-content:flex-end;
+      }
+      .brief-toolbar .search{
+        min-width:0;
+      }
+      .brief-stat .metric{
+        font-size:24px;
+      }
+      .brief-activity .activity-row{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+      .brief-bars{
+        height:120px;
+      }
+      .brief-pie{
+        grid-template-columns:1fr;
+      }
+      .brief-ring{
+        width:140px;
+        height:140px;
+        padding:12px;
+      }
+      .brief-sales-row{
+        padding:9px;
+      }
       .calendar-layout{
         grid-template-columns:1fr !important;
         gap:10px;
@@ -1929,6 +2153,15 @@
       }
       .calendar-board{
         grid-template-columns:38px 1fr;
+      }
+      .brief-activity .activity-row{
+        grid-template-columns:1fr;
+      }
+      .brief-bars{
+        height:110px;
+      }
+      .brief-stat .metric{
+        font-size:22px;
       }
       .calendar-time-col .t{
         height:40px;
@@ -2374,29 +2607,144 @@
         <div class="page-header">
           <div>
             <div class="title" id="welcomeTitle">Welcome back</div>
-            <div class="subtitle">Key priorities and team schedule.</div>
+            <div class="subtitle">Performance snapshot, priorities, and team schedule.</div>
           </div>
           <div class="pillrow">
             <span class="badge" id="welcomeDate">Today</span>
           </div>
         </div>
         <div class="widget-grid" id="widgets-welcome">
-          <div class="widget full">
+          <section class="widget full" data-widget="brief-toolbar">
+            <div class="brief-toolbar">
+              <div class="left">
+                <span class="chip">D</span>
+                <input class="search" type="search" placeholder="Search tasks, clients, meetings..." />
+              </div>
+              <div class="right">
+                <span class="chip">KPIs</span>
+                <span class="chip">Today</span>
+                <div class="avatar"><img src="app-icon.png" alt="Profile avatar" /></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="widget small brief-stat" data-widget="brief-sales">
+            <h3>Total Sales Today</h3>
+            <div class="metric">$18,420</div>
+            <p class="mini">8 estimates sent • 3 accepted</p>
+          </section>
+
+          <section class="widget small brief-stat" data-widget="brief-progress">
+            <h3>Active Projects</h3>
+            <div class="metric">14</div>
+            <p class="mini">7 in progress • 2 final review</p>
+          </section>
+
+          <section class="widget small brief-stat" data-widget="brief-calls">
+            <h3>Lead Conversion</h3>
+            <div class="metric">42%</div>
+            <p class="mini">+6% vs last week</p>
+          </section>
+
+          <section class="widget large brief-activity" data-widget="brief-activity">
+            <h3>Performance Metrics</h3>
+            <div class="activity-row">
+              <div class="widget-item">
+                <strong>39</strong>
+                <p>Follow-ups due</p>
+              </div>
+              <div class="widget-item">
+                <strong>11</strong>
+                <p>Quotes awaiting signature</p>
+              </div>
+              <div class="widget-item">
+                <strong>57</strong>
+                <p>In-progress tasks</p>
+              </div>
+              <div class="widget-item">
+                <strong>68</strong>
+                <p>Completed this week</p>
+              </div>
+            </div>
+            <div class="brief-bars">
+              <div class="brief-bar" data-day="Mon" style="min-height:44%"></div>
+              <div class="brief-bar" data-day="Tue" style="min-height:71%"></div>
+              <div class="brief-bar" data-day="Wed" style="min-height:62%"></div>
+              <div class="brief-bar" data-day="Thu" style="min-height:84%"></div>
+              <div class="brief-bar" data-day="Fri" style="min-height:58%"></div>
+              <div class="brief-bar" data-day="Sat" style="min-height:76%"></div>
+              <div class="brief-bar" data-day="Sun" style="min-height:67%"></div>
+            </div>
+          </section>
+
+          <section class="widget small brief-meetings" data-widget="brief-meetings">
+            <h3>Upcoming Meetings</h3>
+            <p class="mini">This week</p>
+            <div class="meeting-day">
+              <button>Mon</button>
+              <button>Tue</button>
+              <button class="active">Wed</button>
+              <button>Thu</button>
+              <button>Fri</button>
+              <button>Sat</button>
+              <button>Sun</button>
+            </div>
+            <div class="widget-list">
+              <div class="widget-item">8:45 AM • Team sync • 20 min</div>
+              <div class="widget-item">10:30 AM • Client review • 30 min</div>
+              <div class="widget-item">2:00 PM • Walkthrough prep • 45 min</div>
+            </div>
+          </section>
+
+          <section class="widget large" data-widget="brief-trend">
+            <h3>Sales Overview</h3>
+            <p class="mini">$13,680.50 this month • 26% growth</p>
+            <div class="widget-item" style="padding:12px;margin-top:8px">
+              <svg viewBox="0 0 620 220" style="width:100%;height:auto">
+                <g stroke="rgba(255,255,255,.12)" stroke-width="1">
+                  <line x1="16" y1="200" x2="604" y2="200"/>
+                  <line x1="16" y1="160" x2="604" y2="160"/>
+                  <line x1="16" y1="120" x2="604" y2="120"/>
+                  <line x1="16" y1="80" x2="604" y2="80"/>
+                  <line x1="16" y1="40" x2="604" y2="40"/>
+                </g>
+                <path d="M16 178 L90 146 L164 152 L238 132 L312 98 L386 118 L460 86 L534 108 L604 72"
+                  fill="none" stroke="rgba(251,191,36,.95)" stroke-width="2.2" stroke-linecap="round" />
+                <path d="M16 178 L90 146 L164 152 L238 132 L312 98 L386 118 L460 86 L534 108 L604 72 L604 200 L16 200 Z"
+                  fill="rgba(251,191,36,.09)"/>
+              </svg>
+            </div>
+          </section>
+
+          <section class="widget small" data-widget="brief-overview">
+            <h3>Project Overview</h3>
+            <div class="brief-pie">
+              <div class="brief-ring"></div>
+              <div class="brief-sales-list">
+                <div class="brief-sales-row"><span>Paint</span><span class="amt">32%</span></div>
+                <div class="brief-sales-row"><span>Remodel</span><span class="amt">24%</span></div>
+                <div class="brief-sales-row"><span>Turnovers</span><span class="amt">16%</span></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="widget full" data-widget="brief-priorities">
             <h3>Today’s Priorities</h3>
             <div class="widget-list">
-              <div class="widget-item">Reply to 3 open estimates</div>
-              <div class="widget-item">Confirm tomorrow’s walkthroughs</div>
-              <div class="widget-item">Post 1 TikTok walkthrough clip</div>
+              <div class="widget-item">Reply to 3 open estimates before 11:00 AM</div>
+              <div class="widget-item">Confirm tomorrow’s walkthroughs and assign crews</div>
+              <div class="widget-item">Publish one TikTok walkthrough + one recap story post</div>
             </div>
-          </div>
-          <div class="widget full">
+          </section>
+
+          <section class="widget full" data-widget="brief-team">
             <h3>Team Schedule</h3>
             <div class="widget-list">
               <div class="widget-item">9:00 AM — Exterior estimate • Mesa</div>
               <div class="widget-item">1:30 PM — Remodel consult • Chandler</div>
-              <div class="widget-item">3:00 PM — Follow‑up calls</div>
+              <div class="widget-item">3:00 PM — Follow-up calls • Remote</div>
             </div>
-          </div>
+          </section>
         </div>
       </div>
 
