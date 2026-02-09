@@ -1069,17 +1069,16 @@
     #widgets-welcome .widget[data-widget="brief-toolbar"]{
       min-height:auto;
     }
-    #widgets-estimator .estimate-left{grid-column:span 4}
-    #widgets-estimator .estimate-main{grid-column:span 8}
+    #widgets-estimator .estimate-left{grid-column:span 3}
+    #widgets-estimator .estimate-main{grid-column:span 9}
     #widgets-estimator .estimate-ai{grid-column:span 12}
-    .estimate-card{
+    .estimate-shell{
       border:1px solid var(--glass-border);
-      background:var(--glass);
-      border-radius:16px;
+      background:var(--glass-strong);
+      border-radius:18px;
       padding:12px;
-      margin-bottom:12px;
+      box-shadow:var(--glow);
     }
-    .estimate-card:last-child{margin-bottom:0}
     .estimate-head-row{
       display:flex;
       align-items:center;
@@ -1088,29 +1087,58 @@
       flex-wrap:wrap;
       margin-bottom:8px;
     }
-    .estimate-steps{
+    .estimate-shell .row{
+      gap:10px;
+    }
+    .estimate-shell + .estimate-shell{margin-top:12px}
+    .estimate-shell h3{
+      margin:0 0 10px 0;
+      font-size:13px;
+      letter-spacing:.12px;
+    }
+    .estimate-muted{
+      font-size:11px;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+    .estimate-divider{
+      height:1px;
+      background:var(--glass-border);
+      margin:10px 0;
+    }
+    .estimate-meta-buttons{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+    }
+    .estimate-meta-buttons button{
+      justify-content:space-between;
       display:flex;
       align-items:center;
-      gap:8px;
+      min-height:34px;
+    }
+    .estimate-workflow{
+      display:flex;
+      gap:6px;
       flex-wrap:wrap;
     }
-    .estimate-steps span{
+    .estimate-workflow span{
       border:1px solid var(--glass-border);
       border-radius:999px;
-      padding:5px 9px;
+      padding:6px 10px;
       font-size:11px;
       color:var(--muted);
       background:var(--glass);
     }
-    .estimate-steps span.active{
+    .estimate-workflow span.active{
       color:var(--text);
-      border-color:rgba(251,191,36,.55);
-      background:rgba(251,191,36,.12);
+      border-color:rgba(125,211,252,.5);
+      background:rgba(125,211,252,.12);
     }
     .estimate-table-wrap{
       overflow:auto;
       border:1px solid var(--glass-border);
-      border-radius:14px;
+      border-radius:12px;
       background:var(--glass);
     }
     .estimate-table{
@@ -1122,32 +1150,37 @@
     .estimate-table th,
     .estimate-table td{
       border-bottom:1px solid var(--glass-border);
-      padding:9px 10px;
+      padding:10px 10px;
       text-align:left;
       vertical-align:top;
     }
     .estimate-table th{
       color:var(--muted);
       font-weight:560;
-      background:rgba(255,255,255,.02);
+      background:rgba(255,255,255,.025);
+      position:sticky;
+      top:0;
+      z-index:1;
     }
     .estimate-table td small{
       display:block;
       color:var(--muted);
       margin-top:4px;
+      line-height:1.4;
     }
     .estimate-table td.actions{
       white-space:nowrap;
     }
     .estimate-table td.actions button{
-      min-height:28px;
+      min-height:29px;
       padding:6px 8px;
       font-size:11px;
     }
     .estimate-totals{
       display:grid;
       grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:8px 14px;
+      gap:8px 12px;
+      margin-top:10px;
     }
     .estimate-totals > div{
       display:flex;
@@ -1155,13 +1188,18 @@
       justify-content:space-between;
       gap:10px;
       border:1px solid var(--glass-border);
-      border-radius:12px;
+      border-radius:11px;
       background:var(--glass);
       padding:9px 10px;
       font-size:12px;
     }
+    .estimate-totals > div.total-row{
+      grid-column:1 / -1;
+      border-color:rgba(125,211,252,.45);
+    }
     .estimate-totals strong{
       font-size:13px;
+      font-weight:650;
     }
     .estimate-totals .tax-edit{
       display:flex;
@@ -1170,9 +1208,9 @@
     }
     .estimate-totals .tax-edit input,
     #estDeposit{
-      width:90px;
-      padding:7px 8px;
+      width:92px;
       min-height:0;
+      padding:7px 8px;
     }
     .est-activity-item{
       display:flex;
@@ -1194,6 +1232,107 @@
     }
     .estimator-item-panel .panel{
       max-width:640px;
+    }
+    .ai-chat-shell{
+      border:1px solid var(--glass-border);
+      border-radius:16px;
+      background:var(--glass);
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      min-height:540px;
+      max-height:68vh;
+      overflow:hidden;
+    }
+    .ai-chat-head{
+      padding:10px 12px;
+      border-bottom:1px solid var(--glass-border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:rgba(255,255,255,.02);
+    }
+    .ai-chat-title{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .ai-chat-title strong{
+      font-size:13px;
+      font-weight:640;
+    }
+    .ai-chat-title span{
+      font-size:11px;
+      color:var(--muted);
+    }
+    .ai-thread{
+      overflow:auto;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .ai-msg{
+      max-width:min(86%, 760px);
+      border:1px solid var(--glass-border);
+      border-radius:14px;
+      background:rgba(255,255,255,.03);
+      padding:10px 12px;
+      font-size:12px;
+      line-height:1.52;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+    .ai-msg.user{
+      margin-left:auto;
+      border-color:rgba(125,211,252,.45);
+      background:rgba(125,211,252,.12);
+    }
+    .ai-msg.assistant{
+      border-color:rgba(251,191,36,.3);
+      background:rgba(251,191,36,.08);
+    }
+    .ai-msg.system{
+      border-style:dashed;
+      color:var(--muted);
+    }
+    .est-ai-key-row{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+      align-items:end;
+    }
+    .est-ai-mode{
+      min-width:180px;
+    }
+    .ai-composer{
+      border-top:1px solid var(--glass-border);
+      padding:10px;
+      background:rgba(255,255,255,.02);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .ai-composer textarea{
+      min-height:74px;
+      max-height:180px;
+      resize:vertical;
+      font-family:var(--sans);
+      font-size:13px;
+      line-height:1.45;
+    }
+    .ai-composer-tools{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .ai-composer-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
     }
     .calendar-layout{
       grid-template-columns:repeat(12,minmax(0,1fr));
@@ -2145,7 +2284,7 @@
       #widgets-estimator .estimate-ai{
         grid-column:1 / -1 !important;
       }
-      .estimate-card{
+      .estimate-shell{
         padding:11px;
       }
       .estimate-table{
@@ -2313,10 +2452,10 @@
       .estimate-table{
         min-width:560px;
       }
-      .estimate-steps{
+      .estimate-workflow{
         gap:6px;
       }
-      .estimate-steps span{
+      .estimate-workflow span{
         font-size:10px;
         padding:4px 8px;
       }
@@ -2764,7 +2903,7 @@
         <div class="page-header">
           <div>
             <div class="title" id="welcomeTitle">Welcome back</div>
-            <div class="subtitle">Performance snapshot, priorities, and team schedule.</div>
+            <div class="subtitle">Performance dashboard with sales, workload, and schedule at a glance.</div>
           </div>
           <div class="pillrow">
             <span class="badge" id="welcomeDate">Today</span>
@@ -2775,44 +2914,50 @@
             <div class="brief-toolbar">
               <div class="left">
                 <span class="chip">D</span>
-                <input class="search" type="search" placeholder="Search tasks, clients, meetings..." />
+                <input class="search" type="search" placeholder="Search clients, tasks, meetings, jobs..." />
               </div>
               <div class="right">
-                <span class="chip">KPIs</span>
-                <span class="chip">Today</span>
+                <span class="chip">Team</span>
+                <span class="chip">Alerts</span>
                 <div class="avatar"><img src="app-icon.png" alt="Profile avatar" /></div>
               </div>
             </div>
           </section>
 
           <section class="widget small brief-stat" data-widget="brief-sales">
-            <h3>Total Sales Today</h3>
-            <div class="metric">$18,420</div>
-            <p class="mini">8 estimates sent • 3 accepted</p>
+            <h3>Revenue Today</h3>
+            <div class="metric">$24,575</div>
+            <p class="mini">Accepted: 6 • Pending: 9</p>
           </section>
 
           <section class="widget small brief-stat" data-widget="brief-progress">
-            <h3>Active Projects</h3>
-            <div class="metric">14</div>
-            <p class="mini">7 in progress • 2 final review</p>
+            <h3>In Progress</h3>
+            <div class="metric">57</div>
+            <p class="mini">Jobs and work orders</p>
           </section>
 
           <section class="widget small brief-stat" data-widget="brief-calls">
-            <h3>Lead Conversion</h3>
-            <div class="metric">42%</div>
-            <p class="mini">+6% vs last week</p>
+            <h3>Output Tasks</h3>
+            <div class="metric">11</div>
+            <p class="mini">+2 today</p>
+          </section>
+
+          <section class="widget small brief-stat" data-widget="brief-quality">
+            <h3>Success Rate</h3>
+            <div class="metric">85%</div>
+            <p class="mini">Stable this week</p>
           </section>
 
           <section class="widget large brief-activity" data-widget="brief-activity">
-            <h3>Performance Metrics</h3>
+            <h3>Activity</h3>
             <div class="activity-row">
               <div class="widget-item">
                 <strong>39</strong>
-                <p>Follow-ups due</p>
+                <p>Tasks due today</p>
               </div>
               <div class="widget-item">
                 <strong>11</strong>
-                <p>Quotes awaiting signature</p>
+                <p>Quotes this week</p>
               </div>
               <div class="widget-item">
                 <strong>57</strong>
@@ -2836,7 +2981,7 @@
 
           <section class="widget small brief-meetings" data-widget="brief-meetings">
             <h3>Upcoming Meetings</h3>
-            <p class="mini">This week</p>
+            <p class="mini">Today</p>
             <div class="meeting-day">
               <button>Mon</button>
               <button>Tue</button>
@@ -2874,19 +3019,16 @@
           </section>
 
           <section class="widget small" data-widget="brief-overview">
-            <h3>Project Overview</h3>
-            <div class="brief-pie">
-              <div class="brief-ring"></div>
-              <div class="brief-sales-list">
-                <div class="brief-sales-row"><span>Paint</span><span class="amt">32%</span></div>
-                <div class="brief-sales-row"><span>Remodel</span><span class="amt">24%</span></div>
-                <div class="brief-sales-row"><span>Turnovers</span><span class="amt">16%</span></div>
-              </div>
+            <h3>Upcoming Meetings</h3>
+            <div class="widget-list">
+              <div class="widget-item">10:40 AM • Lead review</div>
+              <div class="widget-item">1:15 PM • Pricing sync</div>
+              <div class="widget-item">4:00 PM • Final approvals</div>
             </div>
           </section>
 
           <section class="widget full" data-widget="brief-priorities">
-            <h3>Today’s Priorities</h3>
+            <h3>Priority Queue</h3>
             <div class="widget-list">
               <div class="widget-item">Reply to 3 open estimates before 11:00 AM</div>
               <div class="widget-item">Confirm tomorrow’s walkthroughs and assign crews</div>
@@ -3050,7 +3192,7 @@
         <div class="page-header">
           <div>
             <div class="title">Estimate Builder</div>
-            <div class="subtitle">Housecall-style estimate workflow with AI-assisted scope drafting.</div>
+            <div class="subtitle">Housecall-style flow with line-item management and AI-assisted drafting.</div>
           </div>
           <div class="pillrow">
             <button onclick="openEstimatorItemModal('service')" class="primary">Add Service</button>
@@ -3060,8 +3202,9 @@
         </div>
         <div class="widget-grid" id="widgets-estimator">
           <section class="widget estimate-left" data-widget="est-left">
-            <div class="estimate-card">
+            <div class="estimate-shell">
               <h3>Customer</h3>
+              <p class="estimate-muted">Primary contact details.</p>
               <div class="field">
                 <label>Name</label>
                 <input id="estCustomerName" placeholder="Julie Sommerfeld"/>
@@ -3080,8 +3223,9 @@
               </div>
             </div>
 
-            <div class="estimate-card">
+            <div class="estimate-shell">
               <h3>Schedule</h3>
+              <p class="estimate-muted">Job window and assigned crew.</p>
               <div class="row">
                 <div class="field">
                   <label>From</label>
@@ -3108,44 +3252,46 @@
               </div>
             </div>
 
-            <div class="estimate-card">
+            <div class="estimate-shell">
               <h3>Project Metadata</h3>
-              <div class="widget-list">
-                <div class="widget-item">Attachments <button onclick="alert('Attachment upload coming next.')">+</button></div>
-                <div class="widget-item">Fields <button onclick="alert('Custom fields coming next.')">+</button></div>
-                <div class="widget-item">Tags <button onclick="alert('Tag management coming next.')">+</button></div>
-                <div class="widget-item">Lead source <button onclick="alert('Lead source mapping coming next.')">+</button></div>
+              <p class="estimate-muted">Optional data used by your process.</p>
+              <div class="estimate-meta-buttons">
+                <button onclick="alert('Attachment upload coming next.')"><span>Attachments</span><span>+</span></button>
+                <button onclick="alert('Custom fields coming next.')"><span>Fields</span><span>+</span></button>
+                <button onclick="alert('Tag management coming next.')"><span>Tags</span><span>+</span></button>
+                <button onclick="alert('Lead source mapping coming next.')"><span>Lead source</span><span>+</span></button>
               </div>
             </div>
           </section>
 
           <section class="widget estimate-main" data-widget="est-main">
-            <div class="estimate-card">
+            <div class="estimate-shell">
+              <div class="estimate-head-row">
+                <h3>Estimate Workflow</h3>
+                <span class="badge">This estimate</span>
+              </div>
+              <div class="estimate-workflow">
+                <span class="active">Schedule</span>
+                <span>QMW</span>
+                <span>Finish</span>
+                <span>Send</span>
+                <span>Approval</span>
+                <span>Copy to Job</span>
+              </div>
+            </div>
+
+            <div class="estimate-shell">
               <div class="estimate-head-row">
                 <h3>Private Notes</h3>
                 <div class="pillrow">
-                  <span class="badge">This estimate</span>
+                  <span class="badge">Internal</span>
                   <span class="badge">Customer</span>
                 </div>
               </div>
               <textarea id="estPrivateNotes" rows="2" placeholder="Add private notes here"></textarea>
             </div>
 
-            <div class="estimate-card">
-              <div class="estimate-head-row">
-                <h3>Workflow</h3>
-                <div class="estimate-steps">
-                  <span class="active">Schedule</span>
-                  <span>QMW</span>
-                  <span>Finish</span>
-                  <span>Send</span>
-                  <span>Approval</span>
-                  <span>Copy to Job</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="estimate-card">
+            <div class="estimate-shell">
               <div class="estimate-head-row">
                 <h3>Line Items</h3>
                 <div class="pillrow">
@@ -3170,7 +3316,7 @@
               </div>
             </div>
 
-            <div class="estimate-card">
+            <div class="estimate-shell">
               <h3>Totals</h3>
               <div class="estimate-totals">
                 <div><span>Subtotal</span><strong id="estSubtotal">$0.00</strong></div>
@@ -3193,46 +3339,60 @@
               </div>
             </div>
 
-            <div class="estimate-card">
+            <div class="estimate-shell">
               <h3>Activity Feed</h3>
               <div class="widget-list" id="estActivityFeed"></div>
             </div>
           </section>
 
           <section class="widget estimate-ai" data-widget="est-ai">
-            <div class="estimate-card">
-              <div class="estimate-head-row">
-                <h3>AI Estimate Copilot</h3>
+            <div class="ai-chat-shell">
+              <div class="ai-chat-head">
+                <div class="ai-chat-title">
+                  <strong>AI Estimate Copilot</strong>
+                  <span>ChatGPT-style drafting in your estimate workflow.</span>
+                </div>
                 <div class="pillrow">
                   <span class="badge" id="aiConnectStatus">AI: Disconnected</span>
                   <button onclick="window.open('https://chatgpt.com','_blank')">Open ChatGPT</button>
                 </div>
               </div>
-              <p class="mini">Use your OpenAI API key (from your account) to generate scope descriptions and estimate notes inside this builder.</p>
-              <div class="row">
-                <div class="field">
-                  <label>OpenAI API Key</label>
-                  <input id="aiApiKey" type="password" placeholder="sk-..." autocomplete="off"/>
-                </div>
-                <div class="field">
-                  <label>Actions</label>
+
+              <div class="ai-thread" id="estAiThread">
+                <div class="ai-msg system">Connect your API key to start. Ask for scopes, line items, client summaries, and assumptions.</div>
+              </div>
+
+              <div class="ai-composer">
+                <div class="est-ai-key-row">
+                  <div class="field" style="margin:0">
+                    <label>OpenAI API Key</label>
+                    <input id="aiApiKey" type="password" placeholder="sk-..." autocomplete="off"/>
+                  </div>
                   <div class="pillrow">
                     <button class="primary" onclick="saveAiKey()">Connect</button>
                     <button onclick="clearAiKey()">Clear</button>
                   </div>
                 </div>
-              </div>
-              <div class="field">
-                <label>Prompt</label>
+
                 <textarea id="estAiPrompt" rows="3" placeholder="Create a professional estimate scope for a 2-story exterior repaint, include prep/materials/cleanup and assumptions."></textarea>
+
+                <div class="ai-composer-tools">
+                  <div class="ai-composer-actions">
+                    <select id="estAiMode" class="est-ai-mode">
+                      <option value="scope">Draft Scope</option>
+                      <option value="line-item">Line Item Description</option>
+                      <option value="message">Client Summary</option>
+                    </select>
+                    <button class="primary" onclick="runEstimatorAI()">Send</button>
+                    <button onclick="runEstimatorAI('scope')">Draft Scope</button>
+                    <button onclick="runEstimatorAI('line-item')">Line Item</button>
+                    <button onclick="runEstimatorAI('message')">Client Summary</button>
+                  </div>
+                  <div class="ai-composer-actions">
+                    <button onclick="copyEstimatorAI()">Copy Last Reply</button>
+                  </div>
+                </div>
               </div>
-              <div class="pillrow">
-                <button class="primary" onclick="runEstimatorAI('scope')">Draft Scope</button>
-                <button onclick="runEstimatorAI('line-item')">Line Item Description</button>
-                <button onclick="runEstimatorAI('message')">Client Summary</button>
-                <button onclick="copyEstimatorAI()">Copy Output</button>
-              </div>
-              <div class="out mono" id="estAiOut">AI output will appear here.</div>
             </div>
           </section>
         </div>
@@ -5668,6 +5828,25 @@ Daily rule:
     badge.classList.toggle("connected", hasKey);
   }
 
+  function appendAiMessage(role, text){
+    const thread = $("estAiThread");
+    if(!thread) return;
+    const msg = document.createElement("div");
+    if(role === "user") msg.className = "ai-msg user";
+    else if(role === "system") msg.className = "ai-msg system";
+    else msg.className = "ai-msg assistant";
+    msg.textContent = String(text || "");
+    thread.appendChild(msg);
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  function resetAiThread(message){
+    const thread = $("estAiThread");
+    if(!thread) return;
+    thread.innerHTML = "";
+    appendAiMessage("system", message);
+  }
+
   function saveAiKey(){
     const val = ($("aiApiKey").value || "").trim();
     if(!val){
@@ -5678,25 +5857,35 @@ Daily rule:
     $("aiApiKey").value = "";
     updateAiStatus();
     addEstimatorActivity("Connected AI copilot.");
+    appendAiMessage("system", "AI connected. You can now request drafts.");
   }
 
   function clearAiKey(){
     localStorage.removeItem(KEY.aiKey);
     if($("aiApiKey")) $("aiApiKey").value = "";
     updateAiStatus();
-    $("estAiOut").textContent = "AI output will appear here.";
+    resetAiThread("AI disconnected. Reconnect your key to continue.");
   }
 
   async function runEstimatorAI(mode){
-    const out = $("estAiOut");
+    const selectedMode = mode || $("estAiMode")?.value || "scope";
     const prompt = ($("estAiPrompt").value || "").trim();
     if(!prompt){
-      out.textContent = "Enter a prompt first.";
+      appendAiMessage("system", "Enter a prompt first.");
       return;
     }
     const state = getEstimatorState();
     const key = localStorage.getItem(KEY.aiKey) || "";
-    out.textContent = "Generating...";
+    appendAiMessage("user", prompt);
+    $("estAiPrompt").value = "";
+    const thread = $("estAiThread");
+    const pending = document.createElement("div");
+    pending.className = "ai-msg system";
+    pending.textContent = "Generating...";
+    if(thread){
+      thread.appendChild(pending);
+      thread.scrollTop = thread.scrollHeight;
+    }
     try{
       const res = await fetch("/api/ai/estimate", {
         method: "POST",
@@ -5705,7 +5894,7 @@ Daily rule:
           ...(key ? { "x-openai-key": key } : {})
         },
         body: JSON.stringify({
-          mode,
+          mode: selectedMode,
           prompt,
           estimate: {
             customerName: state.customerName,
@@ -5721,17 +5910,21 @@ Daily rule:
       if(!res.ok || data.status !== "ok"){
         throw new Error(data.message || "AI request failed.");
       }
-      out.textContent = data.text || "No output returned.";
-      addEstimatorActivity(`Generated AI ${mode} draft.`);
+      pending.remove();
+      appendAiMessage("assistant", data.text || "No output returned.");
+      addEstimatorActivity(`Generated AI ${selectedMode} draft.`);
     }catch(err){
       const message = err instanceof Error ? err.message : "AI generation failed.";
-      out.textContent = `AI error: ${message}`;
+      pending.remove();
+      appendAiMessage("system", `AI error: ${message}`);
     }
   }
 
   function copyEstimatorAI(){
-    const text = ($("estAiOut").textContent || "").trim();
-    if(!text || text === "AI output will appear here.") return;
+    const assistantMessages = Array.from(document.querySelectorAll("#estAiThread .ai-msg.assistant"));
+    const last = assistantMessages.at(-1);
+    const text = (last?.textContent || "").trim();
+    if(!text) return;
     navigator.clipboard.writeText(text);
     alert("AI output copied.");
   }
@@ -5740,6 +5933,10 @@ Daily rule:
     bindEstimatorInputs();
     renderEstimator();
     updateAiStatus();
+    if(!$("estAiThread")) return;
+    if(!$("estAiThread").children.length){
+      resetAiThread("Connect your API key to start. Ask for scopes, line items, client summaries, and assumptions.");
+    }
   }
 
   // ====== Company calendar ======
@@ -6394,6 +6591,7 @@ Daily rule:
     bindUiScale();
     bindPageGap();
     initCalendar();
+    initEstimator();
     renderMetrics();
     renderKPIs();
     renderIdeas();
