@@ -1635,41 +1635,190 @@
     }
     .estimate-ai-shell{
       display:grid;
-      grid-template-rows:auto 1fr auto;
+      grid-template-columns:220px minmax(0,1fr);
       min-height:720px;
       max-height:78vh;
       border:1px solid var(--glass-border);
       background:var(--glass-strong);
-      border-radius:14px;
+      border-radius:16px;
       overflow:hidden;
       box-shadow:var(--shadow);
     }
-    .estimate-ai-head{
+    .est-ai-nav{
+      border-right:1px solid var(--glass-border);
+      background:rgba(8,10,14,.62);
+      padding:12px 10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-width:0;
+    }
+    .est-ai-brand{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .est-ai-brand .dot{
+      width:28px;
+      height:28px;
+      border-radius:9px;
+      border:1px solid var(--glass-border);
+      background:rgba(255,255,255,.06);
+      display:grid;
+      place-items:center;
+      font-size:13px;
+      font-weight:700;
+    }
+    .est-ai-brand strong{
+      display:block;
+      font-size:12px;
+      line-height:1.2;
+    }
+    .est-ai-brand span{
+      display:block;
+      font-size:10px;
+      color:var(--muted);
+      line-height:1.2;
+    }
+    .est-ai-newchat{
+      min-height:36px;
+      border-radius:10px;
+      font-size:12px;
+      font-weight:600;
+      text-align:left;
+      padding:8px 10px;
+    }
+    .est-ai-search{
+      margin:0;
+    }
+    .est-ai-search input{
+      min-height:34px;
+      border-radius:10px;
+      font-size:12px;
+    }
+    .est-ai-nav-title{
+      font-size:10px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-top:2px;
+    }
+    .est-ai-convos{
+      min-height:0;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      padding-right:2px;
+    }
+    .est-ai-convo{
+      border:1px solid var(--glass-border);
+      background:rgba(255,255,255,.02);
+      border-radius:10px;
+      padding:8px;
+      text-align:left;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-height:44px;
+      transition:border-color .16s ease, background .16s ease;
+    }
+    .est-ai-convo:hover{
+      border-color:rgba(125,211,252,.45);
+      background:rgba(125,211,252,.10);
+    }
+    .est-ai-convo.active{
+      border-color:rgba(125,211,252,.62);
+      background:rgba(125,211,252,.16);
+    }
+    .est-ai-convo .title{
+      font-size:12px;
+      font-weight:560;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .est-ai-convo .meta{
+      font-size:10px;
+      color:var(--muted);
+    }
+    .est-ai-main{
+      min-width:0;
+      display:grid;
+      grid-template-rows:auto auto 1fr auto;
+      background:rgba(11,14,20,.60);
+    }
+    .est-ai-top{
+      border-bottom:1px solid var(--glass-border);
+      padding:10px 12px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:8px;
-      border-bottom:1px solid var(--glass-border);
-      padding:10px;
       background:rgba(255,255,255,.02);
     }
-    .estimate-ai-head strong{
+    .est-ai-model strong{
       display:block;
       font-size:13px;
+      font-weight:620;
+      line-height:1.2;
       margin-bottom:2px;
     }
-    .estimate-ai-head span{
+    .est-ai-model span{
       display:block;
       font-size:11px;
       color:var(--muted);
     }
-    .estimate-ai-side{
-      border-top:1px solid var(--glass-border);
-      padding:10px;
+    .est-ai-settings-btn{
+      min-height:30px;
+      border-radius:10px;
+      padding:6px 10px;
+      font-size:11px;
+      font-weight:600;
+      white-space:nowrap;
+    }
+    .est-ai-settings{
+      border-bottom:1px solid var(--glass-border);
+      padding:10px 12px;
       display:flex;
       flex-direction:column;
       gap:8px;
       background:rgba(255,255,255,.015);
+    }
+    .est-ai-key-row{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+      align-items:end;
+    }
+    .est-ai-mode{
+      min-height:34px;
+      border-radius:10px;
+      font-size:12px;
+    }
+    .est-ai-thread{
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      overflow:auto;
+      min-height:300px;
+    }
+    .est-ai-empty{
+      margin:auto;
+      text-align:center;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.35;
+    }
+    .estimate-ai-side{
+      border-top:1px solid var(--glass-border);
+      padding:10px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      background:rgba(255,255,255,.02);
     }
     .est-ai-presets{
       display:grid;
@@ -1688,16 +1837,45 @@
       gap:8px;
       align-items:end;
     }
+    .est-ai-input-shell{
+      border:1px solid var(--glass-border);
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:8px;
+      align-items:center;
+      padding:8px 10px;
+    }
+    .est-ai-input-shell .plus{
+      width:22px;
+      height:22px;
+      border-radius:50%;
+      border:1px solid var(--glass-border);
+      display:grid;
+      place-items:center;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1;
+    }
     .est-ai-input textarea{
-      min-height:82px;
-      max-height:200px;
+      min-height:40px;
+      max-height:180px;
       resize:vertical;
+      border:none;
+      background:transparent;
+      padding:0;
+      font-size:13px;
+    }
+    .est-ai-input textarea:focus{
+      box-shadow:none;
     }
     .est-ai-input .send{
-      min-height:82px;
+      min-height:40px;
       border-radius:12px;
-      min-width:70px;
+      min-width:72px;
       font-weight:640;
+      align-self:stretch;
     }
 
     .calendar-layout{
@@ -2650,8 +2828,17 @@
         grid-template-columns:1fr;
       }
       .estimate-ai-shell{
+        grid-template-columns:1fr;
         min-height:560px;
         max-height:none;
+      }
+      .est-ai-nav{
+        border-right:none;
+        border-bottom:1px solid var(--glass-border);
+        max-height:240px;
+      }
+      .est-ai-convos{
+        max-height:120px;
       }
       .estimate-sum{
         grid-template-columns:repeat(2,minmax(0,1fr));
@@ -3722,52 +3909,74 @@
 
               <div class="estimate-col estimate-ai" data-widget="est-ai">
                 <div class="estimate-ai-shell">
-                  <div class="estimate-ai-head">
-                    <div>
-                      <strong>AI Estimate Copilot</strong>
-                      <span>ChatGPT-style drafting for scope, items, and client summary.</span>
+                  <aside class="est-ai-nav">
+                    <div class="est-ai-brand">
+                      <div class="dot">AI</div>
+                      <div>
+                        <strong>Estimator Copilot</strong>
+                        <span>Conversation workspace</span>
+                      </div>
                     </div>
-                    <div class="pillrow">
-                      <span class="badge" id="aiConnectStatus">AI: Disconnected</span>
-                      <button onclick="window.open('https://chatgpt.com','_blank')">ChatGPT</button>
+                    <button class="est-ai-newchat primary" onclick="createEstimatorConversation()">+ New chat</button>
+                    <div class="field est-ai-search">
+                      <input id="estAiSearch" placeholder="Search chats"/>
                     </div>
-                  </div>
+                    <div class="est-ai-nav-title">Your chats</div>
+                    <div class="est-ai-convos" id="estAiConversations"></div>
+                  </aside>
 
-                  <div class="ai-thread" id="estAiThread">
-                    <div class="ai-msg system">Connect your API key to start. Ask for scopes, line items, client summaries, and assumptions.</div>
-                  </div>
+                  <section class="est-ai-main">
+                    <div class="est-ai-top">
+                      <div class="est-ai-model">
+                        <strong>Estimator GPT</strong>
+                        <span id="aiConnectStatus">AI: Disconnected</span>
+                      </div>
+                      <button class="est-ai-settings-btn" onclick="toggleEstimatorAiSettings()">AI Settings</button>
+                    </div>
 
-                  <div class="estimate-ai-side">
-                    <div class="est-ai-key-row">
-                      <div class="field" style="margin:0">
-                        <label>OpenAI API Key</label>
-                        <input id="aiApiKey" type="password" placeholder="sk-..." autocomplete="off"/>
+                    <div class="est-ai-settings hidden" id="estAiSettingsPanel">
+                      <div class="est-ai-key-row">
+                        <div class="field" style="margin:0">
+                          <label>OpenAI API Key</label>
+                          <input id="aiApiKey" type="password" placeholder="sk-..." autocomplete="off"/>
+                        </div>
+                        <div class="pillrow">
+                          <button class="primary" onclick="saveAiKey()">Connect</button>
+                          <button onclick="clearAiKey()">Clear</button>
+                        </div>
                       </div>
                       <div class="pillrow">
-                        <button class="primary" onclick="saveAiKey()">Connect</button>
-                        <button onclick="clearAiKey()">Clear</button>
+                        <button onclick="window.open('https://chatgpt.com','_blank')">Open ChatGPT</button>
+                        <button onclick="copyEstimatorAI()">Copy Last Reply</button>
                       </div>
                     </div>
 
-                    <div class="est-ai-presets">
-                      <button onclick="runEstimatorAI('scope')">Draft Scope</button>
-                      <button onclick="runEstimatorAI('line-item')">Line Item</button>
-                      <button onclick="runEstimatorAI('message')">Client Summary</button>
-                      <button onclick="copyEstimatorAI()">Copy Last Reply</button>
-                    </div>
+                    <div class="ai-thread est-ai-thread" id="estAiThread"></div>
 
-                    <div class="est-ai-input">
-                      <div>
-                        <select id="estAiMode" class="est-ai-mode" style="margin-bottom:6px">
-                          <option value="scope">Draft Scope</option>
-                          <option value="line-item">Line Item Description</option>
-                          <option value="message">Client Summary</option>
-                        </select>
-                        <textarea id="estAiPrompt" rows="4" placeholder="Create a professional estimate scope for a 2-story exterior repaint, include prep/materials/cleanup and assumptions."></textarea>
+                    <div class="estimate-ai-side">
+                      <div class="est-ai-presets">
+                        <button onclick="runEstimatorAI('scope')">Draft Scope</button>
+                        <button onclick="runEstimatorAI('line-item')">Line Item</button>
+                        <button onclick="runEstimatorAI('message')">Client Summary</button>
+                        <button onclick="runEstimatorAI('scope')">Rewrite Cleaner</button>
                       </div>
-                      <button class="primary send" onclick="runEstimatorAI()">Send</button>
+
+                      <div class="est-ai-input">
+                        <div>
+                          <select id="estAiMode" class="est-ai-mode" style="margin-bottom:6px">
+                            <option value="scope">Draft Scope</option>
+                            <option value="line-item">Line Item Description</option>
+                            <option value="message">Client Summary</option>
+                          </select>
+                          <div class="est-ai-input-shell">
+                            <span class="plus">+</span>
+                            <textarea id="estAiPrompt" rows="2" placeholder="Ask Estimator GPT anything..."></textarea>
+                          </div>
+                        </div>
+                        <button class="primary send" onclick="runEstimatorAI()">Send</button>
+                      </div>
                     </div>
-                  </div>
+                  </section>
                 </div>
               </div>
             </div>
@@ -4105,6 +4314,8 @@
     calendarPrefs: "arm_company_calendar_prefs",
     estimator: "arm_estimator_state",
     aiKey: "arm_openai_api_key",
+    aiConversations: "arm_estimator_ai_conversations",
+    aiActiveConversation: "arm_estimator_ai_active_conversation",
     layout: "arm_ai_layout",
     theme: "arm_ai_theme",
     motion: "arm_ai_motion",
@@ -6229,23 +6440,208 @@ Daily rule:
     badge.classList.toggle("connected", hasKey);
   }
 
-  function appendAiMessage(role, text){
+  function normalizeEstimatorConversation(raw, idx){
+    const src = (raw && typeof raw === "object") ? raw : {};
+    const id = String(src.id || `conv_${Date.now()}_${idx}`);
+    const messages = Array.isArray(src.messages) ? src.messages : [];
+    const safeMessages = messages
+      .filter((m)=>m && typeof m === "object")
+      .map((m, i) => ({
+        role: ["user", "assistant", "system"].includes(m.role) ? m.role : "system",
+        text: String(m.text || "").trim(),
+        ts: Number(m.ts || (Date.now() + i))
+      }))
+      .filter((m)=>m.text);
+    const fallbackTitle = safeMessages.find((m)=>m.role === "user")?.text || "New chat";
+    const title = String(src.title || fallbackTitle).trim().slice(0, 72) || "New chat";
+    return {
+      id,
+      title,
+      createdAt: Number(src.createdAt || Date.now()),
+      updatedAt: Number(src.updatedAt || Date.now()),
+      messages: safeMessages
+    };
+  }
+
+  function getEstimatorAiConversations(){
+    const raw = loadJSON(KEY.aiConversations, []);
+    const list = Array.isArray(raw) ? raw : [];
+    return list
+      .map((conv, idx)=> normalizeEstimatorConversation(conv, idx))
+      .sort((a, b)=> b.updatedAt - a.updatedAt);
+  }
+
+  function saveEstimatorAiConversations(list){
+    const safe = Array.isArray(list) ? list : [];
+    saveJSON(KEY.aiConversations, safe.map((conv, idx)=> normalizeEstimatorConversation(conv, idx)));
+  }
+
+  function ensureEstimatorAiState(){
+    let conversations = getEstimatorAiConversations();
+    if(!conversations.length){
+      conversations = [{
+        id: crypto.randomUUID ? crypto.randomUUID() : `conv_${Date.now()}`,
+        title: "New chat",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        messages: []
+      }];
+      saveEstimatorAiConversations(conversations);
+    }
+    let activeId = localStorage.getItem(KEY.aiActiveConversation);
+    if(!activeId || !conversations.some((c)=>c.id === activeId)){
+      activeId = conversations[0].id;
+      localStorage.setItem(KEY.aiActiveConversation, activeId);
+    }
+    return { conversations, activeId };
+  }
+
+  function setEstimatorAiState(conversations, activeId, scrollToBottom = false){
+    saveEstimatorAiConversations(conversations);
+    if(activeId){
+      localStorage.setItem(KEY.aiActiveConversation, activeId);
+    }
+    renderEstimatorAiConversationList();
+    renderEstimatorAiThread(scrollToBottom);
+  }
+
+  function getActiveEstimatorConversation(){
+    const { conversations, activeId } = ensureEstimatorAiState();
+    return conversations.find((conv)=>conv.id === activeId) || conversations[0];
+  }
+
+  function toggleEstimatorAiSettings(){
+    const panel = $("estAiSettingsPanel");
+    if(!panel) return;
+    panel.classList.toggle("hidden");
+  }
+
+  function createEstimatorConversation(){
+    const { conversations } = ensureEstimatorAiState();
+    const next = {
+      id: crypto.randomUUID ? crypto.randomUUID() : `conv_${Date.now()}`,
+      title: "New chat",
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      messages: []
+    };
+    conversations.unshift(next);
+    setEstimatorAiState(conversations, next.id);
+    const prompt = $("estAiPrompt");
+    if(prompt) prompt.focus();
+  }
+
+  function switchEstimatorConversation(id){
+    const { conversations } = ensureEstimatorAiState();
+    if(!conversations.some((conv)=>conv.id === id)) return;
+    setEstimatorAiState(conversations, id);
+  }
+
+  function renderEstimatorAiConversationList(){
+    const root = $("estAiConversations");
+    if(!root) return;
+    const { conversations, activeId } = ensureEstimatorAiState();
+    const q = String(($("estAiSearch")?.value || "")).trim().toLowerCase();
+    const visible = q
+      ? conversations.filter((conv)=>{
+          const hay = `${conv.title} ${conv.messages.map((m)=>m.text).join(" ")}`.toLowerCase();
+          return hay.includes(q);
+        })
+      : conversations;
+
+    root.innerHTML = "";
+    if(!visible.length){
+      const empty = document.createElement("div");
+      empty.className = "mini";
+      empty.textContent = "No matching chats.";
+      root.appendChild(empty);
+      return;
+    }
+
+    visible.forEach((conv)=>{
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `est-ai-convo${conv.id === activeId ? " active" : ""}`;
+      btn.onclick = () => switchEstimatorConversation(conv.id);
+
+      const title = document.createElement("div");
+      title.className = "title";
+      title.textContent = conv.title || "New chat";
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = new Date(conv.updatedAt || Date.now()).toLocaleString(undefined, {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+
+      btn.appendChild(title);
+      btn.appendChild(meta);
+      root.appendChild(btn);
+    });
+  }
+
+  function renderEstimatorAiThread(scrollToBottom = false){
     const thread = $("estAiThread");
     if(!thread) return;
-    const msg = document.createElement("div");
-    if(role === "user") msg.className = "ai-msg user";
-    else if(role === "system") msg.className = "ai-msg system";
-    else msg.className = "ai-msg assistant";
-    msg.textContent = String(text || "");
-    thread.appendChild(msg);
-    thread.scrollTop = thread.scrollHeight;
+    const active = getActiveEstimatorConversation();
+    thread.innerHTML = "";
+
+    if(!active || !active.messages.length){
+      const empty = document.createElement("div");
+      empty.className = "est-ai-empty";
+      empty.textContent = "What are you working on?";
+      thread.appendChild(empty);
+      return;
+    }
+
+    active.messages.forEach((msg)=>{
+      const row = document.createElement("div");
+      if(msg.role === "user") row.className = "ai-msg user";
+      else if(msg.role === "assistant") row.className = "ai-msg assistant";
+      else row.className = "ai-msg system";
+      row.textContent = msg.text;
+      thread.appendChild(row);
+    });
+
+    if(scrollToBottom){
+      thread.scrollTop = thread.scrollHeight;
+    }
+  }
+
+  function appendAiMessage(role, text){
+    const cleanText = String(text || "").trim();
+    if(!cleanText) return;
+    const { conversations, activeId } = ensureEstimatorAiState();
+    const idx = conversations.findIndex((conv)=>conv.id === activeId);
+    if(idx < 0) return;
+    const conv = conversations[idx];
+    conv.messages.push({
+      role: ["user", "assistant", "system"].includes(role) ? role : "system",
+      text: cleanText,
+      ts: Date.now()
+    });
+    if(role === "user" && (!conv.title || /^new chat$/i.test(conv.title))){
+      conv.title = cleanText.slice(0, 56) || "New chat";
+    }
+    conv.updatedAt = Date.now();
+    conversations[idx] = conv;
+    setEstimatorAiState(conversations, activeId, true);
   }
 
   function resetAiThread(message){
-    const thread = $("estAiThread");
-    if(!thread) return;
-    thread.innerHTML = "";
-    appendAiMessage("system", message);
+    const { conversations, activeId } = ensureEstimatorAiState();
+    const idx = conversations.findIndex((conv)=>conv.id === activeId);
+    if(idx < 0) return;
+    conversations[idx].messages = message ? [{
+      role: "system",
+      text: String(message),
+      ts: Date.now()
+    }] : [];
+    conversations[idx].updatedAt = Date.now();
+    setEstimatorAiState(conversations, activeId, true);
   }
 
   function saveAiKey(){
@@ -6311,12 +6707,12 @@ Daily rule:
       if(!res.ok || data.status !== "ok"){
         throw new Error(data.message || "AI request failed.");
       }
-      pending.remove();
+      if(pending.parentNode) pending.remove();
       appendAiMessage("assistant", data.text || "No output returned.");
       addEstimatorActivity(`Generated AI ${selectedMode} draft.`);
     }catch(err){
       const message = err instanceof Error ? err.message : "AI generation failed.";
-      pending.remove();
+      if(pending.parentNode) pending.remove();
       appendAiMessage("system", `AI error: ${message}`);
     }
   }
@@ -6335,9 +6731,16 @@ Daily rule:
     renderEstimator();
     updateAiStatus();
     if(!$("estAiThread")) return;
-    if(!$("estAiThread").children.length){
-      resetAiThread("Connect your API key to start. Ask for scopes, line items, client summaries, and assumptions.");
+    ensureEstimatorAiState();
+    renderEstimatorAiConversationList();
+    renderEstimatorAiThread();
+
+    const search = $("estAiSearch");
+    if(search && search.dataset.bound !== "1"){
+      search.addEventListener("input", ()=> renderEstimatorAiConversationList());
+      search.dataset.bound = "1";
     }
+
     const prompt = $("estAiPrompt");
     if(prompt && prompt.dataset.bound !== "1"){
       prompt.addEventListener("keydown", (e)=>{
