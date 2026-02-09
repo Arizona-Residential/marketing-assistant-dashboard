@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
   <title>Private AI Marketing Assistant — Rosario</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
@@ -84,6 +84,7 @@
     html{
       -webkit-text-size-adjust:100%;
       text-size-adjust:100%;
+      touch-action:pan-x pan-y;
     }
     body{
       margin:0;
@@ -95,6 +96,9 @@
         radial-gradient(900px 700px at 10% 90%, var(--bg-sheen), transparent 65%),
         linear-gradient(180deg, var(--bg2), var(--bg));
       color:var(--text);
+    }
+    input,select,textarea,button{
+      font-size:16px;
     }
     body::before{
       content:"";
@@ -4744,6 +4748,25 @@
     if(slider) slider.value = "100";
   }
 
+  function disableZoomInteractions(){
+    window.addEventListener("wheel", (e)=>{
+      if(e.ctrlKey) e.preventDefault();
+    }, { passive:false });
+
+    document.addEventListener("gesturestart", (e)=> e.preventDefault(), { passive:false });
+    document.addEventListener("gesturechange", (e)=> e.preventDefault(), { passive:false });
+    document.addEventListener("gestureend", (e)=> e.preventDefault(), { passive:false });
+
+    let lastTouchEnd = 0;
+    document.addEventListener("touchend", (e)=>{
+      const now = Date.now();
+      if(now - lastTouchEnd <= 320){
+        e.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, { passive:false });
+  }
+
   async function loadSettingsFromServer(){
     if(!isTikTokConnected()) return;
     const res = await fetch("/api/settings", { cache: "no-store" }).catch(()=>null);
@@ -7017,6 +7040,7 @@ Daily rule:
 
   // Auto-set date on load
   window.addEventListener("load", async ()=>{
+    disableZoomInteractions();
     $("mDate").value = todayISO;
     document.body.classList.remove("layout-locked");
     await loadPublicSettings().catch(()=>{});
