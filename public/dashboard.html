@@ -6741,6 +6741,40 @@ Daily rule:
     resetAiThread("AI disconnected. Reconnect your key to continue.");
   }
 
+  function formatEstimatorAiError(rawMessage){
+    const message = String(rawMessage || "").trim();
+    const lower = message.toLowerCase();
+
+    if(
+      lower.includes("exceeded your current quota") ||
+      lower.includes("insufficient_quota") ||
+      lower.includes("check your plan and billing")
+    ){
+      return "AI billing limit reached. Add or increase API billing in OpenAI, then try again. If you saved a key in AI Settings, verify it belongs to the billed project.";
+    }
+
+    if(
+      lower.includes("missing openai key") ||
+      lower.includes("invalid_api_key") ||
+      lower.includes("incorrect api key")
+    ){
+      return "OpenAI key missing or invalid. Set OPENAI_API_KEY on Render or update your key in AI Settings.";
+    }
+
+    if(
+      lower.includes("rate limit") ||
+      lower.includes("too many requests")
+    ){
+      return "OpenAI rate limit hit. Wait a few seconds and retry.";
+    }
+
+    if(lower.includes("failed to reach ai provider")){
+      return "Unable to reach OpenAI right now. Check connection and retry.";
+    }
+
+    return `AI request failed: ${message || "Unknown error."}`;
+  }
+
   async function runEstimatorAI(mode){
     const selectedMode = mode || $("estAiMode")?.value || "scope";
     const prompt = ($("estAiPrompt").value || "").trim();
@@ -6790,7 +6824,7 @@ Daily rule:
     }catch(err){
       const message = err instanceof Error ? err.message : "AI generation failed.";
       if(pending.parentNode) pending.remove();
-      appendAiMessage("system", `AI error: ${message}`);
+      appendAiMessage("system", formatEstimatorAiError(message));
     }
   }
 
