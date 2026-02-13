@@ -4244,6 +4244,17 @@
                   <label>Widget spacing (all pages)</label>
                   <input id="pageGap" type="range" min="10" max="28" step="1"/>
                 </div>
+                <div class="field">
+                  <label>Daily Brief role profile</label>
+                  <select id="rolePresetSelect">
+                    <option value="auto">Auto (from login role)</option>
+                    <option value="owner">Owner</option>
+                    <option value="sales">Sales</option>
+                    <option value="estimator">Estimator</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="member">Member</option>
+                  </select>
+                </div>
                 <div class="mini">Drag and resize widgets directly on each page. Spacing updates everywhere.</div>
               </section>
 
@@ -4365,7 +4376,8 @@
     glass: "arm_ai_glass",
     blur: "arm_ai_blur",
     uiScale: "arm_ai_ui_scale",
-    session: "arm_ai_session"
+    session: "arm_ai_session",
+    rolePreset: "arm_ai_role_preset"
   };
 
   // ====== Helpers ======
@@ -4619,6 +4631,14 @@
     return ROLE_DASHBOARD_PRESETS[normalized] || ROLE_DASHBOARD_PRESETS.member;
   }
 
+  function getEffectiveRole(role){
+    const selected = String(localStorage.getItem(KEY.rolePreset) || "auto").trim().toLowerCase();
+    if(selected && selected !== "auto"){
+      return normalizeRole(selected);
+    }
+    return normalizeRole(role || currentUser?.role || "member");
+  }
+
   function renderBriefAgenda(targetId, rows){
     const root = $(targetId);
     if(!root) return;
@@ -4700,7 +4720,7 @@
   }
 
   function applyDashboardPreset(role){
-    const preset = getDashboardPresetByRole(role);
+    const preset = getDashboardPresetByRole(getEffectiveRole(role));
     const welcomeSubtitle = $("welcomeSubtitle");
     if(welcomeSubtitle) welcomeSubtitle.textContent = preset.subtitle;
     const roleSummary = $("welcomeRoleSummary");
@@ -5080,6 +5100,7 @@
         glass: localStorage.getItem(KEY.glass),
         blur: localStorage.getItem(KEY.blur),
         widgetGap: localStorage.getItem("widget_gap_global") || "16",
+        rolePreset: localStorage.getItem(KEY.rolePreset) || "auto",
         calendarEvents: loadJSON(KEY.calendar, [])
       };
       const serialized = JSON.stringify(payload);
@@ -5230,6 +5251,9 @@
       if(data.data.widgetGap){
         localStorage.setItem("widget_gap_global", String(data.data.widgetGap));
       }
+      if(data.data.rolePreset){
+        localStorage.setItem(KEY.rolePreset, String(data.data.rolePreset));
+      }
       if(Array.isArray(data.data.calendarEvents)){
         saveJSON(KEY.calendar, data.data.calendarEvents);
         if(!$("appView").classList.contains("hidden")) renderCalendar();
@@ -5370,10 +5394,14 @@
       localStorage.setItem("widget_gap_global", String(data.data.widgetGap));
       document.documentElement.style.setProperty("--widget-gap", `${data.data.widgetGap}px`);
     }
+    if(data.data.rolePreset){
+      localStorage.setItem(KEY.rolePreset, String(data.data.rolePreset));
+    }
     if(Array.isArray(data.data.calendarEvents)){
       saveJSON(KEY.calendar, data.data.calendarEvents);
       renderCalendar();
     }
+    applyDashboardPreset(currentUser?.role);
   }
 
   function renderSocial(){
@@ -5873,6 +5901,22 @@
     slider.addEventListener("input", ()=>{
       localStorage.setItem("widget_gap_global", slider.value);
       document.documentElement.style.setProperty("--widget-gap", `${slider.value}px`);
+    });
+  }
+
+  function bindRolePresetControl(){
+    const select = $("rolePresetSelect");
+    if(!select) return;
+    const stored = String(localStorage.getItem(KEY.rolePreset) || "auto").trim().toLowerCase();
+    if(Array.from(select.options).some((opt)=>opt.value === stored)){
+      select.value = stored;
+    }else{
+      select.value = "auto";
+    }
+    select.addEventListener("change", ()=>{
+      localStorage.setItem(KEY.rolePreset, select.value || "auto");
+      applyDashboardPreset(currentUser?.role);
+      scheduleSettingsSync();
     });
   }
 
@@ -7835,6 +7879,7 @@ Daily rule:
     bindBlurSlider();
     bindUiScale();
     bindPageGap();
+    bindRolePresetControl();
     initCalendar();
     initEstimator();
     renderMetrics();
