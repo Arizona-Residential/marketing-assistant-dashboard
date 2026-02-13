@@ -1429,6 +1429,7 @@
       display:flex;
       align-items:center;
       gap:8px;
+      flex-wrap:wrap;
     }
     .brief-topbar .chip{
       min-height:34px;
@@ -1441,6 +1442,15 @@
       align-items:center;
       font-size:12px;
       font-weight:560;
+    }
+    .brief-topbar .chip.quick-action{
+      cursor:pointer;
+      transition:transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .brief-topbar .chip.quick-action:hover{
+      transform:translateY(-1px);
+      border-color:var(--accent);
+      background:rgba(125, 211, 252, 0.12);
     }
     .brief-kpis{
       display:grid;
@@ -3514,7 +3524,7 @@
         <div class="page-header">
           <div>
             <div class="title" id="welcomeTitle">Welcome back</div>
-            <div class="subtitle">Performance, workload, and schedule at a glance.</div>
+            <div class="subtitle" id="welcomeSubtitle">Performance, workload, and schedule at a glance.</div>
           </div>
           <div class="pillrow">
             <span class="badge" id="welcomeDate">Today</span>
@@ -3528,20 +3538,16 @@
                   <div class="avatar"><img src="app-icon.png" alt="Profile avatar" /></div>
                   <div>
                     <strong id="welcomeHeaderName">Welcome in</strong>
-                    <span>Operations dashboard</span>
+                    <span id="welcomeRoleSummary">Operations dashboard</span>
                   </div>
                 </div>
                 <div class="search-wrap">
                   <input type="search" placeholder="Search clients, tasks, meetings, jobs..."/>
                 </div>
-                <div class="actions">
-                  <span class="chip">Alerts</span>
-                  <span class="chip">Team</span>
-                  <span class="chip">Today</span>
-                </div>
+                <div class="actions" id="briefQuickActions"></div>
               </div>
 
-              <div class="brief-kpis">
+              <div class="brief-kpis" id="briefKpiGrid">
                 <div class="brief-kpi">
                   <div class="label">Revenue Today</div>
                   <div class="value">$24,575</div>
@@ -3585,7 +3591,7 @@
           <section class="widget small" data-widget="brief-meetings">
             <div class="brief-card">
               <h3>Upcoming Meetings</h3>
-              <div class="brief-agenda">
+              <div class="brief-agenda" id="briefMeetingsAgenda">
                 <div class="row"><div class="title">Client review • Exterior repaint</div><div class="t">8:45 AM</div></div>
                 <div class="row"><div class="title">Team sync • Pricing updates</div><div class="t">10:30 AM</div></div>
                 <div class="row"><div class="title">Walkthrough prep • Chandler</div><div class="t">2:00 PM</div></div>
@@ -3618,7 +3624,7 @@
           <section class="widget small" data-widget="brief-overview">
             <div class="brief-card">
               <h3>Priority Queue</h3>
-              <div class="brief-agenda">
+              <div class="brief-agenda" id="briefPriorityAgenda">
                 <div class="row"><div class="title">Reply to 3 open estimates</div><div class="t">Today</div></div>
                 <div class="row"><div class="title">Confirm walkthrough assignments</div><div class="t">Today</div></div>
                 <div class="row"><div class="title">Post marketing recap clip</div><div class="t">Today</div></div>
@@ -3630,7 +3636,7 @@
             <div class="brief-main">
               <div class="brief-card">
                 <h3>Open Tasks</h3>
-                <div class="brief-agenda">
+                <div class="brief-agenda" id="briefOpenTasksAgenda">
                   <div class="row"><div class="title">Exterior repaint estimate • Mesa</div><div class="t">9:00 AM</div></div>
                   <div class="row"><div class="title">Remodel consult • Chandler</div><div class="t">1:30 PM</div></div>
                   <div class="row"><div class="title">Follow-up call block</div><div class="t">3:00 PM</div></div>
@@ -3638,7 +3644,7 @@
               </div>
               <div class="brief-card">
                 <h3>Team Load</h3>
-                <div class="widget-list">
+                <div class="widget-list" id="briefTeamLoadList">
                   <div class="widget-item">Crew A: 4 jobs this week • 83% utilization</div>
                   <div class="widget-item">Crew B: 3 jobs this week • 74% utilization</div>
                   <div class="widget-item">Sales: 12 active estimates • 4 approvals pending</div>
@@ -3650,7 +3656,7 @@
           <section class="widget full" data-widget="brief-team">
             <div class="brief-card">
               <h3>Announcements</h3>
-              <div class="widget-list">
+              <div class="widget-list" id="briefAnnouncementsList">
                 <div class="widget-item">Materials order closes at 4:30 PM today.</div>
                 <div class="widget-item">Friday stand-up moved to 8:30 AM.</div>
                 <div class="widget-item">Marketing upload checklist updated in shared docs.</div>
@@ -4368,6 +4374,213 @@
   const pad = (n)=> String(n).padStart(2,"0");
   const todayISO = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
   let currentUser = null;
+  const ROLE_DASHBOARD_PRESETS = {
+    owner: {
+      subtitle: "Company-wide pipeline, cashflow, and team execution.",
+      roleSummary: "Owner command view",
+      kpis: [
+        { label: "Revenue Today", value: "$24,575", meta: "Accepted: 6 • Pending: 9" },
+        { label: "Pipeline Value", value: "$128,400", meta: "24 open estimates" },
+        { label: "Active Jobs", value: "57", meta: "11 high-priority" },
+        { label: "Close Rate", value: "85%", meta: "+4.1% this week" }
+      ],
+      meetings: [
+        { title: "Leadership standup • Ops", time: "8:30 AM" },
+        { title: "Cashflow review • Finance", time: "11:00 AM" },
+        { title: "Crew capacity sync • PM", time: "3:15 PM" }
+      ],
+      priorities: [
+        { title: "Approve 4 pending estimates", time: "Today" },
+        { title: "Review gross margin by crew", time: "Today" },
+        { title: "Finalize next-week ad budget", time: "Today" }
+      ],
+      openTasks: [
+        { title: "Exterior repaint estimate • Mesa", time: "9:00 AM" },
+        { title: "Remodel consult • Chandler", time: "1:30 PM" },
+        { title: "Follow-up call block", time: "3:00 PM" }
+      ],
+      teamLoad: [
+        "Crew A: 4 jobs this week • 83% utilization",
+        "Crew B: 3 jobs this week • 74% utilization",
+        "Sales: 12 active estimates • 4 approvals pending"
+      ],
+      announcements: [
+        "Materials order closes at 4:30 PM today.",
+        "Friday stand-up moved to 8:30 AM.",
+        "Marketing upload checklist updated in shared docs."
+      ],
+      quickActions: [
+        { label: "New Estimate", action: "new-estimate" },
+        { label: "Schedule Walkthrough", action: "schedule-walkthrough" },
+        { label: "Create Invoice", action: "create-invoice" },
+        { label: "Send Follow-up", action: "send-followup" }
+      ]
+    },
+    member: {
+      subtitle: "Today’s tasks, meetings, and next actions.",
+      roleSummary: "Daily execution view",
+      kpis: [
+        { label: "Tasks Due", value: "18", meta: "5 overdue" },
+        { label: "Meetings Today", value: "6", meta: "2 walkthroughs" },
+        { label: "Quotes Sent", value: "9", meta: "3 awaiting response" },
+        { label: "Response SLA", value: "97%", meta: "Avg reply 14 min" }
+      ],
+      meetings: [
+        { title: "Client walkthrough • Gilbert", time: "9:30 AM" },
+        { title: "Team sync • Estimating", time: "12:00 PM" },
+        { title: "Follow-up block", time: "3:30 PM" }
+      ],
+      priorities: [
+        { title: "Send recap to 3 clients", time: "Today" },
+        { title: "Prepare tomorrow route plan", time: "Today" },
+        { title: "Update pending quote notes", time: "Today" }
+      ],
+      openTasks: [
+        { title: "Door replacement quote • Tempe", time: "10:15 AM" },
+        { title: "Insurance scope follow-up", time: "1:00 PM" },
+        { title: "Material order confirmation", time: "4:00 PM" }
+      ],
+      teamLoad: [
+        "Estimator queue: 8 active",
+        "Walkthrough queue: 5 scheduled",
+        "Inbox follow-ups: 14 pending"
+      ],
+      announcements: [
+        "Daily photo checklist must be attached to each job.",
+        "Updated financing promo available this week.",
+        "Confirm route changes before 7 PM."
+      ],
+      quickActions: [
+        { label: "New Estimate", action: "new-estimate" },
+        { label: "Schedule Walkthrough", action: "schedule-walkthrough" },
+        { label: "Send Follow-up", action: "send-followup" },
+        { label: "Review Pipeline", action: "review-pipeline" }
+      ]
+    },
+    sales: {
+      subtitle: "Lead response, quote pipeline, and close activity.",
+      roleSummary: "Sales focus view",
+      kpis: [
+        { label: "New Leads", value: "14", meta: "Last 24 hours" },
+        { label: "Open Quotes", value: "27", meta: "10 hot leads" },
+        { label: "Close Rate", value: "42%", meta: "+2.8% this month" },
+        { label: "Revenue In Play", value: "$312k", meta: "Pipeline total" }
+      ],
+      meetings: [
+        { title: "High-value callback block", time: "8:15 AM" },
+        { title: "Client financing review", time: "11:45 AM" },
+        { title: "Proposal recap • East Valley", time: "4:00 PM" }
+      ],
+      priorities: [
+        { title: "Call top 5 undecided estimates", time: "Today" },
+        { title: "Update close probability scores", time: "Today" },
+        { title: "Send financing follow-ups", time: "Today" }
+      ],
+      openTasks: [
+        { title: "Kitchen remodel quote follow-up", time: "9:45 AM" },
+        { title: "Exterior paint proposal revision", time: "2:10 PM" },
+        { title: "Commercial bid package send", time: "5:00 PM" }
+      ],
+      teamLoad: [
+        "Lead owner queue: 19",
+        "Pending callbacks: 11",
+        "Proposals awaiting approval: 7"
+      ],
+      announcements: [
+        "New lead source campaign is live.",
+        "Use updated discount guardrails for all quotes.",
+        "Friday close-rate review at 2 PM."
+      ],
+      quickActions: [
+        { label: "New Estimate", action: "new-estimate" },
+        { label: "Send Follow-up", action: "send-followup" },
+        { label: "Review Pipeline", action: "review-pipeline" },
+        { label: "Schedule Walkthrough", action: "schedule-walkthrough" }
+      ]
+    },
+    estimator: {
+      subtitle: "Build accurate estimates and keep schedules moving.",
+      roleSummary: "Estimator focus view",
+      kpis: [
+        { label: "Drafts Today", value: "11", meta: "3 awaiting owner review" },
+        { label: "Avg Turnaround", value: "2.1h", meta: "From walkthrough to quote" },
+        { label: "Revisions", value: "6", meta: "Client requested updates" },
+        { label: "Approval Rate", value: "68%", meta: "Last 30 days" }
+      ],
+      meetings: [
+        { title: "Scope confirmation • Arcadia", time: "9:00 AM" },
+        { title: "Pricing calibration • Team", time: "1:15 PM" },
+        { title: "Bid package final review", time: "3:45 PM" }
+      ],
+      priorities: [
+        { title: "Finalize 3 material-heavy quotes", time: "Today" },
+        { title: "Update labor assumptions", time: "Today" },
+        { title: "Prepare tomorrow walkthrough packets", time: "Today" }
+      ],
+      openTasks: [
+        { title: "Patio door replacement scope", time: "10:00 AM" },
+        { title: "Roof repair itemized estimate", time: "12:30 PM" },
+        { title: "Permit addendum review", time: "4:30 PM" }
+      ],
+      teamLoad: [
+        "Draft estimates: 9",
+        "Pending client revisions: 4",
+        "Ready-to-send quotes: 7"
+      ],
+      announcements: [
+        "Use latest supplier pricing sheet before sending.",
+        "Labor multipliers updated for weekends.",
+        "Estimator QA pass required for jobs over $25k."
+      ],
+      quickActions: [
+        { label: "New Estimate", action: "new-estimate" },
+        { label: "Schedule Walkthrough", action: "schedule-walkthrough" },
+        { label: "Create Invoice", action: "create-invoice" },
+        { label: "Send Follow-up", action: "send-followup" }
+      ]
+    },
+    marketing: {
+      subtitle: "Content output, campaign pacing, and social signals.",
+      roleSummary: "Marketing focus view",
+      kpis: [
+        { label: "Posts Scheduled", value: "13", meta: "7-day pipeline" },
+        { label: "Engagement Rate", value: "5.4%", meta: "+0.7% week over week" },
+        { label: "Leads from Social", value: "22", meta: "MTD attributed" },
+        { label: "Top Hook CTR", value: "8.1%", meta: "Exterior walkthrough clip" }
+      ],
+      meetings: [
+        { title: "Content calendar sync", time: "9:15 AM" },
+        { title: "Ad performance review", time: "1:00 PM" },
+        { title: "Creative approvals", time: "4:20 PM" }
+      ],
+      priorities: [
+        { title: "Publish 2 walkthrough clips", time: "Today" },
+        { title: "Refresh CTA on top 3 posts", time: "Today" },
+        { title: "Prep Monday content batch", time: "Today" }
+      ],
+      openTasks: [
+        { title: "Finalize 7-day posting plan", time: "10:30 AM" },
+        { title: "Generate hook variants", time: "2:00 PM" },
+        { title: "Track top-performing hashtags", time: "5:00 PM" }
+      ],
+      teamLoad: [
+        "Production queue: 6 assets",
+        "Scheduled posts: 13",
+        "A/B tests running: 4"
+      ],
+      announcements: [
+        "Voiceover template v3 is now active.",
+        "Weekly recap reel due Friday 6 PM.",
+        "Campaign tag naming standard updated."
+      ],
+      quickActions: [
+        { label: "Plan Content", action: "plan-content" },
+        { label: "Review Pipeline", action: "review-pipeline" },
+        { label: "Send Follow-up", action: "send-followup" },
+        { label: "New Estimate", action: "new-estimate" }
+      ]
+    }
+  };
 
   function safeNum(v){ const n = Number(v); return Number.isFinite(n) ? n : 0; }
 
@@ -4394,6 +4607,114 @@
     if(mDate) mDate.value = todayISO;
   }
 
+  function normalizeRole(role){
+    const normalized = String(role || "member").trim().toLowerCase();
+    if(normalized === "admin") return "owner";
+    if(normalized === "operations") return "member";
+    return normalized;
+  }
+
+  function getDashboardPresetByRole(role){
+    const normalized = normalizeRole(role);
+    return ROLE_DASHBOARD_PRESETS[normalized] || ROLE_DASHBOARD_PRESETS.member;
+  }
+
+  function renderBriefAgenda(targetId, rows){
+    const root = $(targetId);
+    if(!root) return;
+    root.innerHTML = "";
+    (rows || []).forEach((row)=>{
+      const item = document.createElement("div");
+      item.className = "row";
+      item.innerHTML = `<div class="title">${escapeHtml(row.title || "")}</div><div class="t">${escapeHtml(row.time || "")}</div>`;
+      root.appendChild(item);
+    });
+  }
+
+  function renderBriefList(targetId, rows){
+    const root = $(targetId);
+    if(!root) return;
+    root.innerHTML = "";
+    (rows || []).forEach((row)=>{
+      const item = document.createElement("div");
+      item.className = "widget-item";
+      item.textContent = row;
+      root.appendChild(item);
+    });
+  }
+
+  function renderBriefKpis(kpis){
+    const root = $("briefKpiGrid");
+    if(!root) return;
+    root.innerHTML = "";
+    (kpis || []).slice(0, 4).forEach((kpi)=>{
+      const card = document.createElement("div");
+      card.className = "brief-kpi";
+      card.innerHTML = `
+        <div class="label">${escapeHtml(kpi.label || "")}</div>
+        <div class="value">${escapeHtml(kpi.value || "")}</div>
+        <div class="meta">${escapeHtml(kpi.meta || "")}</div>
+      `;
+      root.appendChild(card);
+    });
+  }
+
+  function handleBriefQuickAction(action){
+    switch(action){
+      case "new-estimate":
+        setActivePage("estimator");
+        break;
+      case "schedule-walkthrough":
+        setActivePage("calendar");
+        setTimeout(()=>{ if(typeof focusCalendarCreate === "function") focusCalendarCreate(); }, 120);
+        break;
+      case "create-invoice":
+        setActivePage("housecall");
+        break;
+      case "send-followup":
+        setActivePage("email");
+        break;
+      case "review-pipeline":
+        setActivePage("company");
+        break;
+      case "plan-content":
+        setActivePage("dashboard");
+        break;
+      default:
+        break;
+    }
+  }
+
+  function renderBriefQuickActions(actions){
+    const root = $("briefQuickActions");
+    if(!root) return;
+    root.innerHTML = "";
+    (actions || []).forEach((item)=>{
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chip quick-action";
+      btn.textContent = item.label;
+      btn.addEventListener("click", ()=> handleBriefQuickAction(item.action));
+      root.appendChild(btn);
+    });
+  }
+
+  function applyDashboardPreset(role){
+    const preset = getDashboardPresetByRole(role);
+    const welcomeSubtitle = $("welcomeSubtitle");
+    if(welcomeSubtitle) welcomeSubtitle.textContent = preset.subtitle;
+    const roleSummary = $("welcomeRoleSummary");
+    if(roleSummary) roleSummary.textContent = preset.roleSummary;
+
+    renderBriefKpis(preset.kpis);
+    renderBriefAgenda("briefMeetingsAgenda", preset.meetings);
+    renderBriefAgenda("briefPriorityAgenda", preset.priorities);
+    renderBriefAgenda("briefOpenTasksAgenda", preset.openTasks);
+    renderBriefList("briefTeamLoadList", preset.teamLoad);
+    renderBriefList("briefAnnouncementsList", preset.announcements);
+    renderBriefQuickActions(preset.quickActions);
+  }
+
   // ====== Login ======
   function setLoginStatus(msg){
     const el = $("loginStatus");
@@ -4414,6 +4735,7 @@
     if(welcomeHeaderName){
       welcomeHeaderName.textContent = user ? `Welcome in, ${user.displayName}` : "Welcome in";
     }
+    applyDashboardPreset(user?.role);
   }
 
   async function getCurrentSessionUser(){
